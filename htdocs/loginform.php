@@ -11,6 +11,9 @@ echo <<<_END
             <input type="password" name="password" placeholder="password">
             <input class="white-text btn waves-effect" type="submit" name="submit" value="submit">
           </form>
+             <form action="register.html" method="get">
+                <input class="white-text btn waves-effect" type="submit" name="signup" value="sign up">
+            </form>
         </div>
       </div>
     </div>
