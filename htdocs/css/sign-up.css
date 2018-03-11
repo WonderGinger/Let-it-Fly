@@ -1,0 +1,22 @@
+html { height: 100%; }
+
+body { height: 100%; }
+
+.container { height: calc(100% - 60px); }
+
+.valign-table {
+  display: table;
+  height: 100%;
+  width: 100%;
+}
+
+.valign-table-cell {
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.row { margin-bottom: 0; }
+
+.row .col { padding: 0; }
+
+.card { margin: 16px 0; }
