@@ -1,23 +1,37 @@
 <?php
 echo <<<_END
-
+<div class="row card blue-grey darken-1">
+  <form class="col s12 card-content white-text" id="login" method="POST">
+    <div class="card-title">Login</div>
     <div class="row">
-    <div class="col s12 m6 offset-m3">
-      <div class="card blue-grey darken-1">
-        <div class="card-content white-text">
-          <span class="card-title">Login</span>
-          <form id="login" method="POST" enctype="multipart/form-data">
-            <input type="text" name="username" placeholder="email"><br/>
-            <input type="password" name="password" placeholder="password">
-            <input class="white-text btn waves-effect" type="submit" name="submit" value="submit">
-          </form>
-             <form action="register.html" method="get">
-                <input class="white-text btn waves-effect" type="submit" name="signup" value="sign up">
-            </form>
-        </div>
+      <div class="switch col s2 offset-s9">
+          <label>
+          Driver?
+            <input type="checkbox">
+            <span class="lever"></span>
+          </label>
       </div>
     </div>
-  </div>
+    <div class="row">
+      <div class="input-field col s12">
+        <input id="email" type="email" class="validate">
+        <label for="email">Email</label>
+      </div>
+    </div>
+    <div class="row">
+      <div class="input-field col s12">
+        <input id="password" type="password" class="validate">
+        <label for="password">Password</label>
+      </div>
+    </div>
+    <div class="row">
+      <button class="btn waves-effect waves-light" type="submit" name="action">Submit
+          <i class="material-icons right">send</i>
+      </button>
+      <a class="white-text btn-flat waves-light" href="register.html">SIGN UP</a>
+    </div>
+  </form>
+</div>
 _END;
 
 // require_once 'login.php';
