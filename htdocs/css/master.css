@@ -40,6 +40,16 @@ nav ul a.btn-floating {
   margin: 0 0 4px 16px;
 }
 
+::selection {
+  background: #26a69a;
+  color: #ffffff;
+}
+
+::-moz-selection {
+  background: #26a69a;
+  color: #ffffff;
+}
+
 @media only screen and (min-width: 601px) {
   nav,
   nav .nav-wrapper i,
