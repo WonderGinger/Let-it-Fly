@@ -39,7 +39,7 @@ echo <<<_END
       <button class="btn waves-effect waves-light" type="submit" id="submit" name="submit">Submit
           <i class="material-icons right">send</i>
       </button>
-      <a class="white-text btn-flat waves-light" href="register.html">SIGN UP</a>
+      <a class="white-text btn-flat waves-light" href="register.php">SIGN UP</a>
     </div>
   </form>
 </div>
