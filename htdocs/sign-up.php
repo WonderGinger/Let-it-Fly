@@ -2,48 +2,68 @@
 $ini = parse_ini_file("../private/let-it-fly.ini");
 $link = mysqli_connect($ini["host"], $ini["user"], $ini["pass"], $ini["dbname"]);
 if (!$link) {
-  // GENERATE SERVER ERROR PAGE
+  // DISPLAY SERVER ERROR PAGE
+  header("Location: http://www.sjsu.edu/");
+  exit();
 }
 
-$email = $password = $confirmation = NULL;
-$msg1 = $msg2 = $msg3 = NULL;
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+$user_checkbox = $user_email = $user_password = $user_confirmation = NULL;
+$error_email = $error_password = $error_confirmation = NULL;
+
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+  $user = empty($_POST["checkbox"]) ? "riders" : "drivers";
   $email = $link->real_escape_string($_POST["email"]);
   $password = $link->real_escape_string($_POST["password"]);
   $confirmation = $link->real_escape_string($_POST["confirmation"]);
+  $verification = TRUE;
 
-  if (empty($email)) {
-    $msg1 = "Email cannot be empty.";
-  } else {
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-      $msg1 = "Email is not valid";
-    } else {
-        // SQL STUFF
-    }
+  switch ($email) {
+    case NULL:
+      $error_email = "Field cannot be empty.";
+      $verification = FALSE;
+      break;
+    case !filter_var($email, FILTER_VALIDATE_EMAIL):
+      $error_email = "Email is considered invalid.";
+      $verification = FALSE;
+      break;
+    // MIGHT NEED TRY/CATCH FOR DISCONNECT ERROR
+    case $email === mysqli_fetch_assoc(mysqli_query($link, "SELECT * FROM {$user} WHERE email='{$email}' LIMIT 1"))["email"]:
+      $error_email = "Email is already registered.";
+      $verification = FALSE;
+      break;
   }
-    
-  // HASH THE PASSWORD
-  if (empty($password)) {
-    $msg2 = "password cannot be empty.";
+  switch ($password) {
+    case NULL:
+      $error_password = "Field cannot be empty.";
+      $verification = FALSE;
+      break;
   }
-  
-  if (empty($confirmation)) {
-    $msg3 = "Confirmation password cannot be empty.";
+  switch ($confirmation) {
+    case NULL:
+      $error_confirmation = "Field cannot be empty.";
+      $verification = FALSE;
+      break;
+    case $confirmation !== $password:
+      $error_confirmation = "Password does not match original.";
+      $verification = FALSE;
+      break;
+  }
+
+  if ($verification) {
+    $password = password_hash($password, PASSWORD_DEFAULT);
+    // ADD PHPMAIL?
+    // MIGHT NEED TRY/CATCH FOR DISCONNECT ERROR
+    // REDIRECT USER TO SUCCESSFUL REGISTRATION PAGE
+    mysqli_query($link, "INSERT INTO {$user} (email, password) VALUES ('{$email}', '{$password}')");
+    header("Location: http://www.sjsu.edu/");
+    exit();
   } else {
-    if ($confirmation != $password) {
-      $msg3 = "Confirmation password does not match;";
-    }
+    $user_checkbox = ($user === "drivers") ? "checked='checked'" : $user_checkbox;
+    $user_email = "value='{$email}'";
+    $user_password = "value='{$password}'";
+    $user_confirmation = "value='{$confirmation}'";
   }
 }
-
-
-  // also get rider vs driver check
-  // do some exception checking
-  // hash password
-
-  $query = "INSERT INTO riders (email, password) VALUES ('$email', '$password')";
-  mysqli_query($link, $query);
-
 
 mysqli_close($link);
 ?>
@@ -83,32 +103,27 @@ mysqli_close($link);
                     <form method="post" action="sign-up">
                       <p>Register and get a ride in minutes, or become a driver and earn money on your schedule.</p>
                       <div class="switch">
-                        <label>Rider<input type="checkbox" id="mycheckbox"><span class="lever"></span>Driver</label>
+                        <label>Rider<input type="checkbox" name="checkbox" <?php echo $user_checkbox; ?>><span class="lever"></span>Driver</label>
                       </div>
-                      <!-- <a onclick="value_()">value</a> -->
-
                       <div class="row">
                         <div class="col s12 input-field">
-                          <input type="email" id="email" name="email" required>
-                          <label for="email">Enter your email</label>
-                          <span class="helper-text"><?php echo $msg1; ?></span>
+                          <input type="email" id="email" name="email" <?php echo $user_email; ?> required>
+                          <label class="active" for="email">Enter your email</label>
+                          <span class="helper-text red-text"><?php echo $error_email; ?></span>
                         </div>
                         <div class="col s12 input-field">
-                          <input type="password" id="password" name="password" required>
-                          <label for="password">Create a password</label>
-                          <span class="helper-text"><?php echo $msg2; ?></span>
+                          <input type="password" id="password" name="password" <?php echo $user_password; ?> required>
+                          <label class="active" for="password">Create a password</label>
+                          <span class="helper-text red-text"><?php echo $error_password; ?></span>
                         </div>
                         <div class="col s12 input-field">
-                          <input type="password" id="confirmation" name="confirmation" required>
-                          <label for="confirmation">Confirm your password</label>
-                          <span class="helper-text"><?php echo $msg3; ?></span>
+                          <input type="password" id="confirmation" name="confirmation" <?php echo $user_confirmation; ?> required>
+                          <label class="active" for="confirmation">Confirm your password</label>
+                          <span class="helper-text red-text"><?php echo $error_confirmation; ?></span>
                         </div>
-                        <div class="col s8">
-                          <p style="font-size: 14px; margin-top:7px; color: #9e9e9e;">By proceeding, you agree to the Terms of Service.</a></p><!-- FIX TAG -->
-                        </div>
+                        <div class="col s8"><p id="legal-warning">By proceeding, you agree to the <a href="">Terms of Service.</a></p></div>
                         <div class="col s4 right-align"><button type="submit" class="btn waves-effect waves-light">Next</button></div>
                       </div>
-
                     </form>
                   </div>
                 </div>
@@ -119,14 +134,5 @@ mysqli_close($link);
       </div>
     </content>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-alpha.4/js/materialize.min.js"></script>
-    <script>
-
-function value_() {
-  var checkbox = document.getElementById('mycheckbox');
-  alert('checkbox value: ' + checkbox.checked);
-}
-
-
-    </script>
   </body>
 </html>
