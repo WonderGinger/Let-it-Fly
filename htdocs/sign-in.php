@@ -24,9 +24,17 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
   $password = mysql_entities_fix_string($link, $_POST["password"]);
 
   $password = password_hash($password, PASSWORD_DEFAULT);
-  mysqli_query($link, "SELECT * FROM riders WHERE email='$email'");
-  header("Location: http:/www.sjsu.edu/");
-  exit();
+  $query = "SELECT * FROM riders WHERE email='$email'";
+  
+
+  $result = $link->query($query);
+  if(!$result) header("Location: http://www.sjsu.edu/");
+  elseif($result->num_rows) {
+    $row = $result->fetch_array(MYSQLI_NUM);
+    $result->close();
+    print_r($row);
+  }
+
 }
 
 ?>
@@ -44,6 +52,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
 
 <body class="grey lighten-3">
+
+<!-- Navigation bar -->
     <nav class="white">
       <div class="container">
         <div class="nav-wrapper">
@@ -57,6 +67,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         </div>
       </div>
     </nav>
+
+
 <!-- Login card -->    
     <content>
       <div class="container">
