@@ -1,40 +1,52 @@
 <?php
-$user_checkbox = NULL;
 
-
-/* USAGE: 
- *  Currently a test version of the code using
- *  only my local test server with a test table.
- *  This can be adapter once the backend is officially created.
- *    Additionally, some of this validation should be done in JavaScript 
- *    rather than using php's die function.
- */
 require_once 'utility.php';
 
+// Connect to let_it_fly database
 $ini = parse_ini_file("../private/let-it-fly.ini");
 $link = mysqli_connect($ini["host"], $ini["user"], $ini["pass"], $ini["dbname"]);
-if (!$link) {
-  // DISPLAY SERVER ERROR PAGE
-  header("Location: http://www.sjsu.edu/");
-  exit();
-}
+if (!$link) display_error_page();
+
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
   $user = empty($_POST["checkbox"]) ? "riders" : "drivers";
   $email = mysql_entities_fix_string($link, $_POST["email"]);
-  $password = mysql_entities_fix_string($link, $_POST["password"]);
 
-  $password = password_hash($password, PASSWORD_DEFAULT);
-  $query = "SELECT * FROM riders WHERE email='$email'";
+  $query = "SELECT * FROM $user WHERE email='$email'";
   
-
+  // Main log-in logic
   $result = $link->query($query);
-  if(!$result) header("Location: http://www.sjsu.edu/");
+  if(!$result) display_error_page();
   elseif($result->num_rows) {
-    $row = $result->fetch_array(MYSQLI_NUM);
-    $result->close();
-    print_r($row);
-  }
 
+    // Get matching row (there should only be one)
+    $row = $result->fetch_array(MYSQLI_NUM);
+    // Sanitize string
+    $password = mysql_entities_fix_string($link, $_POST["password"]);
+    // Hash entered password
+    $password = password_hash($password, PASSWORD_DEFAULT);
+
+    // Check password against database
+    if($password == $row[2]){
+      // Store session variables
+      session_start();
+      $_SESSION['logged_in'] = true;
+      $_SESSION['user'] = $user;
+      $_SESSION['email'] = $email;
+
+      // If the redirection is 1 line of code this can turn into ?: operator.
+      if($user == "drivers"){
+        // TODO: Redirect to driver page
+
+      }
+      elseif($user == "riders"){
+        // TODO: Redirect to rider page
+      }
+      else {
+        display_error_page();
+      }
+    }
+    $result->close();
+  }
 }
 
 ?>
@@ -75,42 +87,44 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         <div class="valign-table">
           <div class="valign-table-cell">
             <div class="row">
-              <div class="col s12 m10 l7 offset-m1 offset-l5">
+              <div class="col s12 m10 l7 offset-m1 offset-l3">
                 <div class="card">
-
-                  <!-- Main form area: 1 column padding on left and right -->
-                  <form class="col s10 offset-s1 card-content" id="login" method="POST">
-                    <div class="card-title">Login</div>
+                  <div class="card-content">
+                    <span class="card-title teal-text text-lighten-1">Login</span>
                     
-                    <!-- Rider login switch -->
-                    <div class="switch">
-                      <label>Rider<input type="checkbox" name="checkbox"><span class="lever"></span>Driver</label>
-                    </div>
-
-                    <!-- Email field -->
-                    <div class="row">
-                      <div class="input-field col s12">
-                        <input id="email" name="email" type="email" class="validate">
-                        <label class="active" for="email">Email</label>
+                    <!-- Main form area: 1 column padding on left and right -->
+                    <form method="post" action="sign-in">
+                      
+                      <!-- Rider login switch -->
+                      <div class="switch">
+                        <label>Rider<input type="checkbox" name="checkbox"><span class="lever"></span>Driver</label>
                       </div>
-                    </div>
 
-                    <!-- Password field -->
-                    <div class="row">
-                      <div class="input-field col s12">
-                        <input id="password" name="password" type="password" class="validate">
-                        <label class="active" for="password">Password</label>
+                      <!-- Email field -->
+                      <div class="row">
+                        <div class="input-field col s12">
+                          <input id="email" name="email" type="email" class="validate">
+                          <label class="active" for="email">Email</label>
+                        </div>
                       </div>
-                    </div>
 
-                    <!-- Submit button and Sign up link -->
-                    <div class="row">
-                      <button class="btn waves-effect waves-light" type="submit" id="submit" name="submit">Submit
-                          <i class="material-icons right">send</i>
-                      </button>
-                      <a class="teal-text btn-flat waves-dark" href="sign-up.php">SIGN UP</a>
-                    </div>
-                  </form>
+                      <!-- Password field -->
+                      <div class="row">
+                        <div class="input-field col s12">
+                          <input id="password" name="password" type="password" class="validate">
+                          <label class="active" for="password">Password</label>
+                        </div>
+                      </div>
+
+                      <!-- Submit button and Sign up link -->
+                      <div class="row">
+                        <button class="btn waves-effect waves-light" type="submit" id="submit" name="submit">Submit
+                            <i class="material-icons right">send</i>
+                        </button>
+                        <a class="teal-text btn-flat waves-dark" href="../sign-up">SIGN UP</a>
+                      </div>
+                    </form>
+                  </div>
                 </div>
               </div>
             </div>
