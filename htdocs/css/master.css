@@ -1,7 +1,25 @@
-.container { max-width: calc(100% - 32px); }
+html { font-size: 15px; }
 
-nav .brand-logo i, nav .brand-logo [class^="mdi-"], nav .brand-logo [class*="mdi-"], nav .brand-logo i.material-icons {
+nav {
+  height: 60px;
+  line-height: 60px;
+}
+
+nav .brand-logo { padding: 0 16px; }
+
+nav .brand-logo i,
+nav .brand-logo [class^="mdi-"],
+nav .brand-logo [class*="mdi-"],
+nav .brand-logo i.material-icons {
   margin-right: 0;
+}
+
+nav i,
+nav [class^="mdi-"],
+nav [class*="mdi-"],
+nav i.material-icons {
+  height: 60px;
+  line-height: 60px;
 }
 
 nav .sidenav-trigger { margin: 0 16px; }
@@ -13,6 +31,31 @@ nav ul a {
   text-transform: uppercase;
 }
 
-nav ul a.btn, nav ul a.btn-large, nav ul a.btn-small, nav ul a.btn-large, nav ul a.btn-flat, nav ul a.btn-floating {
-  margin: 0 16px 4px;
+nav ul a.btn,
+nav ul a.btn-large,
+nav ul a.btn-small,
+nav ul a.btn-large,
+nav ul a.btn-flat,
+nav ul a.btn-floating {
+  margin: 0 0 4px 16px;
+}
+
+::selection {
+  background: #26a69a;
+  color: #ffffff;
+}
+
+::-moz-selection {
+  background: #26a69a;
+  color: #ffffff;
+}
+
+@media only screen and (min-width: 601px) {
+  nav,
+  nav .nav-wrapper i,
+  nav a.sidenav-trigger,
+  nav a.sidenav-trigger i {
+    height: 60px;
+    line-height: 60px;
+  }
 }
