@@ -1,3 +1,14 @@
+<?php
+	if (!empty($_SERVER['HTTPS']) && ('on' == $_SERVER['HTTPS'])) {
+		$uri = 'https://';
+	} else {
+		$uri = 'http://';
+	}
+	$uri .= $_SERVER['HTTP_HOST'];
+	header('Location: '.$uri.'/sign-in');
+	exit;
+?>
+
 <!DOCTYPE html>
 <html>
   <head>
@@ -29,8 +40,6 @@
         </div>
       </div>
     </nav>
-
-    <div class="container"><?php require_once 'sign-in.php';?></div>
 
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-alpha.4/js/materialize.min.js"></script>
