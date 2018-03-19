@@ -1,71 +1,57 @@
 <?php
-$ini = parse_ini_file("../private/let-it-fly.ini");
-$link = mysqli_connect($ini["host"], $ini["user"], $ini["pass"], $ini["dbname"]);
-if (!$link) {
-  // DISPLAY SERVER ERROR PAGE
-  header("Location: http://www.sjsu.edu/");
-  exit();
+require_once "../private/utilities.php";
+session_start();
+
+$nav_link = "/sign-in";
+$nav_text = "Sign In";
+if (isset($_SESSION["logged_in"]) && $_SESSION["logged_in"]) {
+  $nav_link = "/sign-out";
+  $nav_text = "Sign Out";
 }
 
-$user_checkbox = $user_email = $user_password = $user_confirmation = NULL;
-$error_email = $error_password = $error_confirmation = NULL;
-
+$inputs = array_fill(0, 4, NULL);
+$errors = array_fill(0, 3, NULL);
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-  $user = empty($_POST["checkbox"]) ? "riders" : "drivers";
-  $email = $link->real_escape_string($_POST["email"]);
-  $password = $link->real_escape_string($_POST["password"]);
-  $confirmation = $link->real_escape_string($_POST["confirmation"]);
-  $verification = TRUE;
+  $user = !isset($_POST["checkbox"]) ? "riders" : "drivers";
+  $email = mysqli_true_escape_string($dbh, $_POST["email"]);
+  $password = mysqli_true_escape_string($dbh, $_POST["password"]);
+  $confirmation = mysqli_true_escape_string($dbh, $_POST["confirmation"]);
 
-  switch ($email) {
-    case NULL:
-      $error_email = "Field cannot be empty.";
-      $verification = FALSE;
-      break;
-    case !filter_var($email, FILTER_VALIDATE_EMAIL):
-      $error_email = "Email is considered invalid.";
-      $verification = FALSE;
-      break;
-    // MIGHT NEED TRY/CATCH FOR DISCONNECT ERROR
-    case $email === mysqli_fetch_assoc(mysqli_query($link, "SELECT * FROM {$user} WHERE email='{$email}' LIMIT 1"))["email"]:
-      $error_email = "Email is already registered.";
-      $verification = FALSE;
-      break;
-  }
-  switch ($password) {
-    case NULL:
-      $error_password = "Field cannot be empty.";
-      $verification = FALSE;
-      break;
-  }
-  switch ($confirmation) {
-    case NULL:
-      $error_confirmation = "Field cannot be empty.";
-      $verification = FALSE;
-      break;
-    case $confirmation !== $password:
-      $error_confirmation = "Password does not match original.";
-      $verification = FALSE;
-      break;
+  if (empty($email)) {
+    $errors[0] = "Field cannot be empty.";
+  } else if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    $errors[0] = "Email is considered invalid.";
+  } else {
+    if (!$result = $dbh->query("SELECT * FROM {$user} WHERE email='{$email}' LIMIT 1")) db_error();
+    $result = $result->fetch_array(MYSQLI_ASSOC);
+
+    if ($email === $result["email"]) $errors[0] = "Email is already registered.";
   }
 
-  if ($verification) {
+  if (empty($password)) $errors[1] = "Field cannot be empty.";
+
+  if (empty($confirmation)) {
+    $errors[2] = "Field cannot be empty.";
+  } else {
+    if (!empty($password) && $confirmation !== $password) $errors[2] = "Password does not match original.";
+  }
+
+  if (!count(array_filter($errors))) {
+    // TODO: Add PHPMailer functionality
     $password = password_hash($password, PASSWORD_DEFAULT);
-    // ADD PHPMAIL?
-    // MIGHT NEED TRY/CATCH FOR DISCONNECT ERROR
-    // REDIRECT USER TO SUCCESSFUL REGISTRATION PAGE
-    mysqli_query($link, "INSERT INTO {$user} (email, password) VALUES ('{$email}', '{$password}')");
-    header("Location: http://www.sjsu.edu/");
+    if (!$result = $dbh->query("INSERT INTO {$user} (email, password) VALUES ('{$email}', '{$password}')")) db_error();
+    // TODO: Create sign up success page
+    header("Location: /sign-in");
     exit();
   } else {
-    $user_checkbox = ($user === "drivers") ? "checked='checked'" : $user_checkbox;
-    $user_email = "value='{$email}'";
-    $user_password = "value='{$password}'";
-    $user_confirmation = "value='{$confirmation}'";
+    $inputs[0] = ($user === "riders") ? $inputs[0] : "checked='checked'";
+    $inputs[1] = "value='{$email}'";
+    $inputs[2] = "value='{$password}'";
+    $inputs[3] = "value='{$confirmation}'";
   }
 }
 
-mysqli_close($link);
+mysqli_close($dbh);
 ?>
 <!DOCTYPE html>
 <html>
@@ -74,8 +60,8 @@ mysqli_close($link);
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-alpha.4/css/materialize.min.css">
-    <link rel="stylesheet" href="css/master.css">
-    <link rel="stylesheet" href="css/sign-up.css">
+    <link rel="stylesheet" href="/css/master.css">
+    <link rel="stylesheet" href="/css/sign-up.css">
   </head>
   <body class="grey lighten-3">
     <nav class="white">
@@ -84,9 +70,8 @@ mysqli_close($link);
           <a class="brand-logo" href="/"><i class="material-icons teal-text text-lighten-1">airport_shuttle</i></a>
           <a class="sidenav-trigger" data-target="slide-out" href=""><i class="material-icons teal-text text-lighten-1">menu</i></a>
           <ul class="right hide-on-med-and-down">
-            <li class="waves-effect"><a class="teal-text text-lighten-1" href="">Lorem</a></li>
-            <li class="waves-effect"><a class="teal-text text-lighten-1" href="">Ipsum</a></li>
-            <li><a class="btn waves-effect waves-light" href="">Dolor</a></li>
+            <li class="active waves-effect"><a class="teal-text text-lighten-1" href="/sign-up">Create an Account</a></li>
+            <li><a class="btn waves-effect waves-light" href="<?php echo $nav_link; ?>"><?php echo $nav_text; ?></a></li>
           </ul>
         </div>
       </div>
@@ -100,28 +85,31 @@ mysqli_close($link);
                 <div class="card">
                   <div class="card-content">
                     <span class="card-title teal-text text-lighten-1">Begin Your Journey</span>
-                    <form method="post" action="sign-up">
+                    <form method="post" action="/sign-up">
                       <p>Register and get a ride in minutes, or become a driver and earn money on your schedule.</p>
                       <div class="switch">
-                        <label>Rider<input type="checkbox" name="checkbox" <?php echo $user_checkbox; ?>><span class="lever"></span>Driver</label>
+                        <label>Rider<input type="checkbox" name="checkbox" <?php echo $inputs[0]; ?>><span class="lever"></span>Driver</label>
                       </div>
                       <div class="row">
                         <div class="col s12 input-field">
-                          <input type="email" id="email" name="email" <?php echo $user_email; ?> required>
+                          <input type="email" id="email" name="email" <?php echo $inputs[1]; ?> required>
                           <label class="active" for="email">Enter your email</label>
-                          <span class="helper-text red-text"><?php echo $error_email; ?></span>
+                          <span class="helper-text red-text"><?php echo $errors[0]; ?></span>
                         </div>
                         <div class="col s12 input-field">
-                          <input type="password" id="password" name="password" <?php echo $user_password; ?> required>
+                          <input type="password" id="password" name="password" <?php echo $inputs[2]; ?> required>
                           <label class="active" for="password">Create a password</label>
-                          <span class="helper-text red-text"><?php echo $error_password; ?></span>
+                          <span class="helper-text red-text"><?php echo $errors[1]; ?></span>
                         </div>
                         <div class="col s12 input-field">
-                          <input type="password" id="confirmation" name="confirmation" <?php echo $user_confirmation; ?> required>
+                          <input type="password" id="confirmation" name="confirmation" <?php echo $inputs[3]; ?> required>
                           <label class="active" for="confirmation">Confirm your password</label>
-                          <span class="helper-text red-text"><?php echo $error_confirmation; ?></span>
+                          <span class="helper-text red-text"><?php echo $errors[2]; ?></span>
                         </div>
-                        <div class="col s8"><p id="legal-warning">By proceeding, you agree to the <a href="">Terms of Service.</a></p></div>
+                        <div class="col s8">
+                          <!-- TODO: Create mock Terms of Service page -->
+                          <p id="footnote">By proceeding, you agree to the <a href="/res/blank.txt">Terms of Service.</a></p>
+                        </div>
                         <div class="col s4 right-align"><button type="submit" class="btn waves-effect waves-light">Next</button></div>
                       </div>
                     </form>

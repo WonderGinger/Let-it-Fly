@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 15, 2018 at 06:34 AM
+-- Generation Time: Mar 19, 2018 at 07:02 AM
 -- Server version: 10.1.30-MariaDB
 -- PHP Version: 7.2.2
 
@@ -35,13 +35,6 @@ CREATE TABLE `drivers` (
   `active` tinyint(1) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
---
--- Dumping data for table `drivers`
---
-
-INSERT INTO `drivers` (`id`, `email`, `password`, `active`) VALUES
-(1, 'b@gmail.com', '$2y$10$x7qeqfPnJ5VQ4eycaK31dO4dOaw.BYzWhvVZJBCRdXjxT53ni0muC', 0);
-
 -- --------------------------------------------------------
 
 --
@@ -54,14 +47,6 @@ CREATE TABLE `riders` (
   `password` varchar(255) NOT NULL,
   `active` tinyint(1) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Dumping data for table `riders`
---
-
-INSERT INTO `riders` (`id`, `email`, `password`, `active`) VALUES
-(1, 'a@gmail.com', '$2y$10$s5IqwE3zeH9Nidi7T7MP.eXrXZL.0zs6eTmtivzLAxlV3GBgbZzs.', 0),
-(2, 'b@gmail.com', '$2y$10$NKMPQiXRbhjNPGGPyBPAQuTKaIh18tpvsAHq03HbYQeo/jV1QEznK', 0);
 
 --
 -- Indexes for dumped tables
@@ -91,13 +76,13 @@ ALTER TABLE `riders`
 -- AUTO_INCREMENT for table `drivers`
 --
 ALTER TABLE `drivers`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `riders`
 --
 ALTER TABLE `riders`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

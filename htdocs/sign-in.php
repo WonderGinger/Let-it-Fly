@@ -1,127 +1,114 @@
 <?php
+require_once "../private/utilities.php";
+session_start();
 
-require_once 'utility.php';
+if (isset($_SESSION["logged_in"]) && $_SESSION["logged_in"]) {
+  header("Location: /");
+  exit();
+}
 
-// Connect to let_it_fly database
-$ini = parse_ini_file("../private/let-it-fly.ini");
-$link = mysqli_connect($ini["host"], $ini["user"], $ini["pass"], $ini["dbname"]);
-if (!$link) display_error_page();
-
+$inputs = array_fill(0, 3, NULL);
+$errors = array_fill(0, 2, NULL);
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-  $user = empty($_POST["checkbox"]) ? "riders" : "drivers";
-  $email = mysql_entities_fix_string($link, $_POST["email"]);
+  $user = !isset($_POST["checkbox"]) ? "riders" : "drivers";
+  $email = mysqli_true_escape_string($dbh, $_POST["email"]);
+  $password = mysqli_true_escape_string($dbh, $_POST["password"]);
 
-  $query = "SELECT * FROM $user WHERE email='$email'";
-  
-  // Main log-in logic
-  $result = $link->query($query);
-  if(!$result) display_error_page();
-  elseif($result->num_rows) {
+  if (empty($email)) {
+    $errors[0] = "Field cannot be empty.";
+  } else if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    $errors[0] = "Email is considered invalid.";
+  } else {
+    if (!$result = $dbh->query("SELECT * FROM {$user} WHERE email='{$email}' LIMIT 1")) db_error();
+    $result = $result->fetch_array(MYSQLI_ASSOC);
 
-    // Get matching row (there should only be one)
-    $row = $result->fetch_array(MYSQLI_NUM);
-    // Sanitize string
-    $password = mysql_entities_fix_string($link, $_POST["password"]);
-    // Hash entered password
-    $password = password_hash($password, PASSWORD_DEFAULT);
+    if (!$result) {
+      $errors[0] = "Email has not been registered yet.";
+    } else {
+      // TODO: Make this condition false after implementing PHPMailer
+      if ($result["active"]) $errors[0] = "Email has not been activated yet.";
+    }
+  }
 
-    // Check password against database
-    if($password == $row[2]){
-      // Store session variables
-      session_start();
-      $_SESSION['logged_in'] = true;
-      $_SESSION['user'] = $user;
-      $_SESSION['email'] = $email;
-
-      // If the redirection is 1 line of code this can turn into ?: operator.
-      if($user == "drivers"){
-        // TODO: Redirect to driver page
-
-      }
-      elseif($user == "riders"){
-        // TODO: Redirect to rider page
-      }
-      else {
-        display_error_page();
+  if (empty($password)) {
+    $errors[1] = "Field cannot be empty.";
+  } else {
+    if ($errors[0] === "Email has not been activated yet." || $errors[0] === NULL) {
+      if (!password_verify($password, $result["password"])) {
+        $errors[1] = "Password is incorrect.";
+      } else {
+        $_SESSION["logged_in"] = true;
+        $_SESSION["user"] = $user;
+        $_SESSION["email"] = $email;
       }
     }
-    $result->close();
+  }
+
+  if (!count(array_filter($errors))) {
+    header("Location: /");
+    exit();
+  } else {
+    $inputs[0] = ($user === "riders") ? $inputs[0] : "checked='checked'";
+    $inputs[1] = "value='{$email}'";
+    $inputs[2] = "value='{$password}'";
   }
 }
 
+mysqli_close($dbh);
 ?>
-
 <!DOCTYPE html>
 <html>
-<head>
+  <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-alpha.4/css/materialize.min.css">
-    <link rel="stylesheet" href="css/master.css">
-    <link rel="stylesheet" href="css/sign-in.css">
-</head>
-
-
-<body class="grey lighten-3">
-
-<!-- Navigation bar -->
+    <link rel="stylesheet" href="/css/master.css">
+    <link rel="stylesheet" href="/css/sign-in.css">
+  </head>
+  <body class="grey lighten-3">
     <nav class="white">
       <div class="container">
         <div class="nav-wrapper">
           <a class="brand-logo" href="/"><i class="material-icons teal-text text-lighten-1">airport_shuttle</i></a>
           <a class="sidenav-trigger" data-target="slide-out" href=""><i class="material-icons teal-text text-lighten-1">menu</i></a>
           <ul class="right hide-on-med-and-down">
-            <li class="waves-effect"><a class="teal-text text-lighten-1" href="">Lorem</a></li>
-            <li class="waves-effect"><a class="teal-text text-lighten-1" href="">Ipsum</a></li>
-            <li><a class="btn waves-effect waves-light" href="">Dolor</a></li>
+            <li class="waves-effect"><a class="teal-text text-lighten-1" href="/sign-up">Create an Account</a></li>
+            <li><a class="btn teal-text text-lighten-1 waves-effect waves-light" href="/sign-in">Sign In</a></li>
           </ul>
         </div>
       </div>
     </nav>
-
-
-<!-- Login card -->    
     <content>
       <div class="container">
         <div class="valign-table">
           <div class="valign-table-cell">
             <div class="row">
-              <div class="col s12 m10 l7 offset-m1 offset-l3">
+              <div class="col s12 m8 l6 offset-m2 offset-l3">
                 <div class="card">
                   <div class="card-content">
-                    <span class="card-title teal-text text-lighten-1">Login</span>
-                    
-                    <!-- Main form area: 1 column padding on left and right -->
-                    <form method="post" action="sign-in">
-                      
-                      <!-- Rider login switch -->
+                    <span class="card-title teal-text text-lighten-1">Sign In</span>
+                    <form method="post" action="/sign-in">
+                      <p>Select your user account.</p>
                       <div class="switch">
-                        <label>Rider<input type="checkbox" name="checkbox"><span class="lever"></span>Driver</label>
+                        <label>Rider<input type="checkbox" name="checkbox" <?php echo $inputs[0]; ?>><span class="lever"></span>Driver</label>
                       </div>
-
-                      <!-- Email field -->
                       <div class="row">
-                        <div class="input-field col s12">
-                          <input id="email" name="email" type="email" class="validate">
-                          <label class="active" for="email">Email</label>
+                        <div class="col s12 input-field">
+                          <input type="email" id="email" name="email" <?php echo $inputs[1]; ?> required>
+                          <label class="active" for="email">Enter your email</label>
+                          <span class="helper-text red-text"><?php echo $errors[0]; ?></span>
                         </div>
-                      </div>
-
-                      <!-- Password field -->
-                      <div class="row">
-                        <div class="input-field col s12">
-                          <input id="password" name="password" type="password" class="validate">
-                          <label class="active" for="password">Password</label>
+                        <div class="col s12 input-field">
+                          <input type="password" id="password" name="password" <?php echo $inputs[2]; ?> required>
+                          <label class="active" for="password">Enter your password</label>
+                          <span class="helper-text red-text"><?php echo $errors[1]; ?></span>
                         </div>
-                      </div>
-
-                      <!-- Submit button and Sign up link -->
-                      <div class="row">
-                        <button class="btn waves-effect waves-light" type="submit" id="submit" name="submit">Submit
-                            <i class="material-icons right">send</i>
-                        </button>
-                        <a class="teal-text btn-flat waves-dark" href="../sign-up">SIGN UP</a>
+                        <div class="col s8">
+                          <!-- TODO: Add password reset functionality -->
+                          <p id="footnote"><a href="/res/blank.txt">Forgot password?</a></p>
+                        </div>
+                        <div class="col s4 right-align"><button type="submit" class="btn waves-effect waves-light">Next</button></div>
                       </div>
                     </form>
                   </div>

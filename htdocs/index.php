@@ -1,14 +1,15 @@
 <?php
-	if (!empty($_SERVER['HTTPS']) && ('on' == $_SERVER['HTTPS'])) {
-		$uri = 'https://';
-	} else {
-		$uri = 'http://';
-	}
-	$uri .= $_SERVER['HTTP_HOST'];
-	header('Location: '.$uri.'/sign-in');
-	exit;
-?>
+session_start();
 
+// TODO: Organize code, add functionality
+
+if (!isset($_SESSION["logged_in"]) || !$_SESSION["logged_in"]) {
+  echo "please login";
+} else {
+  echo "Welcome to the member's area, " . $_SESSION["email"];
+}
+?>
+<!--
 <!DOCTYPE html>
 <html>
   <head>
@@ -46,3 +47,4 @@
     <script>$( document ).ready(function() { $(".sidenav").sidenav(); });</script>
   </body>
 </html>
+-->
