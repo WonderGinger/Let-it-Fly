@@ -4,9 +4,9 @@ session_start();
 // TODO: Organize code, add functionality
 
 if (!isset($_SESSION["logged_in"]) || !$_SESSION["logged_in"]) {
-  echo "please login";
+  header("Location: /sign-in");
 } else {
-  echo "Welcome to the member's area, " . $_SESSION["email"];
+  require_once "map.php";
 }
 ?>
 <!--
