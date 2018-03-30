@@ -1,11 +1,21 @@
-html { font-size: 15px; }
+html {
+  font-size: 15px;
+  height: 100%;
+}
 
+body {
+  height: 100%;
+}
+
+/* Navigation bar */
 nav {
   height: 60px;
   line-height: 60px;
 }
 
-nav .brand-logo { padding: 0 16px; }
+nav .brand-logo {
+  padding: 0 16px;
+}
 
 nav .brand-logo i,
 nav .brand-logo [class^="mdi-"],
@@ -22,11 +32,13 @@ nav i.material-icons {
   line-height: 60px;
 }
 
-nav .sidenav-trigger { margin: 0 16px; }
+nav .sidenav-trigger {
+  margin: 0 16px;
+}
 
 nav ul a {
   font-size: 14px;
-  letter-spacing: 0.5px;
+  letter-spacing: .5px;
   padding: 0 16px;
   text-transform: uppercase;
 }
@@ -40,6 +52,45 @@ nav ul a.btn-floating {
   margin: 0 0 4px 16px;
 }
 
+/* Navigation menu */
+.sidenav {
+  height: 100%;
+  padding-bottom: 0;
+  width: 256px;
+}
+
+.sidenav .user-view {
+  height: 128px;
+  margin-bottom: 0;
+  padding: 0 32px;
+}
+
+.sidenav .user-view .background {
+  opacity: .9;
+}
+
+.sidenav li > a {
+  font-weight: normal;
+  height: 50px;
+  letter-spacing: .5px;
+  line-height: 50px;
+  padding: 0 32px;
+  text-transform: uppercase;
+}
+
+/* Cross-browser vertical alignment */
+.valign-table {
+  display: table;
+  height: 100%;
+  width: 100%;
+}
+
+.valign-table-cell {
+  display: table-cell;
+  vertical-align: middle;
+}
+
+/* Text selection color */
 ::selection {
   background: #26a69a;
   color: #ffffff;
@@ -50,6 +101,7 @@ nav ul a.btn-floating {
   color: #ffffff;
 }
 
+/* Responsive design */
 @media only screen and (min-width: 601px) {
   nav,
   nav .nav-wrapper i,

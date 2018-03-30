@@ -1,10 +1,9 @@
 <?php
-$ini = parse_ini_file("../private/let-it-fly.ini");
+$ini = parse_ini_file("let-it-fly.ini");
 if (!$dbh = mysqli_connect($ini["host"], $ini["username"], $ini["passwd"], $ini["dbname"])) db_error();
 
 function db_error() {
-  // TODO: Create database error page
-  header("Location: /res/blank.txt");
+  header("location: db-error");
   exit();
 }
 
