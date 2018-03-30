@@ -1,3 +1,4 @@
+/* Formatting */
 html {
   font-size: 15px;
   height: 100%;
@@ -17,16 +18,10 @@ nav .brand-logo {
   padding: 0 16px;
 }
 
-nav .brand-logo i,
-nav .brand-logo [class^="mdi-"],
-nav .brand-logo [class*="mdi-"],
 nav .brand-logo i.material-icons {
   margin-right: 0;
 }
 
-nav i,
-nav [class^="mdi-"],
-nav [class*="mdi-"],
 nav i.material-icons {
   height: 60px;
   line-height: 60px;
@@ -43,12 +38,7 @@ nav ul a {
   text-transform: uppercase;
 }
 
-nav ul a.btn,
-nav ul a.btn-large,
-nav ul a.btn-small,
-nav ul a.btn-large,
-nav ul a.btn-flat,
-nav ul a.btn-floating {
+nav ul a.btn {
   margin: 0 0 4px 16px;
 }
 

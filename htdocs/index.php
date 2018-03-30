@@ -52,8 +52,27 @@ mysqli_close($dbh);
       <li><a class="teal-text text-lighten-1 waves-effect" href="about">User Manual</a></li>
       <li><a class="teal-text text-lighten-1 waves-effect" href="account">Account Settings</a></li>
     </ul>
+
+
+
+
     <!-- Content -->
     <div class="card">
+      <div class="container" style="position: relative;">
+        <div id="floating-panel" style="margin-top: 16px;">
+          <div class="row">
+            <div class="col s12 input-field m8 offset-m2">
+              <div class="card-panel">
+
+                    <input placeholder="Enter an address" type="text" id="autocomplete-input" class="autocomplete">
+
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div id="map"></div>
       <div class="card-content activator">
         <span class="card-title activator center-align teal-text lighten-1">Choose Your Location<i class="material-icons">keyboard_arrow_up</i></span>
@@ -65,10 +84,16 @@ mysqli_close($dbh);
         </div>
       </div>
     </div>
+
+
     <!-- Import JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-alpha.4/js/materialize.min.js"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCRIbTYik2x_e5--W85NiB2bckEMFDjVtc&callback=initMap" async defer></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCRIbTYik2x_e5--W85NiB2bckEMFDjVtc&libraries=places&callback=initMap" async defer></script>
     <script src="js/sidenav.js"></script>
     <script src="js/map.js"></script>
+    <script>
+      var elem = document.querySelector(".autocomplete");
+      var instance = M.Autocomplete.init(elem);
+    </script>
   </body>
 </html>

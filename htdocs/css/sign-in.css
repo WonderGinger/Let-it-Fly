@@ -1,19 +1,10 @@
-nav ul a.btn,
-nav ul a.btn-large,
-nav ul a.btn-small,
-nav ul a.btn-large,
-nav ul a.btn-flat,
-nav ul a.btn-floating {
+/* Active color sign in button */
+nav ul a.btn {
   background-color: #dfdfdf !important;
   color: #9f9f9f !important;
 }
 
-.sidenav .user-view a.btn,
-.sidenav .user-view a.btn-large,
-.sidenav .user-view a.btn-small,
-.sidenav .user-view a.btn-large,
-.sidenav .user-view a.btn-flat,
-.sidenav .user-view a.btn-floating {
+.sidenav .user-view a.btn {
   background-color: #dfdfdf !important;
   color: #9f9f9f !important;
 }
@@ -41,8 +32,7 @@ nav ul a.btn-floating {
 }
 
 /* User toggle */
-.switch,
-.switch * {
+.switch {
   margin: 16px 0;
 }
 
@@ -61,10 +51,6 @@ nav ul a.btn-floating {
 
 .input-field {
   margin: 16px 0;
-}
-
-.input-field.col label {
-  left: 0;
 }
 
 /* Footnote */

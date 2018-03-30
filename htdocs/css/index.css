@@ -47,6 +47,28 @@
 </div>
 */
 
+.card-panel {
+  margin: 0;
+  padding: 16px;
+}
+
+.row .col {
+  padding: 0;
+}
+
+.row {
+  margin-bottom: 0;
+}
+
+input[type=text]:not(.browser-default) {
+  margin: 0;
+}
+
+.input-field {
+  margin: 0;
+}
+
+
 #floating-panel {
   position: absolute;
   width: 100%;

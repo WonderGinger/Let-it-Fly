@@ -21,8 +21,7 @@
 }
 
 /* User toggle */
-.switch,
-.switch * {
+.switch {
   margin: 16px 0;
 }
 
@@ -41,10 +40,6 @@
 
 .input-field {
   margin: 16px 0;
-}
-
-.input-field.col label {
-  left: 0;
 }
 
 /* Footnote */

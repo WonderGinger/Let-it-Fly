@@ -147,14 +147,12 @@ mysqli_close($dbh);
                     <div class="row">
                       <!-- Email field -->
                       <div class="col s12 input-field">
-                        <input type="email" name="email" id="email" <?php echo $inputs[1]; ?> required>
-                        <label class="active" for="email">Enter your email</label>
+                        <input type="email" name="email" id="email" placeholder="Enter your email" <?php echo $inputs[1]; ?> required>
                         <span class="helper-text red-text"><?php echo $errors[0]; ?></span>
                       </div>
                       <!-- Password field -->
                       <div class="col s12 input-field">
-                        <input type="password" name="password" id="password" <?php echo $inputs[2]; ?> required>
-                        <label class="active" for="password">Enter your password</label>
+                        <input type="password" name="password" id="password" placeholder="Enter your password" <?php echo $inputs[2]; ?> required>
                         <span class="helper-text red-text"><?php echo $errors[1]; ?></span>
                       </div>
                       <!-- Footnote -->
