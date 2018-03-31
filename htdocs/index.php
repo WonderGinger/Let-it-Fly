@@ -70,7 +70,7 @@ mysqli_close($dbh);
       </div>
       <!-- Map -->
       <div id="map"></div>
-      <div class="card-content activator">
+      <div class="card-content activator" id="slider">
         <span class="card-title activator center-align teal-text lighten-1">Choose Your Location<i class="material-icons">keyboard_arrow_up</i></span>
       </div>
       <!-- Request Interface -->
