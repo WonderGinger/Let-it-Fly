@@ -11,7 +11,7 @@ if (!isset($_SESSION["logged_in"]) || !$_SESSION["logged_in"]) {
 mysqli_close($dbh);
 ?>
 <!doctype html>
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -53,47 +53,40 @@ mysqli_close($dbh);
       <li><a class="teal-text text-lighten-1 waves-effect" href="account">Account Settings</a></li>
     </ul>
 
-
-
-
     <!-- Content -->
     <div class="card">
-      <div class="container" style="position: relative;">
-        <div id="floating-panel" style="margin-top: 16px;">
+      <!-- Search interface -->
+      <div class="container">
+        <div id="floating-panel">
           <div class="row">
-            <div class="col s12 input-field m8 offset-m2">
+            <div class="col s12 m8 offset-m2 input-field">
+              <!-- Search card -->
               <div class="card-panel">
-
-                    <input placeholder="Enter an address" type="text" id="autocomplete-input" class="autocomplete">
-
-
+                <input class="autocomplete" type="text" id="autocomplete-input" placeholder="Enter an address">
               </div>
             </div>
           </div>
         </div>
       </div>
-
+      <!-- Map -->
       <div id="map"></div>
       <div class="card-content activator">
         <span class="card-title activator center-align teal-text lighten-1">Choose Your Location<i class="material-icons">keyboard_arrow_up</i></span>
       </div>
+      <!-- Request Interface -->
       <div class="card-reveal grey lighten-3">
         <span class="card-title center-align teal-text lighten-1">Request a Ride<i class="material-icons">keyboard_arrow_down</i></span>
         <div class="container">
-          <!-- TODO: add request form fields -->
+          <div>The quick brown fox jumps over the lazy dog.</div>
         </div>
       </div>
     </div>
 
-
     <!-- Import JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-alpha.4/js/materialize.min.js"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCRIbTYik2x_e5--W85NiB2bckEMFDjVtc&libraries=places&callback=initMap" async defer></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCRIbTYik2x_e5--W85NiB2bckEMFDjVtc&libraries=places"></script>
     <script src="js/sidenav.js"></script>
+    <script src="js/autocomplete.js"></script>
     <script src="js/map.js"></script>
-    <script>
-      var elem = document.querySelector(".autocomplete");
-      var instance = M.Autocomplete.init(elem);
-    </script>
   </body>
 </html>

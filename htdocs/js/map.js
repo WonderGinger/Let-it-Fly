@@ -1,18 +1,17 @@
+
+
 function initMap() {
   var map = new google.maps.Map(document.getElementById("map"), {
-    center: {lat: 37.3352, lng: -121.8811},
+    center: { lat: 37.3352, lng: -121.8811 },
+    clickableIcons: false,
     disableDefaultUI: true,
-    zoom: 15
+    mapTypeId: "roadmap",
+    zoom: 15,
   });
-
-
-
-
 
         // Create the search box and link it to the UI element.
         var input = document.getElementById('autocomplete-input');
         var searchBox = new google.maps.places.SearchBox(input);
-        
 
         // Bias the SearchBox results towards current map's viewport.
         map.addListener('bounds_changed', function() {
@@ -68,3 +67,6 @@ function initMap() {
           map.fitBounds(bounds);
         });
       }
+
+
+google.maps.event.addDomListener(window, "load", initMap);
