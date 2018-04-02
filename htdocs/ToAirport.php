@@ -92,11 +92,11 @@
         }
 
         // Retrieve the start and end locations and create a DirectionsRequest using
-        // WALKING directions.
+        // DRIVING directions.
         directionsService.route({
           origin: document.getElementById('start').value,
           destination: document.getElementById('end').value,
-          travelMode: 'WALKING'
+          travelMode: 'DRIVING'
         }, function(response, status) {
           // Route the directions and pass the response to a function to create
           // markers for each step.
@@ -104,7 +104,7 @@
             document.getElementById('warnings-panel').innerHTML =
                 '<b>' + response.routes[0].warnings + '</b>';
             directionsDisplay.setDirections(response);
-            showSteps(response, markerArray, stepDisplay, map);
+         // showSteps(response, markerArray, stepDisplay, map);
           } else {
             window.alert('Directions request failed due to ' + status);
           }
