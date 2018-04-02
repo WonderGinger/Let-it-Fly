@@ -77,16 +77,36 @@ mysqli_close($dbh);
       <div class="card-reveal grey lighten-3">
         <span class="card-title center-align teal-text lighten-1">Request a Ride<i class="material-icons">keyboard_arrow_down</i></span>
         <div class="container">
-          <div>The quick brown fox jumps over the lazy dog.</div>
+          <p id="info1"></p>
+          <p id="info2"></p>
+
+<div style="pointer-events: auto;">
+  <div class="input-field col s12">
+    <select id="sel">
+
+      <option value="SFO" selected>SFO</option>
+      <option value="SJC">SJC</option>
+      <option value="OAK">OAK</option>
+    </select>
+  </div>
+</div>
+
+
+
         </div>
       </div>
     </div>
-
     <!-- Import JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-alpha.4/js/materialize.min.js"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCRIbTYik2x_e5--W85NiB2bckEMFDjVtc&libraries=places"></script>
     <script src="js/sidenav.js"></script>
     <script src="js/autocomplete.js"></script>
     <script src="js/map.js"></script>
+
+    <!-- TODO(front end): tidy up Materialize JavaScript -->
+    <script>
+      var elem = document.querySelector("select");
+      var instance = M.FormSelect.init(elem);
+    </script>
   </body>
 </html>
