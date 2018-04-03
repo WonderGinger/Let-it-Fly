@@ -77,21 +77,23 @@ mysqli_close($dbh);
       <div class="card-reveal grey lighten-3">
         <span class="card-title center-align teal-text lighten-1">Request a Ride<i class="material-icons">keyboard_arrow_down</i></span>
         <div class="container">
-          <p id="info1"></p>
-          <p id="info2"></p>
-
-<div style="pointer-events: auto;">
-  <div class="input-field col s12">
-    <select id="sel">
-
-      <option value="SFO" selected>SFO</option>
-      <option value="SJC">SJC</option>
-      <option value="OAK">OAK</option>
-    </select>
-  </div>
-</div>
 
 
+          <div style="pointer-events: auto;">
+            <div class="input-field col s12">
+              <select id="sel">
+                <option value="SFO" selected>SFO</option>
+                <option value="SJC">SJC</option>
+                <option value="OAK">OAK</option>
+              </select>
+            </div>
+            <p id="info0"></p>
+            <p id="info1"></p>
+            <p id="info2"></p>
+            <p id="info3"></p>
+            <p id="info4"></p>
+            <p id="info99"></p>
+          </div>
 
         </div>
       </div>

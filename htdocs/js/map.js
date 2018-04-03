@@ -1,3 +1,9 @@
+function coordinate(x, y) {
+    this.x = x;
+    this.y = y;
+}
+
+
 function initMap() {
   var map = new google.maps.Map(document.getElementById("map"), {
     center: { lat: 37.3352, lng: -121.8811 },
@@ -49,8 +55,9 @@ function initMap() {
     // Save origin lat and lng
     origin_lat = place.geometry.location.lat();
     origin_lng = place.geometry.location.lng();
-    document.getElementById("info1").innerHTML = origin_lat + " " + origin_lng;
-    document.getElementById("info2").innerHTML = document.getElementById("sel").value;
+    document.getElementById("info0").innerHTML = place.name;
+    document.getElementById("info1").innerHTML = "Origin lat: " + origin_lat + "; Origin long: " + origin_lng;
+    document.getElementById("info2").innerHTML = "Destination: " + document.getElementById("sel").value;
 
 
         var dest_lat;
@@ -86,8 +93,9 @@ function initMap() {
   }, function(response, status) {
     if (status === google.maps.DirectionsStatus.OK) {
 
-        
-        
+
+
+
       // directionsDisplay.setDirections(response);
       var polyline = new google.maps.Polyline({
         path: [],
@@ -97,6 +105,10 @@ function initMap() {
       var bounds = new google.maps.LatLngBounds();
 
 
+var arr = new Array();
+
+
+
       var legs = response.routes[0].legs;
       for (i = 0; i < legs.length; i++) {
         var steps = legs[i].steps;
@@ -104,43 +116,32 @@ function initMap() {
           var nextSegment = steps[j].path;
           for (k = 0; k < nextSegment.length; k++) {
             polyline.getPath().push(nextSegment[k]);
+            //document.getElementById("info99").innerHTML = nextSegment[k].lng();
+            //arr.push(new coordinate(nextSegment[k].lat(), nextSegment[k].lng()));
             bounds.extend(nextSegment[k]);
           }
         }
       }
 
+
+
       polyline.setMap(map);
-      document.getElementById("demo").innerHTML = polyline.getPath().getArray();
+      map.fitBounds(bounds);
+
+      document.getElementById("info3").innerHTML = "Estimated historic time: " + response.routes[0].legs[0].duration.text;
+
+
+      var pointsList = polyline.getPath().getArray();
+
+
+      document.getElementById("info99").innerHTML = pointsList;
+
+
+
     } else {
       window.alert('Directions request failed due to ' + status);
     }
   });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
   });
