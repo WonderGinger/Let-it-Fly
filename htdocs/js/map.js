@@ -178,19 +178,21 @@ function initMap() {
         }
       });
 
-      ds.route({
-        origin: origin1,
-        destination: destinationB,
-        travelMode: google.maps.TravelMode.DRIVING
-      } function(response, status) {
-        if (status == google.maps.DirectionsStatus.OK) {
-          alert("hi");
-        }
-        else {
-            window.alert('Directions request failed due to ' + status);
-        }
-      });
-
+      // OVERQUERY
+      for (var i = 0; i < firstFruits.length; i++) {
+          ds.route({
+            origin: origin1,
+            destination: destinationB,
+            travelMode: google.maps.TravelMode.DRIVING
+          }, function(response, status) {
+            if (status == google.maps.DirectionsStatus.OK) {
+              alert("hi");
+            }
+            else {
+                window.alert('Directions request failed due to ' + status);
+            }
+          });
+     };
 
 
 
