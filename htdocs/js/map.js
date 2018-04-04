@@ -174,7 +174,7 @@ function initMap() {
       origin: origin1,
       destination: destinationB,
       travelMode: google.maps.TravelMode.DRIVING
-    }, function(response, status) {
+    }, function (response, status) {
       if (status === google.maps.DirectionsStatus.OK) {
           alert(response.routes[0].legs[0].duration.text);
       } else {
@@ -183,6 +183,8 @@ function initMap() {
     });
 
     // OVERQUERY
+
+    addTiming(arr, response.routes[0].legs[0].duration.value);
 
     /*
         PLACE ALGORITHM CALL HERE
@@ -206,5 +208,49 @@ function initMap() {
 
   });
 }
+
+
+function addTiming(arr, totalTime) {
+
+  let totalDistance = 0;
+
+  for (let i = 1; i < arr.length; i++) {
+    totalDistance += getDistanceFromLatLonInKm(arr[i - 1].x, arr[i - 1].y, arr[i].x, arr[i].y);
+  }
+
+  arr[0].time = 0;
+
+  for (let i = 1; i < arr.length; i++) {
+
+    prev = arr[i - 1];
+
+    arr[i].time = ((getDistanceFromLatLonInKm(prev.x, prev.y, arr[i].x, arr[i].y) / totalDistance) * totalTime)
+      + arr[i - 1].time;
+
+  }
+
+  console.log(arr);
+
+  console.log("totaltime: " + totalTime);
+
+}
+
+function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
+  var R = 6371; // Radius of the earth in km
+  var dLat = deg2rad(lat2 - lat1);  // deg2rad below
+  var dLon = deg2rad(lon2 - lon1);
+  var a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  var d = R * c; // Distance in km
+  return d;
+}
+
+function deg2rad(deg) {
+  return deg * (Math.PI / 180)
+}
+
 
 google.maps.event.addDomListener(window, "load", initMap);
