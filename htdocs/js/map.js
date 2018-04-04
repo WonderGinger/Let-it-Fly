@@ -105,7 +105,7 @@ function initMap() {
       var bounds = new google.maps.LatLngBounds();
 
 
-var arr = new Array();
+      var arr = new Array();
 
 
 
@@ -116,25 +116,81 @@ var arr = new Array();
           var nextSegment = steps[j].path;
           for (k = 0; k < nextSegment.length; k++) {
             polyline.getPath().push(nextSegment[k]);
-            //document.getElementById("info99").innerHTML = nextSegment[k].lng();
-            //arr.push(new coordinate(nextSegment[k].lat(), nextSegment[k].lng()));
+            // document.getElementById("info99").innerHTML = nextSegment[k].lng();
+            arr.push(new coordinate(nextSegment[k].lat(), nextSegment[k].lng()));
             bounds.extend(nextSegment[k]);
           }
         }
       }
-
-
 
       polyline.setMap(map);
       map.fitBounds(bounds);
 
       document.getElementById("info3").innerHTML = "Estimated historic time: " + response.routes[0].legs[0].duration.text;
 
-
       var pointsList = polyline.getPath().getArray();
 
-
       document.getElementById("info99").innerHTML = pointsList;
+
+      /*
+      for( i = 0; i < arr.length; i++ ) {
+
+        var position = new google.maps.LatLng(arr[i].x, arr[i].y);
+        bounds.extend(position);
+        var marker = new google.maps.Marker({
+            position: position,
+            map: map
+        });
+
+        // Automatically center the map fitting all markers on the screen
+        map.fitBounds(bounds);
+      }
+      */
+
+      // alert("lat: " + arr[0].x + ", lng: " + arr[0].y + "; " + "lat2: " + arr[1].x + ", lng: " + arr[1].y);
+
+      var firstFruits = []
+
+      for (var i = 0; i < arr.length; i = i+25) {
+        firstFruits.push(arr[i]);
+      };
+
+    // alert(arr[20].x + " " + arr[20].y
+     //37.337920000000004 -121.93791000000002
+     //37.334160000000004 -121.93633000000001
+     //37.334500000000006 -121.93552000000001
+      //alert(firstFruits[0].x + ", " + firstFruits[0].y);
+      //alert(firstFruits[40].x + ", " + firstFruits[40].y);
+
+
+      var origin1 = new google.maps.LatLng(firstFruits[0].x, firstFruits[0].y);
+      var destinationB = new google.maps.LatLng(firstFruits[40].x, firstFruits[40].y);
+      var ds = new google.maps.DirectionsService();
+      ds.route({
+        origin: origin1,
+        destination: destinationB,
+        travelMode: google.maps.TravelMode.DRIVING
+      }, function(response, status) {
+        if (status === google.maps.DirectionsStatus.OK) {
+            alert(response.routes[0].legs[0].duration.text);
+        } else {
+          window.alert('Directions request failed due to ' + status);
+        }
+      });
+
+      ds.route({
+        origin: origin1,
+        destination: destinationB,
+        travelMode: google.maps.TravelMode.DRIVING
+      } function(response, status) {
+        if (status == google.maps.DirectionsStatus.OK) {
+          alert("hi");
+        }
+        else {
+            window.alert('Directions request failed due to ' + status);
+        }
+      });
+
 
 
 

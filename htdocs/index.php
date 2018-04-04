@@ -93,6 +93,7 @@ mysqli_close($dbh);
             <p id="info3"></p>
             <p id="info4"></p>
             <p id="info99"></p>
+            <h5 id="info100"></p>
           </div>
 
         </div>
@@ -103,7 +104,7 @@ mysqli_close($dbh);
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCRIbTYik2x_e5--W85NiB2bckEMFDjVtc&libraries=places"></script>
     <script src="js/sidenav.js"></script>
     <script src="js/autocomplete.js"></script>
-    <script src="js/map.js"></script>
+    <script src="js/map.js?aaaaa"></script>
 
     <!-- TODO(front end): tidy up Materialize JavaScript -->
     <script>
