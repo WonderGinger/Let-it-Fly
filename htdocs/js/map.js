@@ -1,12 +1,11 @@
 function coordinate(x, y) {
-    this.x = x;
-    this.y = y;
+  this.x = x;
+  this.y = y;
 }
-
 
 function initMap() {
   var map = new google.maps.Map(document.getElementById("map"), {
-    center: { lat: 37.3352, lng: -121.8811 },
+    center: {lat: 37.3352, lng: -121.8811},
     clickableIcons: false,
     disableDefaultUI: true,
     zoom: 15,
@@ -39,7 +38,7 @@ function initMap() {
       "lat": 37.7126,
       "long": -122.2197
     }
-  }
+  };
 
   autocomplete.addListener("place_changed", function() {
     marker.setVisible(false);
@@ -92,149 +91,148 @@ function initMap() {
       preserveViewport: true
     });
 
-  directionsService.route({
-    origin: new google.maps.LatLng(origin_lat, origin_lng),
-    destination: new google.maps.LatLng(dest_lat, dest_lng),
-    travelMode: google.maps.TravelMode.DRIVING
-  }, function(response, status) {
-    if (status !== google.maps.DirectionsStatus.OK) {
-      window.alert('Directions request failed due to ' + status);      
-    }
-    // directionsDisplay.setDirections(response);
-    var polyline = new google.maps.Polyline({
-      path: [],
-      strokeColor: '#0000FF',
-      strokeWeight: 3
-    });
-    var bounds = new google.maps.LatLngBounds();
+    directionsService.route({
+      origin: new google.maps.LatLng(origin_lat, origin_lng),
+      destination: new google.maps.LatLng(dest_lat, dest_lng),
+      travelMode: google.maps.TravelMode.DRIVING
+    }, function (response, status) {
+
+      if (status !== google.maps.DirectionsStatus.OK) {
+        console.log('[a] Directions request failed due to ' + status);
+      }
+      // directionsDisplay.setDirections(response);
+      var polyline = new google.maps.Polyline({
+        path: [],
+        strokeColor: '#0000FF',
+        strokeWeight: 3
+      });
+      var bounds = new google.maps.LatLngBounds();
 
 
-    var arr = new Array();
+      var arr = [];
 
-
-
-    var legs = response.routes[0].legs;
-    for (i = 0; i < legs.length; i++) {
-      var steps = legs[i].steps;
-      for (j = 0; j < steps.length; j++) {
-        var nextSegment = steps[j].path;
-        for (k = 0; k < nextSegment.length; k++) {
-          polyline.getPath().push(nextSegment[k]);
-          // document.getElementById("info99").innerHTML = nextSegment[k].lng();
-          arr.push(new coordinate(nextSegment[k].lat(), nextSegment[k].lng()));
-          bounds.extend(nextSegment[k]);
+      var legs = response.routes[0].legs;
+      for (i = 0; i < legs.length; i++) {
+        var steps = legs[i].steps;
+        for (j = 0; j < steps.length; j++) {
+          var nextSegment = steps[j].path;
+          for (k = 0; k < nextSegment.length; k++) {
+            polyline.getPath().push(nextSegment[k]);
+            // document.getElementById("info99").innerHTML = nextSegment[k].lng();
+            arr.push(new coordinate(nextSegment[k].lat(), nextSegment[k].lng()));
+            bounds.extend(nextSegment[k]);
+          }
         }
       }
-    }
 
-    polyline.setMap(map);
-    map.fitBounds(bounds);
-
-    document.getElementById("info3").innerHTML = "Estimated historic time: " + response.routes[0].legs[0].duration.text;
-
-    var pointsList = polyline.getPath().getArray();
-
-    document.getElementById("info99").innerHTML = pointsList;
-
-    /*
-    for( i = 0; i < arr.length; i++ ) {
-
-      var position = new google.maps.LatLng(arr[i].x, arr[i].y);
-      bounds.extend(position);
-      var marker = new google.maps.Marker({
-          position: position,
-          map: map
-      });
-
-      // Automatically center the map fitting all markers on the screen
+      polyline.setMap(map);
       map.fitBounds(bounds);
-    }
-    */
 
-    // alert("lat: " + arr[0].x + ", lng: " + arr[0].y + "; " + "lat2: " + arr[1].x + ", lng: " + arr[1].y);
+      document.getElementById("info3").innerHTML = "Estimated historic time: " + response.routes[0].legs[0].duration.text;
 
-    var firstFruits = []
+      var pointsList = polyline.getPath().getArray();
 
-    for (var i = 0; i < arr.length; i = i+25) {
-      firstFruits.push(arr[i]);
-    };
+      document.getElementById("info99").innerHTML = pointsList;
 
-    // alert(arr[20].x + " " + arr[20].y
-    //37.337920000000004 -121.93791000000002
-    //37.334160000000004 -121.93633000000001
-    //37.334500000000006 -121.93552000000001
+      /*
+      for( i = 0; i < arr.length; i++ ) {
+
+        var position = new google.maps.LatLng(arr[i].x, arr[i].y);
+        bounds.extend(position);
+        var marker = new google.maps.Marker({
+            position: position,
+            map: map
+        });
+
+        // Automatically center the map fitting all markers on the screen
+        map.fitBounds(bounds);
+      }
+      */
+
+      // alert("lat: " + arr[0].x + ", lng: " + arr[0].y + "; " + "lat2: " + arr[1].x + ", lng: " + arr[1].y);
+
+      var firstFruits = [];
+
+      for (let i = 0; i < arr.length; i = i + 25) {
+        firstFruits.push(arr[i]);
+      }
+
+      // alert(arr[20].x + " " + arr[20].y
+      //37.337920000000004 -121.93791000000002
+      //37.334160000000004 -121.93633000000001
+      //37.334500000000006 -121.93552000000001
       //alert(firstFruits[0].x + ", " + firstFruits[0].y);
       //alert(firstFruits[40].x + ", " + firstFruits[40].y);
 
 
-    var origin1 = new google.maps.LatLng(firstFruits[0].x, firstFruits[0].y);
-    var destinationB = new google.maps.LatLng(firstFruits[40].x, firstFruits[40].y);
-    var ds = new google.maps.DirectionsService();
-    ds.route({
-      origin: origin1,
-      destination: destinationB,
-      travelMode: google.maps.TravelMode.DRIVING
-    }, function (response, status) {
-      if (status === google.maps.DirectionsStatus.OK) {
-          alert(response.routes[0].legs[0].duration.text);
-      } else {
-        window.alert('Directions request failed due to ' + status);
-      }
-    });
+      var origin1 = new google.maps.LatLng(firstFruits[0].x, firstFruits[0].y);
+      var destinationB = new google.maps.LatLng(firstFruits[40].x, firstFruits[40].y);
+      var ds = new google.maps.DirectionsService();
+      ds.route({
+        origin: origin1,
+        destination: destinationB,
+        travelMode: google.maps.TravelMode.DRIVING
+      }, function (response, status) {
+        if (status === google.maps.DirectionsStatus.OK) {
+          console.log(response.routes[0].legs[0].duration.text);
+        } else {
+          console.log('[b] Directions request failed due to ' + status);
+        }
+      });
 
-    // OVERQUERY
+      // OVERQUERY
 
-    addTiming(arr, response.routes[0].legs[0].duration.value);
+      addTiming(arr, response.routes[0].legs[0].duration.value);
 
-    /*
-        PLACE ALGORITHM CALL HERE
-    */
-    for (var i = 0; i < firstFruits.length; i++) {
+      for (let i = 0; i < firstFruits.length; i++) {
         ds.route({
           origin: origin1,
           destination: destinationB,
           travelMode: google.maps.TravelMode.DRIVING
-        }, function(response, status) {
-          if (status == google.maps.DirectionsStatus.OK) {
-            alert("hi");
+        }, function (response, status) {
+          if (status === google.maps.DirectionsStatus.OK) {
+            console.log("hi");
           }
           else {
-              window.alert('Directions request failed due to ' + status);
+            console.log('[c] Directions request failed due to ' + status);
           }
         });
-    };
-  });
-
+      }
+    });
 
   });
 }
 
-
+/**
+ * Add timing to route
+ *
+ * @param arr of coordinates that determine a route
+ * @param totalTime in seconds, to cover the route
+ */
 function addTiming(arr, totalTime) {
 
   let totalDistance = 0;
 
+  // sum up all the distances, this is different from just start -> finish distance
   for (let i = 1; i < arr.length; i++) {
     totalDistance += getDistanceFromLatLonInKm(arr[i - 1].x, arr[i - 1].y, arr[i].x, arr[i].y);
   }
 
-  arr[0].time = 0;
+  arr[0].time = 0; // time to first is zero
 
   for (let i = 1; i < arr.length; i++) {
 
     prev = arr[i - 1];
 
+    // time to i-th coordinate = time to (i-1)th coordinate + time to cover the distance b/t the two
     arr[i].time = ((getDistanceFromLatLonInKm(prev.x, prev.y, arr[i].x, arr[i].y) / totalDistance) * totalTime)
       + arr[i - 1].time;
 
   }
 
-  console.log(arr);
-
-  console.log("totaltime: " + totalTime);
-
 }
 
+// from stackoverflow
 function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
   var R = 6371; // Radius of the earth in km
   var dLat = deg2rad(lat2 - lat1);  // deg2rad below
