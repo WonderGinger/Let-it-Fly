@@ -4,6 +4,9 @@ function coordinate(x, y) {
 }
 
 function initMap() {
+
+  var polyline;
+
   var map = new google.maps.Map(document.getElementById("map"), {
     center: {lat: 37.3352, lng: -121.8811},
     clickableIcons: false,
@@ -103,16 +106,21 @@ function initMap() {
 
       console.log("Travel time: " + response.routes[0].legs[0].duration.text);
 
+      // had polyline from before, remove it from map
+      if (polyline != null) {
+        polyline.setMap(null);
+      }
+
       // directionsDisplay.setDirections(response);
-      var polyline = new google.maps.Polyline({
+      polyline = new google.maps.Polyline({
         path: [],
         strokeColor: '#0000FF',
         strokeWeight: 3
       });
+
       var bounds = new google.maps.LatLngBounds();
 
-
-      var arr = [];
+      var coordinatesArr = [];
 
       var legs = response.routes[0].legs;
       for (i = 0; i < legs.length; i++) {
@@ -122,7 +130,7 @@ function initMap() {
           for (k = 0; k < nextSegment.length; k++) {
             polyline.getPath().push(nextSegment[k]);
             // document.getElementById("info99").innerHTML = nextSegment[k].lng();
-            arr.push(new coordinate(nextSegment[k].lat(), nextSegment[k].lng()));
+            coordinatesArr.push(new coordinate(nextSegment[k].lat(), nextSegment[k].lng()));
             bounds.extend(nextSegment[k]);
           }
         }
@@ -135,7 +143,7 @@ function initMap() {
 
       document.getElementById("info99").innerHTML = polyline.getPath().getArray();
 
-      addTiming(arr, response.routes[0].legs[0].duration.value);
+      addTiming(coordinatesArr, response.routes[0].legs[0].duration.value);
 
     });
 
