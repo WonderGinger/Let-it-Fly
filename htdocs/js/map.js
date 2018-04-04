@@ -26,12 +26,20 @@ function initMap() {
   var origin_lat;
   var origin_lng;
 
-  var sfo_lat = 37.6213;
-  var sfo_lng = -122.3790;
-  var sjc_lat = 37.3639;
-  var sjc_lng = - 121.9289;
-  var oak_lat = 37.7126
-  var oak_lng = -122.2197;
+  var destinations = {
+    "sfo": {
+      "lat": 37.6213,
+      "long": -122.3790
+    },
+    "sjc": {
+      "lat": 37.3639,
+      "long": -121.9289
+    },
+    "oak": {
+      "lat": 37.7126,
+      "long": -122.2197
+    }
+  }
 
   autocomplete.addListener("place_changed", function() {
     marker.setVisible(false);
@@ -60,145 +68,139 @@ function initMap() {
     document.getElementById("info2").innerHTML = "Destination: " + document.getElementById("sel").value;
 
 
-        var dest_lat;
-        var dest_lng;
+    var dest_lat;
+    var dest_lng;
 
-        if (document.getElementById("sel").value === "SFO") {
-            dest_lat = sfo_lat;
-            dest_lng = sfo_lng;
-        }
+    if (document.getElementById("sel").value === "SFO") {
+        dest_lat = destinations.sfo.lat;
+        dest_lng = destinations.sfo.long;
+    }
 
-        if (document.getElementById("sel").value === "SJC") {
-            dest_lat = sjc_lat;
-            dest_lng = sjc_lng;
-        }
+    if (document.getElementById("sel").value === "SJC") {
+        dest_lat = destinations.sjc.lat;
+        dest_lng = destinations.sjc.long;
+    }
 
-        if (document.getElementById("sel").value == "OAK") {
-            dest_lat = oak_lat;
-            dest_lng = oak_lng;
-        }
+    if (document.getElementById("sel").value === "OAK") {
+        dest_lat = destinations.oak.lat;
+        dest_lng = destinations.oak.long;
+    }
 
+    var directionsService = new google.maps.DirectionsService();
+    var directionsDisplay = new google.maps.DirectionsRenderer({
+      map: map,
+      preserveViewport: true
+    });
 
-
-
-  var directionsService = new google.maps.DirectionsService();
-  var directionsDisplay = new google.maps.DirectionsRenderer({
-    map: map,
-    preserveViewport: true
-  });
   directionsService.route({
     origin: new google.maps.LatLng(origin_lat, origin_lng),
     destination: new google.maps.LatLng(dest_lat, dest_lng),
     travelMode: google.maps.TravelMode.DRIVING
   }, function(response, status) {
-    if (status === google.maps.DirectionsStatus.OK) {
+    if (status !== google.maps.DirectionsStatus.OK) {
+      window.alert('Directions request failed due to ' + status);      
+    }
+    // directionsDisplay.setDirections(response);
+    var polyline = new google.maps.Polyline({
+      path: [],
+      strokeColor: '#0000FF',
+      strokeWeight: 3
+    });
+    var bounds = new google.maps.LatLngBounds();
+
+
+    var arr = new Array();
 
 
 
-
-      // directionsDisplay.setDirections(response);
-      var polyline = new google.maps.Polyline({
-        path: [],
-        strokeColor: '#0000FF',
-        strokeWeight: 3
-      });
-      var bounds = new google.maps.LatLngBounds();
-
-
-      var arr = new Array();
-
-
-
-      var legs = response.routes[0].legs;
-      for (i = 0; i < legs.length; i++) {
-        var steps = legs[i].steps;
-        for (j = 0; j < steps.length; j++) {
-          var nextSegment = steps[j].path;
-          for (k = 0; k < nextSegment.length; k++) {
-            polyline.getPath().push(nextSegment[k]);
-            // document.getElementById("info99").innerHTML = nextSegment[k].lng();
-            arr.push(new coordinate(nextSegment[k].lat(), nextSegment[k].lng()));
-            bounds.extend(nextSegment[k]);
-          }
+    var legs = response.routes[0].legs;
+    for (i = 0; i < legs.length; i++) {
+      var steps = legs[i].steps;
+      for (j = 0; j < steps.length; j++) {
+        var nextSegment = steps[j].path;
+        for (k = 0; k < nextSegment.length; k++) {
+          polyline.getPath().push(nextSegment[k]);
+          // document.getElementById("info99").innerHTML = nextSegment[k].lng();
+          arr.push(new coordinate(nextSegment[k].lat(), nextSegment[k].lng()));
+          bounds.extend(nextSegment[k]);
         }
       }
+    }
 
-      polyline.setMap(map);
+    polyline.setMap(map);
+    map.fitBounds(bounds);
+
+    document.getElementById("info3").innerHTML = "Estimated historic time: " + response.routes[0].legs[0].duration.text;
+
+    var pointsList = polyline.getPath().getArray();
+
+    document.getElementById("info99").innerHTML = pointsList;
+
+    /*
+    for( i = 0; i < arr.length; i++ ) {
+
+      var position = new google.maps.LatLng(arr[i].x, arr[i].y);
+      bounds.extend(position);
+      var marker = new google.maps.Marker({
+          position: position,
+          map: map
+      });
+
+      // Automatically center the map fitting all markers on the screen
       map.fitBounds(bounds);
+    }
+    */
 
-      document.getElementById("info3").innerHTML = "Estimated historic time: " + response.routes[0].legs[0].duration.text;
+    // alert("lat: " + arr[0].x + ", lng: " + arr[0].y + "; " + "lat2: " + arr[1].x + ", lng: " + arr[1].y);
 
-      var pointsList = polyline.getPath().getArray();
+    var firstFruits = []
 
-      document.getElementById("info99").innerHTML = pointsList;
-
-      /*
-      for( i = 0; i < arr.length; i++ ) {
-
-        var position = new google.maps.LatLng(arr[i].x, arr[i].y);
-        bounds.extend(position);
-        var marker = new google.maps.Marker({
-            position: position,
-            map: map
-        });
-
-        // Automatically center the map fitting all markers on the screen
-        map.fitBounds(bounds);
-      }
-      */
-
-      // alert("lat: " + arr[0].x + ", lng: " + arr[0].y + "; " + "lat2: " + arr[1].x + ", lng: " + arr[1].y);
-
-      var firstFruits = []
-
-      for (var i = 0; i < arr.length; i = i+25) {
-        firstFruits.push(arr[i]);
-      };
+    for (var i = 0; i < arr.length; i = i+25) {
+      firstFruits.push(arr[i]);
+    };
 
     // alert(arr[20].x + " " + arr[20].y
-     //37.337920000000004 -121.93791000000002
-     //37.334160000000004 -121.93633000000001
-     //37.334500000000006 -121.93552000000001
+    //37.337920000000004 -121.93791000000002
+    //37.334160000000004 -121.93633000000001
+    //37.334500000000006 -121.93552000000001
       //alert(firstFruits[0].x + ", " + firstFruits[0].y);
       //alert(firstFruits[40].x + ", " + firstFruits[40].y);
 
 
-      var origin1 = new google.maps.LatLng(firstFruits[0].x, firstFruits[0].y);
-      var destinationB = new google.maps.LatLng(firstFruits[40].x, firstFruits[40].y);
-      var ds = new google.maps.DirectionsService();
-      ds.route({
-        origin: origin1,
-        destination: destinationB,
-        travelMode: google.maps.TravelMode.DRIVING
-      }, function(response, status) {
-        if (status === google.maps.DirectionsStatus.OK) {
-            alert(response.routes[0].legs[0].duration.text);
-        } else {
-          window.alert('Directions request failed due to ' + status);
-        }
-      });
+    var origin1 = new google.maps.LatLng(firstFruits[0].x, firstFruits[0].y);
+    var destinationB = new google.maps.LatLng(firstFruits[40].x, firstFruits[40].y);
+    var ds = new google.maps.DirectionsService();
+    ds.route({
+      origin: origin1,
+      destination: destinationB,
+      travelMode: google.maps.TravelMode.DRIVING
+    }, function(response, status) {
+      if (status === google.maps.DirectionsStatus.OK) {
+          alert(response.routes[0].legs[0].duration.text);
+      } else {
+        window.alert('Directions request failed due to ' + status);
+      }
+    });
 
-      // OVERQUERY
-      for (var i = 0; i < firstFruits.length; i++) {
-          ds.route({
-            origin: origin1,
-            destination: destinationB,
-            travelMode: google.maps.TravelMode.DRIVING
-          }, function(response, status) {
-            if (status == google.maps.DirectionsStatus.OK) {
-              alert("hi");
-            }
-            else {
-                window.alert('Directions request failed due to ' + status);
-            }
-          });
-     };
+    // OVERQUERY
 
-
-
-    } else {
-      window.alert('Directions request failed due to ' + status);
-    }
+    /*
+        PLACE ALGORITHM CALL HERE
+    */
+    for (var i = 0; i < firstFruits.length; i++) {
+        ds.route({
+          origin: origin1,
+          destination: destinationB,
+          travelMode: google.maps.TravelMode.DRIVING
+        }, function(response, status) {
+          if (status == google.maps.DirectionsStatus.OK) {
+            alert("hi");
+          }
+          else {
+              window.alert('Directions request failed due to ' + status);
+          }
+        });
+    };
   });
 
 
