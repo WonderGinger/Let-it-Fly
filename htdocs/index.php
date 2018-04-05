@@ -102,14 +102,7 @@ mysqli_close($dbh);
     <!-- Import JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-alpha.4/js/materialize.min.js"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCRIbTYik2x_e5--W85NiB2bckEMFDjVtc&libraries=places"></script>
-    <script src="js/sidenav.js"></script>
-    <script src="js/autocomplete.js"></script>
-    <script src="js/map.js?aaaaa"></script>
-
-    <!-- TODO(front end): tidy up Materialize JavaScript -->
-    <script>
-      var elem = document.querySelector("select");
-      var instance = M.FormSelect.init(elem);
-    </script>
+    <script src="js/materialize.js"></script>
+    <script src="js/map.js"></script>
   </body>
 </html>

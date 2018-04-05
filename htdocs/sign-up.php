@@ -183,6 +183,6 @@ mysqli_close($dbh);
     </div>
     <!-- Import JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-alpha.4/js/materialize.min.js"></script>
-    <script src="js/sidenav.js"></script>
+    <script src="js/materialize.js"></script>
   </body>
 </html>
