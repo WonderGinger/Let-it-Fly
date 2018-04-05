@@ -1,3 +1,18 @@
+var destinations = {
+  "sfo": {
+    "lat": 37.6213,
+    "long": -122.3790
+  },
+  "sjc": {
+    "lat": 37.3639,
+    "long": -121.9289
+  },
+  "oak": {
+    "lat": 37.7126,
+    "long": -122.2197
+  }
+};
+
 function coordinate(x, y) {
   this.x = x;
   this.y = y;
@@ -28,20 +43,7 @@ function initMap() {
   var origin_lat;
   var origin_lng;
 
-  var destinations = {
-    "sfo": {
-      "lat": 37.6213,
-      "long": -122.3790
-    },
-    "sjc": {
-      "lat": 37.3639,
-      "long": -121.9289
-    },
-    "oak": {
-      "lat": 37.7126,
-      "long": -122.2197
-    }
-  };
+
 
   autocomplete.addListener("place_changed", function () {
     marker.setVisible(false);
@@ -65,9 +67,12 @@ function initMap() {
     // Save origin lat and lng
     origin_lat = place.geometry.location.lat();
     origin_lng = place.geometry.location.lng();
+
     document.getElementById("info0").innerHTML = place.name;
     document.getElementById("info1").innerHTML = "Origin lat: " + origin_lat + "; Origin long: " + origin_lng;
     document.getElementById("info2").innerHTML = "Destination: " + document.getElementById("sel").value;
+
+    validateAddress(origin_lat, origin_lng);
 
 
     var dest_lat;
@@ -197,5 +202,64 @@ function deg2rad(deg) {
   return deg * (Math.PI / 180)
 }
 
-
+function km2mi(km) {
+  return km * 1.609344;
+}
 google.maps.event.addDomListener(window, "load", initMap);
+
+// These are rough polygons that more or less equate to the counties.
+// They are not perfect or even particularly accurate, and surely overlap.
+var sanMateoCounty = new google.maps.Polygon({
+  paths: [
+    new google.maps.LatLng(37.710187, -122.543591),
+    new google.maps.LatLng(37.105402, -122.510670),
+    new google.maps.LatLng(37.198355, -122.127484),
+    new google.maps.LatLng(37.507291, -122.113751),
+    new google.maps.LatLng(37.711817, -122.391156)
+  ]
+});
+
+var santaClaraCounty = new google.maps.Polygon({
+  paths: [
+    new google.maps.LatLng(37.466437, -122.182572),
+    new google.maps.LatLng(36.886512, -121.583130),
+    new google.maps.LatLng(36.957874, -121.205475),
+    new google.maps.LatLng(37.197617, -121.233602),
+    new google.maps.LatLng(37.188878, -121.407682),
+    new google.maps.LatLng(37.492592, -121.407349)
+  ]
+});
+
+var alamedaCounty = new google.maps.Polygon({
+  paths: [
+    new google.maps.LatLng(37.822140, -121.556944),
+    new google.maps.LatLng(37.544660, -121.556209),
+    new google.maps.LatLng(37.483659, -121.469005),
+    new google.maps.LatLng(37.452595, -121.926311),
+    new google.maps.LatLng(37.874393, -122.411769),
+    new google.maps.LatLng(37.913949, -122.263454),
+    new google.maps.LatLng(37.732793, -121.899532)
+  ]
+});
+
+/**
+ * @param lat, the latitude of the address to be checked.
+ * @param long, the longitude
+ * @param debug, boolean used to print debugging information to the console.
+ * @returns boolean of if the address passed is within the correct counties.
+ */
+
+function validateAddress(lat, long, debug = false){
+  address = new google.maps.LatLng(lat, long);
+
+  let sanMateo = google.maps.geometry.poly.containsLocation(address, sanMateoCounty);
+  let santaClara = google.maps.geometry.poly.containsLocation(address, santaClaraCounty);
+  let alameda = google.maps.geometry.poly.containsLocation(address, alamedaCounty);
+    
+  if(debug){
+    console.log("San Mateo County: " + sanMateo);
+    console.log("Santa Clara County: " + santaClara);
+    console.log("Alameda County: " + alameda);
+  }
+  return sanMateo || santaClara || alameda;
+}
