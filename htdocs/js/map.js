@@ -72,7 +72,11 @@ function initMap() {
     document.getElementById("info1").innerHTML = "Origin lat: " + origin_lat + "; Origin long: " + origin_lng;
     document.getElementById("info2").innerHTML = "Destination: " + document.getElementById("sel").value;
 
-    validateAddress(origin_lat, origin_lng);
+    // Check if origin address is valid
+    if(!validateAddress(origin_lat, origin_lng, true)){
+      alert("The address must be in San Mateo County, Alameda County, or Santa Clara County.");
+      return;
+    }
 
 
     var dest_lat;
