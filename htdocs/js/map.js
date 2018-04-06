@@ -161,15 +161,15 @@ function initMap() {
         items.appendChild(output);
       }
 
-      // Send JSON to PHP
-      console.log(coordinatesArr);
-      console.log(JSON.stringify(coordinatesArr));
 
       var myarray = new Array();
 
       var params = { myarray: myarray };
 
       var paramJSON = JSON.stringify(params);
+
+      // 1 Mile radius testing 
+      console.log("1 mile radius: " + check1MileRadius(37.271099, -122.015098, coordinatesArr));
 
       $.post(
         'test.php',
@@ -230,7 +230,7 @@ function deg2rad(deg) {
 }
 
 function km2mi(km) {
-  return km * 1.609344;
+  return km * 0.621371;
 }
 google.maps.event.addDomListener(window, "load", initMap);
 
@@ -275,7 +275,6 @@ var alamedaCounty = new google.maps.Polygon({
  * @param debug, boolean used to print debugging information to the console.
  * @returns boolean of if the address passed is within the correct counties.
  */
-
 function validateAddress(lat, long, debug = false){
   address = new google.maps.LatLng(lat, long);
 
@@ -289,4 +288,20 @@ function validateAddress(lat, long, debug = false){
     console.log("Alameda County: " + alameda);
   }
   return sanMateo || santaClara || alameda;
+}
+
+/**
+ * 
+ * @param lat the latitude of the rider making the request
+ * @param long the longitude
+ * @param points the coordinate array of the path to check against
+ * @returns boolean of if the address is within 1 mile radius
+ */
+function check1MileRadius(lat, long, points) {
+  for ( p in points){
+    var dist = km2mi(getDistanceFromLatLonInKm(points[p].x, points[p].y, lat, long));
+    console.log(dist);
+    if (dist <= 1) return true
+  }
+  return false;
 }
