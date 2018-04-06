@@ -8,7 +8,20 @@ if (!isset($_SESSION["logged_in"]) || !$_SESSION["logged_in"]) {
   exit();
 }
 
+// Receive array from JS
+if(isset($_POST["data"]))
+{
+    $data = json_decode($_POST["data"]);
+    $myarray = $data->myarray;
+    foreach($myarray as $singular)
+    {
+      echo "something<br>";
+    }
+}
+
 mysqli_close($dbh);
+
+
 ?>
 <!doctype html>
 <html lang="en">
@@ -100,6 +113,7 @@ mysqli_close($dbh);
       </div>
     </div>
     <!-- Import JavaScript -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-alpha.4/js/materialize.min.js"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCRIbTYik2x_e5--W85NiB2bckEMFDjVtc&libraries=places"></script>
     <script src="js/materialize.js"></script>

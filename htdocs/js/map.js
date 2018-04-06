@@ -161,6 +161,22 @@ function initMap() {
         items.appendChild(output);
       }
 
+      // Send JSON to PHP
+      console.log(coordinatesArr);
+      console.log(JSON.stringify(coordinatesArr));
+
+      var myarray = new Array();
+
+      var params = { myarray: myarray };
+
+      var paramJSON = JSON.stringify(params);
+
+      $.post(
+        'test.php',
+          { data: paramJSON },
+          function(data) {
+              var result = JSON.parse(data);
+          });
     });
 
   });
