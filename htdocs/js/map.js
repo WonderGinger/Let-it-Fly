@@ -150,9 +150,19 @@ function initMap() {
 
       document.getElementById("info3").innerHTML = "Estimated historic time: " + response.routes[0].legs[0].duration.text;
 
-      document.getElementById("info99").innerHTML = polyline.getPath().getArray();
-
       addTiming(coordinatesArr, response.routes[0].legs[0].duration.value);
+
+      // Display point object data for demo
+      var items = document.getElementById("info99");
+      items.innerHTML = "";
+      for (var i = 0; i < coordinatesArr.length; i++) {
+        var output = document.createElement("li");
+        output.innerHTML = "[Point " + i + "] lat: " + coordinatesArr[i].x + ", lng: " + coordinatesArr[i].y + ", time: " + coordinatesArr[i].time;
+        items.appendChild(output);
+      }
+
+
+
 
     });
 
@@ -259,7 +269,7 @@ function validateAddress(lat, long, debug = false){
   let sanMateo = google.maps.geometry.poly.containsLocation(address, sanMateoCounty);
   let santaClara = google.maps.geometry.poly.containsLocation(address, santaClaraCounty);
   let alameda = google.maps.geometry.poly.containsLocation(address, alamedaCounty);
-    
+
   if(debug){
     console.log("San Mateo County: " + sanMateo);
     console.log("Santa Clara County: " + santaClara);
