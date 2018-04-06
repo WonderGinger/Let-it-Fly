@@ -9,10 +9,12 @@ $duration = ($resultz < 60) ? 0 : $resultz - 60;
 
 if (!$result = $dbh->query("UPDATE requests SET time={$duration} WHERE id=1")) db_error();
 
+/*
 echo "<pre>";
 echo "before: " . $resultz . "<br>";
 echo "after : " . $duration . "<br>";
 echo "</pre>";
+*/
 
 mysqli_close($dbh);
 ?>

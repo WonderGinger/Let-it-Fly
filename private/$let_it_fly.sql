@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 19, 2018 at 07:02 AM
+-- Generation Time: Apr 06, 2018 at 09:05 AM
 -- Server version: 10.1.30-MariaDB
 -- PHP Version: 7.2.2
 
@@ -38,6 +38,19 @@ CREATE TABLE `drivers` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `requests`
+--
+
+CREATE TABLE `requests` (
+  `id` int(11) NOT NULL,
+  `id_rider` int(11) NOT NULL,
+  `id_driver` int(11) NOT NULL,
+  `eta` double NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `riders`
 --
 
@@ -61,6 +74,15 @@ ALTER TABLE `drivers`
   ADD UNIQUE KEY `email` (`email`);
 
 --
+-- Indexes for table `requests`
+--
+ALTER TABLE `requests`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `id` (`id`),
+  ADD UNIQUE KEY `id_rider` (`id_rider`),
+  ADD UNIQUE KEY `id_driver` (`id_driver`);
+
+--
 -- Indexes for table `riders`
 --
 ALTER TABLE `riders`
@@ -77,6 +99,12 @@ ALTER TABLE `riders`
 --
 ALTER TABLE `drivers`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `requests`
+--
+ALTER TABLE `requests`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `riders`
