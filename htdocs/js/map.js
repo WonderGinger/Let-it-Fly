@@ -161,9 +161,6 @@ function initMap() {
         items.appendChild(output);
       }
 
-
-
-
     });
 
   });
