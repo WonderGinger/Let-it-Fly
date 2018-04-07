@@ -130,6 +130,8 @@ function initMap() {
       var bounds = new google.maps.LatLngBounds();
 
       var coordinatesArr = [];
+      // append the origin to the beginning of array
+      coordinatesArr.push(new coordinate(origin_lat, origin_lng));
 
       var legs = response.routes[0].legs;
       for (i = 0; i < legs.length; i++) {
@@ -145,6 +147,9 @@ function initMap() {
         }
       }
 
+      // append the dest to the end of array
+      coordinatesArr.push(new coordinate(dest_lat, dest_lng));
+
       polyline.setMap(map);
       map.fitBounds(bounds);
 
@@ -152,14 +157,27 @@ function initMap() {
 
       addTiming(coordinatesArr, response.routes[0].legs[0].duration.value);
 
-      // Display point object data for demo
+
+      // parse the coordinatesArr every seconds (except for the origin and dest)
+      var parsedArr = [];
+      var n = 0;
+      parsedArr.push(coordinatesArr[0]);
+      for (var i = 1; i < coordinatesArr.length - 1; i++) {
+        if (coordinatesArr[i].time >= n) {
+          parsedArr.push(coordinatesArr[i]);
+          n += 60;
+        }
+      }
+      parsedArr.push(coordinatesArr[coordinatesArr.length - 1]);
+
       var items = document.getElementById("info99");
       items.innerHTML = "";
-      for (var i = 0; i < coordinatesArr.length; i++) {
+      for (var i = 0; i < parsedArr.length; i++) {
         var output = document.createElement("li");
-        output.innerHTML = "[Point " + i + "] lat: " + coordinatesArr[i].x + ", lng: " + coordinatesArr[i].y + ", time: " + coordinatesArr[i].time;
+        output.innerHTML = "[Point " + i + "] lat: " + parsedArr[i].x + ", lng: " + parsedArr[i].y + ", time: " + parsedArr[i].time;
         items.appendChild(output);
       }
+
 
 
       var myarray = new Array();
@@ -168,15 +186,9 @@ function initMap() {
 
       var paramJSON = JSON.stringify(params);
 
-      // 1 Mile radius testing 
-      console.log("1 mile radius: " + check1MileRadius(37.271099, -122.015098, coordinatesArr));
+      // 1 Mile radius testing
+      // console.log("1 mile radius: " + check1MileRadius(37.271099, -122.015098, coordinatesArr));
 
-      $.post(
-        'test.php',
-          { data: paramJSON },
-          function(data) {
-              var result = JSON.parse(data);
-          });
     });
 
   });
@@ -291,7 +303,7 @@ function validateAddress(lat, long, debug = false){
 }
 
 /**
- * 
+ *
  * @param lat the latitude of the rider making the request
  * @param long the longitude
  * @param points the coordinate array of the path to check against
