@@ -99,7 +99,11 @@ h6 {
   width: calc(100% - 53px);
 }
 
-#indicator {
+#indicator1 {
+  margin-left: 6px;
+}
+
+#indicator2 {
   margin-left: 6px;
 }
 

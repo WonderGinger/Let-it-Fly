@@ -28,11 +28,11 @@
           <div class="card">
             <div class="card-content">
               <h6 class="teal-text lighten-1">Route</h6>
-              <i class="material-icons red-text" id="indicator">location_on</i>
+              <i class="material-icons red-text" id="indicator1">location_on</i>
               <div class="input-field inline">
                 <input type="text" id="disabled" value="Location has not been chosen yet" disabled>
               </div>
-              <i class="material-icons blue-text" id="indicator">my_location</i>
+              <i class="material-icons blue-text" id="indicator2">my_location</i>
               <div class="input-field inline">
                 <select id="airport-select">
                   <option value="" disabled selected>Select an airport</option>
@@ -42,7 +42,7 @@
                 </select>
               </div>
               <div class="switch">
-                <label><input type="checkbox" name="checkbox"><span class="lever"></span>Swap directions</label>
+                <label><input type="checkbox" id="switch" name="checkbox"><span class="lever"></span>Swap directions</label>
               </div>
               <h6 class="teal-text lighten-1">Passenger Count</h6>
             </div>

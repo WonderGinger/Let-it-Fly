@@ -1,9 +1,35 @@
 google.maps.event.addDomListener(window, "load", initMap);
 
+// Styling for direction switch
+document.getElementById("switch").addEventListener("click", function() {
+  var indicator1 = document.getElementById("indicator1").innerHTML;
+  var indicator2 = document.getElementById("indicator2").innerHTML;
+
+  if (indicator1 === "location_on") {
+    document.getElementById("indicator1").classList.remove("red-text");
+    document.getElementById("indicator1").classList.add("blue-text");
+  } else {
+    document.getElementById("indicator1").classList.remove("blue-text");
+    document.getElementById("indicator1").classList.add("red-text");
+  }
+
+  if (indicator2 === "my_location") {
+    document.getElementById("indicator2").classList.remove("blue-text");
+    document.getElementById("indicator2").classList.add("red-text");
+  } else {
+    document.getElementById("indicator2").classList.remove("red-text");
+    document.getElementById("indicator2").classList.add("blue-text");
+  }
+
+  document.getElementById("indicator1").innerHTML = indicator2;
+  document.getElementById("indicator2").innerHTML = indicator1;
+});
+
 function initMap() {
   var map = new google.maps.Map(document.getElementById("map"), {
     center: {lat: 37.3352, lng: -121.8811},
     clickableIcons: false,
+    fullscreenControl: false,
     mapTypeControl: false,
     streetViewControl: false,
     zoom: 15,
@@ -24,7 +50,7 @@ function initMap() {
     // Invalid input
     if (!place.geometry) {
       document.getElementById("autocomplete-input").value = "";
-      document.getElementById("autocomplete-input").placeholder = "You must select an autocomplete address";
+      document.getElementById("autocomplete-input").placeholder = "You must select an autocomplete location";
       document.getElementById("autocomplete-input").classList.add("invalid");
       document.getElementById("disabled").value = "Location has not been chosen yet";
       return;
@@ -34,10 +60,10 @@ function initMap() {
     loc_lat = place.geometry.location.lat();
     loc_lng = place.geometry.location.lng();
 
-    // Check if address is in county bounds
+    // Check if location is in county bounds
     if (!validateAddress(loc_lat, loc_lng, false)) {
       document.getElementById("autocomplete-input").value = "";
-      document.getElementById("autocomplete-input").placeholder = "Address is not in operational bounds";
+      document.getElementById("autocomplete-input").placeholder = "Location is not in operational bounds";
       document.getElementById("autocomplete-input").classList.add("invalid");
       document.getElementById("disabled").value = "Location has not been chosen yet";
       return;
@@ -58,6 +84,9 @@ function initMap() {
 
     // Set marker
     marker.setPosition(place.geometry.location);
+    marker.addListener("click", function() {
+      document.getElementById("slider").click();
+    });
     marker.setVisible(true);
   });
 }
