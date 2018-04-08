@@ -11,7 +11,7 @@
 }
 
 #floating-panel {
-  margin-top: 16px;
+  margin-top: 8px;
   position: absolute;
   width: 100%;
   z-index: 1;
@@ -28,7 +28,7 @@
 /* Search card */
 .card-panel {
   margin: 0;
-  padding: 16px;
+  padding: 12px;
   pointer-events: auto;
 }
 
@@ -37,6 +37,8 @@
 }
 
 input[type=text]:not(.browser-default) {
+  font-size: 14px;
+  height: 2.5rem;
   margin: 0;
 }
 
@@ -83,4 +85,56 @@ input[type=text]:not(.browser-default) {
 
 .card .card-reveal .container {
   padding-left: calc(100vw - 100%);
+  pointer-events: auto;
+}
+
+/* Request details */
+h6 {
+  margin: 0 0 8px;
+}
+
+.input-field.inline {
+  margin: 0 0 16px 18px;
+  width: calc(100% - 53px);
+}
+
+#indicator {
+  margin-left: 6px;
+}
+
+.input-field.inline .select-dropdown {
+  margin-bottom: 0;
+}
+
+.row .col#details .card{
+  margin-bottom: 4px;
+}
+
+.switch {
+  margin: 5px 0 36px;
+}
+
+.switch label .lever {
+  background-color: #84c7c1;
+  margin:0 16px 3px 0;
+}
+
+.switch label .lever:after {
+  background-color: #26a69a;
+}
+
+/* Request submission */
+.row .col#submission .card{
+  margin: 4px 0 16px;
+}
+
+/* Responsive design */
+@media only screen and (min-width: 601px) {
+  .row .col#details{
+    padding-right: 4px;
+  }
+
+  .row .col#submission{
+    padding-left: 4px;
+  }
 }
