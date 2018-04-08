@@ -2,7 +2,6 @@
 require_once "../private/utilities.php";
 session_start();
 
-// Redirect user to sign-in if not logged in
 if (!isset($_SESSION["logged_in"]) || !$_SESSION["logged_in"]) {
   header("location: sign-in");
   exit();
@@ -14,7 +13,7 @@ mysqli_close($dbh);
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
     <title>Let It Fly</title>
     <!-- Import stylesheets -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
@@ -60,8 +59,8 @@ mysqli_close($dbh);
     }
     ?>
     <!-- Import JavaScript -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-alpha.4/js/materialize.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCRIbTYik2x_e5--W85NiB2bckEMFDjVtc&libraries=places"></script>
     <script src="js/materialize.js"></script>
     <script src="js/map.js"></script>
