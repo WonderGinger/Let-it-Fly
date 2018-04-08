@@ -8,20 +8,7 @@ if (!isset($_SESSION["logged_in"]) || !$_SESSION["logged_in"]) {
   exit();
 }
 
-// Receive array from JS
-if(isset($_POST["data"]))
-{
-    $data = json_decode($_POST["data"]);
-    $myarray = $data->myarray;
-    foreach($myarray as $singular)
-    {
-      echo "something<br>";
-    }
-}
-
 mysqli_close($dbh);
-
-
 ?>
 <!doctype html>
 <html lang="en">
@@ -65,53 +52,13 @@ mysqli_close($dbh);
       <li><a class="teal-text text-lighten-1 waves-effect" href="about">User Manual</a></li>
       <li><a class="teal-text text-lighten-1 waves-effect" href="account">Account Settings</a></li>
     </ul>
-
-    <!-- Content -->
-    <div class="card">
-      <!-- Search interface -->
-      <div class="container">
-        <div id="floating-panel">
-          <div class="row">
-            <div class="col s12 m8 offset-m2 input-field">
-              <!-- Search card -->
-              <div class="card-panel">
-                <input class="autocomplete" type="text" id="autocomplete-input" placeholder="Enter an address">
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <!-- Map -->
-      <div id="map"></div>
-      <div class="card-content activator" id="slider">
-        <span class="card-title activator center-align teal-text lighten-1">Choose Your Location<i class="material-icons">keyboard_arrow_up</i></span>
-      </div>
-      <!-- Request Interface -->
-      <div class="card-reveal grey lighten-3">
-        <span class="card-title center-align teal-text lighten-1">Request a Ride<i class="material-icons">keyboard_arrow_down</i></span>
-        <div class="container">
-
-
-          <div style="pointer-events: auto;">
-            <div class="input-field col s12">
-              <select id="sel">
-                <option value="SFO" selected>SFO</option>
-                <option value="SJC">SJC</option>
-                <option value="OAK">OAK</option>
-              </select>
-            </div>
-            <p id="info0"></p>
-            <p id="info1"></p>
-            <p id="info2"></p>
-            <p id="info3"></p>
-            <p id="info4"></p>
-            <p id="info99"></p>
-            <h5 id="info100"></p>
-          </div>
-
-        </div>
-      </div>
-    </div>
+    <?php
+    if ($_SESSION["user"] === "riders") {
+      require_once "../require/rider.php";
+    } else {
+      require_once "../require/driver.php";
+    }
+    ?>
     <!-- Import JavaScript -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-alpha.4/js/materialize.min.js"></script>

@@ -27,6 +27,7 @@
 
 .switch label .lever {
   background-color: #84c7c1;
+  margin-bottom: 3px;
 }
 
 .switch label .lever:after {
