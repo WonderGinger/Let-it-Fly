@@ -72,8 +72,12 @@
                   <td class="data" id="td3">1</td>
                 </tr>
                 <tr>
+                  <td class="grey-text">Duration</td>
+                  <td class="data red-text" id="td4">Unknown</td>
+                </tr>
+                <tr>
                   <td class="grey-text">Cost</td>
-                  <td class="data" id="td4">$0</td>
+                  <td class="data" id="td5">$0</td>
                 </tr>
               </table>
             </div>

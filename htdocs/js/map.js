@@ -43,6 +43,9 @@ document.getElementById("switch").addEventListener("click", function() {
     document.getElementById("td2").classList.remove("red-text");
     document.getElementById("td2").classList.add("green-text");
   }
+
+  // UPDATE ROUTE
+  verify();
 });
 
 // Airport listener
@@ -56,12 +59,98 @@ document.getElementById("airport-select").addEventListener("change", function() 
     document.getElementById("td1").classList.remove("red-text");
     document.getElementById("td1").classList.add("green-text");
   }
+
+  // UPDATE ROUTE
+  verify();
 });
 
 // Range slider listener
 document.getElementById("range").addEventListener("change", function() {
   document.getElementById("td3").innerHTML = document.getElementById("range").value;
+
+  // UPDATE ROUTE
+  verify();
 });
+
+// Verify if all fields are correct before using direction service
+function verify() {
+  if (loc_lat != null && loc_lng != null && document.getElementById("airport-select").value != "") {
+    // Get selected airport coords
+    var airport_lat;
+    var airport_lng;
+
+    if (document.getElementById("airport-select").value === "SFO") {
+      airport_lat = destinations.sfo.lat;
+      airport_lng = destinations.sfo.long;
+    } else if (document.getElementById("airport-select").value === "OAK") {
+      airport_lat = destinations.oak.lat;
+      airport_lng = destinations.oak.long;
+    } else {
+      airport_lat = destinations.sjc.lat;
+      airport_lng = destinations.sjc.long;
+    }
+
+    // Check if airport is the origin or destination
+    var ori_lat;
+    var ori_lng;
+    var des_lat;
+    var des_lng;
+
+    if (document.getElementById("indicator1").innerHTML === "location_on") {
+      ori_lat = loc_lat;
+      ori_lng = loc_lng;
+      des_lat = airport_lat;
+      des_lng = airport_lng;
+    } else {
+      ori_lat = airport_lat;
+      ori_lng = airport_lng;
+      des_lat = loc_lat;
+      des_lng = loc_lng;
+    }
+
+    var directionsService = new google.maps.DirectionsService();
+
+    directionsService.route({
+      origin: new google.maps.LatLng(ori_lat, ori_lng),
+      destination: new google.maps.LatLng(des_lat, des_lng),
+      travelMode: google.maps.TravelMode.DRIVING
+    }, function (response, status) {
+      if (status !== google.maps.DirectionsStatus.OK) {
+        window.alert("Directions request failed due to " + status);
+      }
+
+      // Update duration in confirmation pane
+      var travelTime = response.routes[0].legs[0].duration.text;
+      document.getElementById("td4").classList.remove("red-text");
+      document.getElementById("td4").classList.add("green-text");
+      document.getElementById("td4").innerHTML = travelTime;
+    });
+  } else {
+    // clear out data
+    document.getElementById("td4").classList.remove("green-text");
+    document.getElementById("td4").classList.add("red-text");
+    document.getElementById("td4").innerHTML = "Unknown";
+  }
+}
+
+var loc_lat = null;
+var loc_lng = null;
+
+// Hard-coded airport coordinates
+var destinations = {
+  "sfo": {
+    "lat": 37.6213,
+    "long": -122.3790
+  },
+  "sjc": {
+    "lat": 37.3639,
+    "long": -121.9289
+  },
+  "oak": {
+    "lat": 37.7126,
+    "long": -122.2197
+  }
+};
 
 function initMap() {
   var map = new google.maps.Map(document.getElementById("map"), {
@@ -103,6 +192,12 @@ function initMap() {
         document.getElementById("td2").classList.add("red-text");
       }
 
+      loc_lat = null;
+      loc_lng = null;
+
+      // UPDATE ROUTE
+      verify();
+
       return;
     }
 
@@ -127,6 +222,12 @@ function initMap() {
         document.getElementById("td2").classList.remove("green-text");
         document.getElementById("td2").classList.add("red-text");
       }
+
+      loc_lat = null;
+      loc_lng = null;
+
+      // UPDATE ROUTE
+      verify();
 
       return;
     }
@@ -161,6 +262,9 @@ function initMap() {
       document.getElementById("slider").click();
     });
     marker.setVisible(true);
+
+    // UPDATE ROUTE
+    verify();
   });
 }
 
