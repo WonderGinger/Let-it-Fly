@@ -76,14 +76,19 @@
                   <td class="data red-text" id="td4">Unknown</td>
                 </tr>
                 <tr>
+                  <td class="grey-text">Wait Time</td>
+                  <td class="data red-text" id="td5">Unknown</td>
+                </tr>
+                <tr>
                   <td class="grey-text">Cost</td>
-                  <td class="data" id="td5">$0</td>
+                  <td class="data" id="td6">$0</td>
                 </tr>
               </table>
             </div>
           </div>
         </div>
       </div>
+      <p id="ajax"></p>
     </div>
   </div>
 </div>

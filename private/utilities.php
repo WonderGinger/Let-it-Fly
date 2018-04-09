@@ -3,7 +3,7 @@ $ini = parse_ini_file("let-it-fly.ini");
 if (!$dbh = mysqli_connect($ini["host"], $ini["username"], $ini["passwd"], $ini["dbname"])) db_error();
 
 function db_error() {
-  header("location: db-error");
+  header("location: /db-error");
   exit();
 }
 

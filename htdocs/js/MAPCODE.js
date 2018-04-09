@@ -183,6 +183,7 @@ function initMap() {
 
 
 
+
       var myarray = new Array();
 
       var params = { myarray: myarray };

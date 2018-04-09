@@ -116,7 +116,7 @@ function verify() {
       travelMode: google.maps.TravelMode.DRIVING
     }, function (response, status) {
       if (status !== google.maps.DirectionsStatus.OK) {
-        window.alert("Directions request failed due to " + status);
+        window.alert("Directions request failed: " + status);
       }
 
       // Update duration in confirmation pane
@@ -124,6 +124,88 @@ function verify() {
       document.getElementById("td4").classList.remove("red-text");
       document.getElementById("td4").classList.add("green-text");
       document.getElementById("td4").innerHTML = travelTime;
+
+      // Load array of coordinates with lat, lng, and eta
+      var coordinates = [];
+      coordinates.push({ "lat": ori_lat, "lng": ori_lng, "eta": undefined });
+      var legs = response.routes[0].legs;
+      for (i = 0; i < legs.length; i++) {
+        var steps = legs[i].steps;
+        for (j = 0; j < steps.length; j++) {
+          var nextSegment = steps[j].path;
+          for (k = 0; k < nextSegment.length; k++) {
+            coordinates.push({ "lat": nextSegment[k].lat(), "lng": nextSegment[k].lng(), "eta": undefined });
+          }
+        }
+      }
+      coordinates.push({ "lat": des_lat, "lng": des_lng, "eta": undefined });
+      addTiming(coordinates, response.routes[0].legs[0].duration.value);
+
+      // Only take the minute coordinates
+      var waypoints = [];
+      waypoints.push(coordinates[0]);
+      var n = 0;
+      for (var i = 1; i < coordinates.length - 1; i++) {
+        if (coordinates[i]["eta"] >= n) {
+          waypoints.push(coordinates[i]);
+          n += 60;
+        }
+      }
+      waypoints.push(coordinates[coordinates.length - 1]);
+
+      $.post("js/ajax/request.php", {
+        data: { waypoints },
+        passengers: document.getElementById("range").value,
+        selector: "drivers"
+      }, function(output) {
+        // List of working drivers with non-zero seats
+        var drivers = JSON.parse(output)
+        if (drivers.length > 0) {
+          // do something
+        }
+
+/* ASYNC ERROR CODE FIX LATER
+        var timelist = [];
+        for (var i = 0; i < drivers.length; i++) {
+          // Waiting drivers
+          if (drivers[i]["driving"] == 0) {
+            var service = new google.maps.DirectionsService();
+            service.route({
+              origin: new google.maps.LatLng(drivers[i]["lat"], drivers[i]["lng"]),
+              destination: new google.maps.LatLng(ori_lat, ori_lng),
+              travelMode: google.maps.TravelMode.DRIVING
+            }, function (response, status) {
+              if (status !== google.maps.DirectionsStatus.OK) {
+                window.alert("Directions request failed: " + status);
+              }
+
+              addTimelist(drivers[i]["id"], drivers[i]["driving"], drivers[i]["lat"], drivers[i]["lng"], response.routes[0].legs[0].duration.value);
+              callback(timelist);
+            });
+          } else {
+            // Driving drivers
+          }
+        }
+        
+        function addTimelist(id, driving, lat, lng, time) {
+          timelist.push({ "id": id, "driving": driving, "lat": lat, "lng": lng, "time": time });
+          alert("hi");
+        }
+        alert(timelist.length);
+        
+       // document.getElementById("ajax").innerHTML = JSON.stringify(timelist);
+      var items = document.getElementById("ajax");
+      items.innerHTML = "";
+      for (var i = 0; i < timelist.length; i++) {
+        var output = document.createElement("li");
+        output.innerHTML = "[Point " + i + "] lat: " + timelist["lat"] + ", lng: " + timelist["lng"];
+        items.appendChild(output);
+      }
+
+*/
+
+
+      });
     });
   } else {
     // clear out data
@@ -133,28 +215,71 @@ function verify() {
   }
 }
 
+/**
+ * Add timing to route
+ *
+ * @param arr of coordinates that determine a route
+ * @param totalTime in seconds, to cover the route
+ */
+function addTiming(arr, totalTime) {
+  let totalDistance = 0;
+
+  // sum up all the distances, this is different from just start -> finish distance
+  for (let i = 1; i < arr.length; i++) {
+    totalDistance += getDistanceFromLatLonInKm(arr[i - 1]["lat"], arr[i - 1]["lng"], arr[i]["lat"], arr[i]["lng"]);
+  }
+
+  arr[0]["eta"] = 0; // time to first is zero
+  for (let i = 1; i < arr.length; i++) {
+    prev = arr[i - 1];
+    // time to i-th coordinate = time to (i-1)th coordinate + time to cover the distance b/t the two
+    arr[i]["eta"] = ((getDistanceFromLatLonInKm(prev["lat"], prev["lng"], arr[i]["lat"], arr[i]["lng"]) / totalDistance) * totalTime) + arr[i - 1]["eta"];
+  }
+}
+
+function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
+  var R = 6371; // Radius of the earth in km
+  var dLat = deg2rad(lat2 - lat1); // deg2rad below
+  var dLon = deg2rad(lon2 - lon1);
+  var a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  var d = R * c; // Distance in km
+  return d;
+}
+
+function deg2rad(deg) {
+  return deg * (Math.PI / 180)
+}
+
+function km2mi(km) {
+  return km * 0.621371;
+}
+
 var loc_lat = null;
 var loc_lng = null;
 
 // Hard-coded airport coordinates
 var destinations = {
   "sfo": {
-    "lat": 37.6213,
-    "long": -122.3790
-  },
-  "sjc": {
-    "lat": 37.3639,
-    "long": -121.9289
+    "lat": 37.6213129,
+    "long": -122.3789554
   },
   "oak": {
-    "lat": 37.7126,
-    "long": -122.2197
+    "lat": 37.7125689,
+    "long": -122.2197428
+  },
+  "sjc": {
+    "lat": 37.3639472,
+    "long": -121.92893750000002
   }
 };
 
 function initMap() {
   var map = new google.maps.Map(document.getElementById("map"), {
-    center: {lat: 37.3352, lng: -121.8811},
+    center: { lat: 37.3351874, lng: -121.88107150000002 },
     clickableIcons: false,
     fullscreenControl: false,
     mapTypeControl: false,
