@@ -4,6 +4,8 @@ google.maps.event.addDomListener(window, "load", initMap);
 document.getElementById("switch").addEventListener("click", function() {
   var indicator1 = document.getElementById("indicator1").innerHTML;
   var indicator2 = document.getElementById("indicator2").innerHTML;
+  var td1 = document.getElementById("td1").innerHTML;
+  var td2 = document.getElementById("td2").innerHTML;
 
   if (indicator1 === "location_on") {
     document.getElementById("indicator1").classList.remove("red-text");
@@ -23,6 +25,42 @@ document.getElementById("switch").addEventListener("click", function() {
 
   document.getElementById("indicator1").innerHTML = indicator2;
   document.getElementById("indicator2").innerHTML = indicator1;
+  document.getElementById("td1").innerHTML = td2;
+  document.getElementById("td2").innerHTML = td1;
+
+  // Retain color on switch
+  if (document.getElementById("td1").innerHTML === "Unspecified") {
+    document.getElementById("td1").classList.remove("green-text");
+    document.getElementById("td1").classList.add("red-text");
+  } else {
+    document.getElementById("td1").classList.remove("red-text");
+    document.getElementById("td1").classList.add("green-text");
+  }
+  if (document.getElementById("td2").innerHTML === "Unspecified") {
+    document.getElementById("td2").classList.remove("green-text");
+    document.getElementById("td2").classList.add("red-text");
+  } else {
+    document.getElementById("td2").classList.remove("red-text");
+    document.getElementById("td2").classList.add("green-text");
+  }
+});
+
+// Airport listener
+document.getElementById("airport-select").addEventListener("change", function() {
+  if (document.getElementById("indicator1").innerHTML === "location_on") {
+    document.getElementById("td2").innerHTML = document.getElementById("airport-select").value;
+    document.getElementById("td2").classList.remove("red-text");
+    document.getElementById("td2").classList.add("green-text");
+  } else {
+    document.getElementById("td1").innerHTML = document.getElementById("airport-select").value;
+    document.getElementById("td1").classList.remove("red-text");
+    document.getElementById("td1").classList.add("green-text");
+  }
+});
+
+// Range slider listener
+document.getElementById("range").addEventListener("change", function() {
+  document.getElementById("td3").innerHTML = document.getElementById("range").value;
 });
 
 function initMap() {
@@ -32,7 +70,7 @@ function initMap() {
     fullscreenControl: false,
     mapTypeControl: false,
     streetViewControl: false,
-    zoom: 15,
+    zoom: 15
   });
 
   // Initialize autocomplete module
@@ -53,6 +91,18 @@ function initMap() {
       document.getElementById("autocomplete-input").placeholder = "You must select an autocomplete location";
       document.getElementById("autocomplete-input").classList.add("invalid");
       document.getElementById("disabled").value = "Location has not been chosen yet";
+
+      // Remove address from confirmation pane
+      if (document.getElementById("indicator1").innerHTML === "location_on") {
+        document.getElementById("td1").innerHTML = "Unspecified";
+        document.getElementById("td1").classList.remove("green-text");
+        document.getElementById("td1").classList.add("red-text");
+      } else {
+        document.getElementById("td2").innerHTML = "Unspecified";
+        document.getElementById("td2").classList.remove("green-text");
+        document.getElementById("td2").classList.add("red-text");
+      }
+
       return;
     }
 
@@ -66,6 +116,18 @@ function initMap() {
       document.getElementById("autocomplete-input").placeholder = "Location is not in operational bounds";
       document.getElementById("autocomplete-input").classList.add("invalid");
       document.getElementById("disabled").value = "Location has not been chosen yet";
+
+      // Remove address from confirmation pane
+      if (document.getElementById("indicator1").innerHTML === "location_on") {
+        document.getElementById("td1").innerHTML = "Unspecified";
+        document.getElementById("td1").classList.remove("green-text");
+        document.getElementById("td1").classList.add("red-text");
+      } else {
+        document.getElementById("td2").innerHTML = "Unspecified";
+        document.getElementById("td2").classList.remove("green-text");
+        document.getElementById("td2").classList.add("red-text");
+      }
+
       return;
     }
 
@@ -73,6 +135,17 @@ function initMap() {
     document.getElementById("autocomplete-input").placeholder = "Search";
     document.getElementById("autocomplete-input").classList.remove("invalid");
     document.getElementById("disabled").value = place.formatted_address;
+
+    // Append value to confirmation pane
+    if (document.getElementById("indicator1").innerHTML === "location_on") {
+      document.getElementById("td1").innerHTML = place.formatted_address;
+      document.getElementById("td1").classList.remove("red-text");
+      document.getElementById("td1").classList.add("green-text");
+    } else {
+      document.getElementById("td2").innerHTML = place.formatted_address;
+      document.getElementById("td2").classList.remove("red-text");
+      document.getElementById("td2").classList.add("green-text");
+    }
 
     // Change viewport to fit marker
     if (place.geometry.viewport) {

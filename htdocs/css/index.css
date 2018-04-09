@@ -133,6 +133,31 @@ h6 {
   margin: 4px 0 16px;
 }
 
+table {
+  width: 100%;
+}
+
+tr {
+  border-bottom: 0;
+}
+
+tr:last-child td {
+  padding-bottom: 0;
+}
+
+td {
+  padding: 5px 0;
+  white-space: nowrap;
+}
+
+.data {
+  max-width: 1px;
+  overflow: hidden;
+  padding-left: 16px;
+  text-align: right;
+  text-overflow: ellipsis;
+}
+
 /* Responsive design */
 @media only screen and (min-width: 601px) {
   .row .col#details{
@@ -141,5 +166,9 @@ h6 {
 
   .row .col#submission{
     padding-left: 4px;
+  }
+
+  .row .col#submission .card{
+    margin: 2px 0 16px;
   }
 }

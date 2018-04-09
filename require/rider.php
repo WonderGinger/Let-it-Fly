@@ -45,6 +45,7 @@
                 <label><input type="checkbox" id="switch" name="checkbox"><span class="lever"></span>Swap directions</label>
               </div>
               <h6 class="teal-text lighten-1">Passenger Count</h6>
+              <p class="range-field"><input type="range" id="range" min="1" max="4" value="1"></p>
             </div>
           </div>
         </div>
@@ -52,7 +53,29 @@
         <div class="col s12 m5" id="submission">
           <div class="card">
             <div class="card-content">
-              <h6 class="teal-text lighten-1">Ride Cost</h6>
+              <h6 class="teal-text lighten-1">Confirm Ride Details</h6>
+              <table>
+                <colgroup>
+                  <col width="0%">
+                  <col width="100%">
+                </colgroup>
+                <tr>
+                  <td class="grey-text">Starting point</td>
+                  <td class="data red-text" id="td1">Unspecified</td>
+                </tr>
+                <tr>
+                  <td class="grey-text">Destination</td>
+                  <td class="data red-text" id="td2">Unspecified</td>
+                </tr>
+                <tr>
+                  <td class="grey-text">Passenger(s)</td>
+                  <td class="data" id="td3">1</td>
+                </tr>
+                <tr>
+                  <td class="grey-text">Cost</td>
+                  <td class="data" id="td4">$0</td>
+                </tr>
+              </table>
             </div>
           </div>
         </div>
