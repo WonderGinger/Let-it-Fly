@@ -142,7 +142,7 @@ tr {
 }
 
 tr:last-child td {
-  padding-bottom: 0;
+  padding-bottom: 13px;
 }
 
 td {
@@ -156,6 +156,33 @@ td {
   padding-left: 16px;
   text-align: right;
   text-overflow: ellipsis;
+}
+
+.col .row {
+  margin: 0;
+}
+
+#update {
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+#confirm {
+  width: 100%;
+}
+
+.switch input[type=checkbox][disabled]+.lever {
+  background-color: rgba(0,0,0,0.12) !important;
+}
+
+input[type=range].disabled::-webkit-slider-thumb {
+  background-color: #949494;
+}
+input[type=range].disabled::-moz-range-thumb {
+  background-color: #949494;
+}
+input[type=range].disabled::-ms-thumb {
+  background-color: #949494;
 }
 
 /* Responsive design */

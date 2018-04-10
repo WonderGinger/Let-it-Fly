@@ -20,11 +20,11 @@
   </div>
   <!-- Request Interface -->
   <div class="card-reveal grey lighten-3">
-    <span class="card-title center-align teal-text lighten-1">Request a Ride<i class="material-icons">keyboard_arrow_down</i></span>
+    <span class="card-title center-align teal-text lighten-1" id="tabu">Request a Ride<i class="material-icons">keyboard_arrow_down</i></span>
     <div class="container">
       <div class="row">
         <!-- Request Details -->
-        <div class="col s12 m7" id="details">
+        <div class="col s12 m6" id="details">
           <div class="card">
             <div class="card-content">
               <h6 class="teal-text lighten-1">Route</h6>
@@ -50,10 +50,10 @@
           </div>
         </div>
         <!-- Request Submission -->
-        <div class="col s12 m5" id="submission">
+        <div class="col s12 m6" id="submission">
           <div class="card">
             <div class="card-content">
-              <h6 class="teal-text lighten-1">Confirm Ride Details</h6>
+              <h6 class="teal-text lighten-1">Ride Details</h6>
               <table>
                 <colgroup>
                   <col width="0%">
@@ -68,8 +68,8 @@
                   <td class="data red-text" id="td2">Unspecified</td>
                 </tr>
                 <tr>
-                  <td class="grey-text">Passenger(s)</td>
-                  <td class="data" id="td3">1</td>
+                  <td class="grey-text">Distance</td>
+                  <td class="data red-text" id="td7">Unknown</td>
                 </tr>
                 <tr>
                   <td class="grey-text">Duration</td>
@@ -80,10 +80,21 @@
                   <td class="data red-text" id="td5">Unknown</td>
                 </tr>
                 <tr>
+                  <td class="grey-text">Passenger(s)</td>
+                  <td class="data" id="td3">1</td>
+                </tr>
+                <tr>
                   <td class="grey-text">Cost</td>
                   <td class="data" id="td6">$0</td>
                 </tr>
               </table>
+
+              <div class="row">
+                <div class="col s12">
+                  <button class="btn waves-effect waves-light yellow darken-2 disabled" type="submit" id="update">Update</button>
+                </div>
+                <div class="col s12"><button class="btn waves-effect waves-light green disabled" type="submit" id="confirm">Confirm</button></div>
+              </div>
             </div>
           </div>
         </div>

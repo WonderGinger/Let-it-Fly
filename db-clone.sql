@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 09, 2018 at 11:09 AM
+-- Generation Time: Apr 10, 2018 at 10:55 AM
 -- Server version: 10.1.31-MariaDB
 -- PHP Version: 7.2.3
 
@@ -46,14 +46,23 @@ CREATE TABLE `drivers` (
 
 INSERT INTO `drivers` (`id`, `email`, `password`, `active`, `seats`, `working`, `driving`, `lat`, `lng`) VALUES
 (1, 'driver1@domain.com', '$2y$10$TRDV4fuNbqMbeht2HM/IYOgJqggNEZvUWJLIo3aXQVJFP0.9l/k1y', 0, 1, 1, 0, 37.6213129, -122.3789554),
-(2, 'driver2@domain.com', '$2y$10$NpReHR4AJpyBXlGOhw/kVuD0OZEXDha6B49pnlcOiCzd163xEvLai', 0, 2, 1, 0, 37.6213129, -122.3789554),
-(3, 'driver3@domain.com', '$2y$10$Huvf2FRkYYj7I/VFbALNBu8HfPpJjp.VzBLnZUvtILilAePOh6EvG', 0, 3, 1, 0, 37.7125689, -122.2197428),
-(4, 'driver4@domain.com', '$2y$10$akm9HefojbgLNvoyzZGleuZCXWFzTdoXJqEhIaj/VCnDIUA4EHm0C', 0, 4, 1, 1, 37.7125689, -122.2197428),
-(5, 'driver5@domain.com', '$2y$10$oLKSOlpQ9NQyeBiwWpV50OIb6kgav3gv87CA/Nkk5WUbDgZg4KQK6', 0, 4, 1, 1, 37.3639472, -121.92893750000002),
-(6, 'driver6@domain.com', '$2y$10$bonsr6qF8/IRlHfO1ckvruSS4uDtLiuTsFP44SeFyloFNmdgthGIK', 0, 4, 1, 1, 37.3639472, -121.92893750000002),
-(7, 'driver7@domain.com', '$2y$10$wsz.CkUI4VNiYZJCwqtNDetk/AYzVoasgs3RivrJSvZQnVGNLSaLW', 0, 4, 0, 0, 0, 0),
-(8, 'driver8@domain.com', '$2y$10$M3AQymsppeIcJ0YCDHl6k.9i5/z48ECm7ASbA0W0aiJxSifOUasdy', 0, 4, 0, 0, 0, 0),
-(9, 'driver9@domain.com', '$2y$10$3RuD1p3byp9MpKfZO2AaMOeM9V7RtlP1I.VhhA6FXwTrh6sYlCJYW', 0, 4, 0, 0, 0, 0);
+(2, 'driver2@domain.com', '$2y$10$NpReHR4AJpyBXlGOhw/kVuD0OZEXDha6B49pnlcOiCzd163xEvLai', 0, 2, 1, 0, 37.7125689, -122.2197428),
+(3, 'driver3@domain.com', '$2y$10$Huvf2FRkYYj7I/VFbALNBu8HfPpJjp.VzBLnZUvtILilAePOh6EvG', 0, 3, 1, 0, 37.3639472, -121.92893750000002),
+(4, 'driver4@domain.com', '$2y$10$akm9HefojbgLNvoyzZGleuZCXWFzTdoXJqEhIaj/VCnDIUA4EHm0C', 0, 1, 1, 0, 37.6213129, -122.3789554),
+(5, 'driver5@domain.com', '$2y$10$oLKSOlpQ9NQyeBiwWpV50OIb6kgav3gv87CA/Nkk5WUbDgZg4KQK6', 0, 2, 1, 0, 37.7125689, -122.2197428),
+(6, 'driver6@domain.com', '$2y$10$bonsr6qF8/IRlHfO1ckvruSS4uDtLiuTsFP44SeFyloFNmdgthGIK', 0, 3, 1, 0, 37.3639472, -121.92893750000002),
+(7, 'driver7@domain.com', '$2y$10$wsz.CkUI4VNiYZJCwqtNDetk/AYzVoasgs3RivrJSvZQnVGNLSaLW', 0, 1, 1, 1, 37.6213129, -122.3789554),
+(8, 'driver8@domain.com', '$2y$10$M3AQymsppeIcJ0YCDHl6k.9i5/z48ECm7ASbA0W0aiJxSifOUasdy', 0, 2, 1, 1, 37.7125689, -122.2197428),
+(9, 'driver9@domain.com', '$2y$10$3RuD1p3byp9MpKfZO2AaMOeM9V7RtlP1I.VhhA6FXwTrh6sYlCJYW', 0, 3, 1, 1, 37.3639472, -121.92893750000002),
+(10, 'driver10@domain.com', '$2y$10$TRDV4fuNbqMbeht2HM/IYOgJqggNEZvUWJLIo3aXQVJFP0.9l/k1y', 0, 1, 1, 0, 37.6213129, -122.3789554),
+(11, 'driver11@domain.com', '$2y$10$NpReHR4AJpyBXlGOhw/kVuD0OZEXDha6B49pnlcOiCzd163xEvLai', 0, 2, 1, 0, 37.7125689, -122.2197428),
+(12, 'driver12@domain.com', '$2y$10$Huvf2FRkYYj7I/VFbALNBu8HfPpJjp.VzBLnZUvtILilAePOh6EvG', 0, 3, 1, 0, 37.3639472, -121.92893750000002),
+(13, 'driver13@domain.com', '$2y$10$akm9HefojbgLNvoyzZGleuZCXWFzTdoXJqEhIaj/VCnDIUA4EHm0C', 0, 1, 1, 0, 37.6213129, -122.3789554),
+(14, 'driver14@domain.com', '$2y$10$oLKSOlpQ9NQyeBiwWpV50OIb6kgav3gv87CA/Nkk5WUbDgZg4KQK6', 0, 2, 1, 0, 37.7125689, -122.2197428),
+(15, 'driver15@domain.com', '$2y$10$bonsr6qF8/IRlHfO1ckvruSS4uDtLiuTsFP44SeFyloFNmdgthGIK', 0, 3, 1, 0, 37.3639472, -121.92893750000002),
+(16, 'driver16@domain.com', '$2y$10$wsz.CkUI4VNiYZJCwqtNDetk/AYzVoasgs3RivrJSvZQnVGNLSaLW', 0, 1, 1, 1, 37.6213129, -122.3789554),
+(17, 'driver17@domain.com', '$2y$10$M3AQymsppeIcJ0YCDHl6k.9i5/z48ECm7ASbA0W0aiJxSifOUasdy', 0, 2, 1, 1, 37.7125689, -122.2197428),
+(18, 'driver18@domain.com', '$2y$10$3RuD1p3byp9MpKfZO2AaMOeM9V7RtlP1I.VhhA6FXwTrh6sYlCJYW', 0, 3, 1, 1, 37.3639472, -121.92893750000002);
 
 -- --------------------------------------------------------
 
@@ -126,7 +135,7 @@ ALTER TABLE `riders`
 -- AUTO_INCREMENT for table `drivers`
 --
 ALTER TABLE `drivers`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT for table `requests`
