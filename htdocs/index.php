@@ -6,8 +6,6 @@ if (!isset($_SESSION["logged_in"]) || !$_SESSION["logged_in"]) {
   header("location: sign-in");
   exit();
 }
-
-mysqli_close($dbh);
 ?>
 <!doctype html>
 <html lang="en">
@@ -57,6 +55,7 @@ mysqli_close($dbh);
     } else {
       require_once "../require/driver.php";
     }
+    mysqli_close($dbh);
     ?>
     <!-- Import JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-alpha.4/js/materialize.min.js"></script>
