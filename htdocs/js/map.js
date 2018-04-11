@@ -1,19 +1,5 @@
 google.maps.event.addDomListener(window, "load", initMap);
 
-// Change button states
-function update() {
-  if (loc_lat != null && loc_lng != null && document.getElementById("airport-select").value != "") {
-    document.getElementById("update").classList.remove("disabled");
-  } else {
-    document.getElementById("update").classList.add("disabled");
-  }
-}
-
-// call verify
-document.getElementById("update").addEventListener("click", function() {
-  verify();
-});
-
 // Styling for direction switch
 document.getElementById("switch").addEventListener("click", function() {
   var indicator1 = document.getElementById("indicator1").innerHTML;
@@ -58,15 +44,8 @@ document.getElementById("switch").addEventListener("click", function() {
     document.getElementById("td2").classList.add("green-text");
   }
 
-  document.getElementById("td4").classList.remove("green-text");
-  document.getElementById("td4").classList.add("red-text");
-  document.getElementById("td4").innerHTML = "Unknown";
-  document.getElementById("td7").classList.remove("green-text");
-  document.getElementById("td7").classList.add("red-text");
-  document.getElementById("td7").innerHTML = "Unknown";
-
   // UPDATE ROUTE
-  update();
+  verify();
 });
 
 // Airport listener
@@ -81,45 +60,35 @@ document.getElementById("airport-select").addEventListener("change", function() 
     document.getElementById("td1").classList.add("green-text");
   }
 
-  document.getElementById("td4").classList.remove("green-text");
-  document.getElementById("td4").classList.add("red-text");
-  document.getElementById("td4").innerHTML = "Unknown";
-  document.getElementById("td7").classList.remove("green-text");
-  document.getElementById("td7").classList.add("red-text");
-  document.getElementById("td7").innerHTML = "Unknown";
-
   // UPDATE ROUTE
-  update();
+  verify();
 });
 
 // Range slider listener
 document.getElementById("range").addEventListener("change", function() {
   document.getElementById("td3").innerHTML = document.getElementById("range").value;
 
-  document.getElementById("td4").classList.remove("green-text");
-  document.getElementById("td4").classList.add("red-text");
-  document.getElementById("td4").innerHTML = "Unknown";
-  document.getElementById("td7").classList.remove("green-text");
-  document.getElementById("td7").classList.add("red-text");
-  document.getElementById("td7").innerHTML = "Unknown";
-
   // UPDATE ROUTE
-  update();
+  verify();
+});
+
+// Driver "WORKING" button (toggle)
+document.getElementById("working-toggle").addEventListener("click", function(){
+  console.log("happening");
+  if(this.classList.innerHTML == "START") {
+    this.classList.remove("red");
+    this.classList.add("green");
+    this.innerHTML = "END";
+  } else {
+    this.classList.remove("green");
+    this.classList.add("red");
+    this.innerHTML = "END";
+  }
 });
 
 // Verify if all fields are correct before using direction service
 function verify() {
   if (loc_lat != null && loc_lng != null && document.getElementById("airport-select").value != "") {
-    document.getElementById("update").classList.add("disabled");
-    document.getElementById("switch").disabled = true;
-    document.getElementById("range").disabled = true;
-    document.getElementById("range").classList.add("disabled");
-    document.getElementsByClassName("select-dropdown")[0].disabled = true;
-    document.getElementById("tabu").style["pointer-events"] = "none";
-    document.getElementById("tabu").classList.remove("teal-text");
-    document.getElementById("tabu").classList.remove("lighten-1");
-    document.getElementById("tabu").classList.add("grey-text");
-
     // Get selected airport coords
     var airport_lat;
     var airport_lng;
@@ -170,10 +139,6 @@ function verify() {
       document.getElementById("td4").classList.add("green-text");
       document.getElementById("td4").innerHTML = travelTime;
 
-      document.getElementById("td7").classList.remove("red-text");
-      document.getElementById("td7").classList.add("green-text");
-      document.getElementById("td7").innerHTML = response.routes[0].legs[0].distance.text;;
-
       // Load array of coordinates with lat, lng, and eta
       var coordinates = [];
       coordinates.push({ "lat": ori_lat, "lng": ori_lng, "eta": undefined });
@@ -210,56 +175,51 @@ function verify() {
         // List of working drivers with non-zero seats
         var drivers = JSON.parse(output)
         if (drivers.length > 0) {
-          // TODO: do something with front end
+          // do something
         }
 
+      
+/* ASYNC ERROR CODE FIX LATER
+        var timelist = [];
         for (var i = 0; i < drivers.length; i++) {
-          var src = new google.maps.LatLng(drivers[i]["lat"], drivers[i]["lng"]);
-          var des = new google.maps.LatLng(ori_lat, ori_lng);
+          // Waiting drivers
+          if (drivers[i]["driving"] == 0) {
+            var service = new google.maps.DirectionsService();
+            service.route({
+              origin: new google.maps.LatLng(drivers[i]["lat"], drivers[i]["lng"]),
+              destination: new google.maps.LatLng(ori_lat, ori_lng),
+              travelMode: google.maps.TravelMode.DRIVING
+            }, function (response, status) {
+              if (status !== google.maps.DirectionsStatus.OK) {
+                window.alert("Directions request failed: " + status);
+              }
 
-          var request = {
-            origin: src,
-            destination: des,
-            travelMode: google.maps.DirectionsTravelMode.DRIVING
-          };
-
-          getWaitTime(i, request, function(counter, result) {
-            drivers[counter]["eta"] = result;
-            console.log(result);
-          });
+              addTimelist(drivers[i]["id"], drivers[i]["driving"], drivers[i]["lat"], drivers[i]["lng"], response.routes[0].legs[0].duration.value);
+              callback(timelist);
+            });
+          } else {
+            // Driving drivers
+          }
         }
-
-        var delay = 0;
-        function getWaitTime(counter, request, callback) {
-          var service = new google.maps.DirectionsService();
-          service.route(request, function(result, status) {
-            if (status === google.maps.DirectionsStatus.OK) {
-              callback(counter, result.routes[0].legs[0].duration.value);
-            } else if (status === google.maps.DirectionsStatus.OVER_QUERY_LIMIT) {
-              delay++;
-              setTimeout(function () {
-                getWaitTime(counter, request, callback);
-              }, delay * 1000);
-            } else {
-              window.alert("Directions request failed: " + status);
-            }
-          });
+        
+        function addTimelist(id, driving, lat, lng, time) {
+          timelist.push({ "id": id, "driving": driving, "lat": lat, "lng": lng, "time": time });
+          alert("hi");
         }
+        alert(timelist.length);
+        
+       // document.getElementById("ajax").innerHTML = JSON.stringify(timelist);
+      var items = document.getElementById("ajax");
+      items.innerHTML = "";
+      for (var i = 0; i < timelist.length; i++) {
+        var output = document.createElement("li");
+        output.innerHTML = "[Point " + i + "] lat: " + timelist["lat"] + ", lng: " + timelist["lng"];
+        items.appendChild(output);
+      }
 
-        setTimeout(function() {
-          document.getElementById("ajax").innerHTML = JSON.stringify(drivers);
-          document.getElementById("range").disabled = false;
-          document.getElementById("range").classList.remove("disabled");
-          document.getElementById("switch").disabled = false;
-          document.getElementsByClassName("select-dropdown")[0].disabled = false;
-          document.getElementById("tabu").style["pointer-events"] = "auto";
-          document.getElementById("tabu").classList.remove("grey-text");
-          document.getElementById("tabu").classList.add("teal-text");
-          document.getElementById("tabu").classList.add("lighten-1");
-          
-          // TODO(ken): remember you left off here
+*/
 
-         }, (drivers.length - 5) * 1000);
+
       });
     });
   } else {
@@ -267,11 +227,9 @@ function verify() {
     document.getElementById("td4").classList.remove("green-text");
     document.getElementById("td4").classList.add("red-text");
     document.getElementById("td4").innerHTML = "Unknown";
-
-    document.getElementById("td7").classList.remove("green-text");
-    document.getElementById("td7").classList.add("red-text");
-    document.getElementById("td7").innerHTML = "Unknown";
   }
+
+
 }
 
 /**
@@ -358,14 +316,6 @@ function initMap() {
 
     var place = autocomplete.getPlace();
 
-    // Clear data
-    document.getElementById("td4").classList.remove("green-text");
-    document.getElementById("td4").classList.add("red-text");
-    document.getElementById("td4").innerHTML = "Unknown";
-    document.getElementById("td7").classList.remove("green-text");
-    document.getElementById("td7").classList.add("red-text");
-    document.getElementById("td7").innerHTML = "Unknown";
-
     // Invalid input
     if (!place.geometry) {
       document.getElementById("autocomplete-input").value = "";
@@ -384,18 +334,11 @@ function initMap() {
         document.getElementById("td2").classList.add("red-text");
       }
 
-      document.getElementById("td4").classList.remove("green-text");
-      document.getElementById("td4").classList.add("red-text");
-      document.getElementById("td4").innerHTML = "Unknown";
-      document.getElementById("td7").classList.remove("green-text");
-      document.getElementById("td7").classList.add("red-text");
-      document.getElementById("td7").innerHTML = "Unknown";
-
       loc_lat = null;
       loc_lng = null;
 
       // UPDATE ROUTE
-      update();
+      verify();
 
       return;
     }
@@ -422,18 +365,11 @@ function initMap() {
         document.getElementById("td2").classList.add("red-text");
       }
 
-      document.getElementById("td4").classList.remove("green-text");
-      document.getElementById("td4").classList.add("red-text");
-      document.getElementById("td4").innerHTML = "Unknown";
-      document.getElementById("td7").classList.remove("green-text");
-      document.getElementById("td7").classList.add("red-text");
-      document.getElementById("td7").innerHTML = "Unknown";
-
       loc_lat = null;
       loc_lng = null;
 
       // UPDATE ROUTE
-      update();
+      verify();
 
       return;
     }
@@ -470,7 +406,7 @@ function initMap() {
     marker.setVisible(true);
 
     // UPDATE ROUTE
-    update();
+    verify();
   });
 }
 
@@ -16499,4 +16435,4 @@ var santaCruzCounty = new google.maps.Polygon({
     new google.maps.LatLng(37.0428333, 122.31605),
     new google.maps.LatLng(37.0479139, 122.3220529)
   ]
-});;;
+});
