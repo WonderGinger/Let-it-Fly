@@ -479,6 +479,27 @@ function initMap() {
 }
 
 /**
+ * Get the best driver, returns the id
+ * @param drivers json list of available drivers from DB
+ */
+function getBestDriver(drivers) {
+
+  var minDriverId = drivers[0].id;
+  var minDriverEta = drivers[0].eta;
+
+  for (driver in drivers) {
+
+    if (driver.eta < minDriverEta) {
+      minDriverId = driver.id;
+      minDriverEta = driver.eta
+    }
+
+  }
+
+  return minDriverId;
+}
+
+/**
  * @param lat, the latitude of the address to be checked.
  * @param long, the longitude
  * @param debug, boolean used to print debugging information to the console.
