@@ -94,7 +94,7 @@ function showPosition(position) {
     initialMarker = new google.maps.Marker({
         position: initialLocation,
         map: map,
-        title: 'Your location'
+        animation: google.maps.Animation.DROP
     });
 }
 
