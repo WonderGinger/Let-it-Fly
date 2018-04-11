@@ -52,6 +52,9 @@ function cancel(element){
     // Clear interval checking for requests
     clearInterval(interval);
 
+    // Not sure if this actually works or just appears to, but we basically erase the map when we cancel.
+    document.getElementById("map").innerHTML = "";    
+
     // Change button back to START
     if(element.classList.contains("red"))         
         element.classList.remove("red");
@@ -64,6 +67,7 @@ function cancel(element){
     document.getElementById("preload").classList.add("determinate");
     document.getElementById("waiting-message").innerHTML = "";
     document.getElementById("progress").style.visibility = "hidden";
+
 }
 
 function initMap() {
@@ -141,5 +145,9 @@ function checkRequests(){
         // Receives request in form of JSON
         // { "id", "id_rider", "id_driver", "airport", "time" }
         console.log(output);
+
+        // Sets "GO" button to SJSU for now
+        document.getElementById("go").href = 
+            "https://www.google.com/maps/dir/?api=1&destination=" + 37.3351874 + "," + -121.88107150000002;
     });
 }
