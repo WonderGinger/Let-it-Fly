@@ -10,8 +10,9 @@ if (isset($_POST["selector"])) {
     while($row = $result->fetch_assoc()) $drivers[] = $row;
     echo json_encode($drivers);
   }
-  if ($_POST["selector"] === "working" && isset($_SESSION["id"])) {
-    if (!$result = $dbh->query("UPDATE drivers SET working=!working WHERE id='{$_SESSION['id']}'")) db_error();
+  if ($_POST["selector"] === "working" && isset($_SESSION["id"]) && isset($_POST["value"])) {
+    if (!$result = $dbh->query("UPDATE drivers SET working={$_POST['value']} WHERE id='{$_SESSION['id']}'")) db_error();
+    echo $_POST["value"];
   }
 }
 
