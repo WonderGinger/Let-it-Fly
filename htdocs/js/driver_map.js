@@ -36,11 +36,14 @@ function start(element){
     document.getElementById("waiting-message").innerHTML = "Waiting for rider request";
     document.getElementById("progress").style.visibility = "visible";
     
+    initMap();
+
+
     // Check requests right away, and initialize a timer for checking.
-    checkRequests();
+    // Wait 2 seconds to check requests initially.
+    setTimeout(checkRequests, 2000);
     interval = window.setInterval(checkRequests, 60000);
 
-    initMap();
 }
 
 function cancel(element){
@@ -89,6 +92,8 @@ function getLocation() {
 function showPosition(position) {
     loc_lat = position.coords.latitude;
     loc_lng = position.coords.longitude;
+
+    console.log(loc_lat + ", " + loc_lng);
     initialLocation = new google.maps.LatLng(loc_lat, loc_lng);
 
     // Center map
@@ -98,6 +103,7 @@ function showPosition(position) {
     initialMarker = new google.maps.Marker({
         position: initialLocation,
         map: map,
+        title: loc_lat + ", " + loc_lng,
         animation: google.maps.Animation.DROP
     });
 }
@@ -121,9 +127,19 @@ function showError(error) {
 
 // Sends AJAX request to check the requests table for a rider who needs a driver.
 function checkRequests(){
+    console.log("Checking requests");
+    // If lat and lng havent been set somehow, default to SJSU
+    if(loc_lat == null || loc_lng == null){
+        loc_lat = 37.3351874;
+        loc_lng = -121.88107150000002;
+    }
     $.post("js/ajax/request.php", {
-        selector: "check"
+        selector: "check",
+        lat: loc_lat,
+        lng: loc_lng
     }, function(output){
+        // Receives request in form of JSON
+        // { "id", "id_rider", "id_driver", "airport", "time" }
         console.log(output);
     });
 }
