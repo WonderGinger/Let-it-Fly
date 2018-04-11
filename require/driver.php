@@ -2,11 +2,13 @@
 <p id="ajax"></p>
 
 <!-- One of the two ways of doing map display logic.-->
-<div class="container">
+<!-- <div class="container">
     <div class="section teal-text lighten-3 center-align">
         <a id="working-toggle" class="waves-effect green lighten-1 waves-light btn-large">START</a>
     </div>
-</div>
+</div> -->
+
+<button class="btn waves-effect waves-light yellow darken-2" type="submit" id="update">Update</button>
 
 <?php
 if (!$result = $dbh->query("SELECT * FROM drivers WHERE email='{$_SESSION['email']}' LIMIT 1")) echo $result;
