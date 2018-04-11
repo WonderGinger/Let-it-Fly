@@ -256,10 +256,10 @@ function verify() {
           document.getElementById("tabu").classList.remove("grey-text");
           document.getElementById("tabu").classList.add("teal-text");
           document.getElementById("tabu").classList.add("lighten-1");
-          
+
           // TODO(ken): remember you left off here
 
-         }, (drivers.length - 5) * 1000);
+         }, drivers.length * 1000);
       });
     });
   } else {
