@@ -119,6 +119,8 @@ function verify() {
     document.getElementById("tabu").classList.remove("teal-text");
     document.getElementById("tabu").classList.remove("lighten-1");
     document.getElementById("tabu").classList.add("grey-text");
+    document.getElementById("preload").classList.remove("determinate");
+    document.getElementById("preload").classList.add("indeterminate");
 
     // Get selected airport coords
     var airport_lat;
@@ -256,6 +258,8 @@ function verify() {
           document.getElementById("tabu").classList.remove("grey-text");
           document.getElementById("tabu").classList.add("teal-text");
           document.getElementById("tabu").classList.add("lighten-1");
+          document.getElementById("preload").classList.remove("indeterminate");
+          document.getElementById("preload").classList.add("determinate");
 
           // TODO(ken): remember you left off here
 

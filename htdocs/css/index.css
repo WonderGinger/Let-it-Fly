@@ -185,6 +185,10 @@ input[type=range].disabled::-ms-thumb {
   background-color: #949494;
 }
 
+.progress {
+  margin-bottom: 8px;
+}
+
 /* Responsive design */
 @media only screen and (min-width: 601px) {
   .row .col#details{

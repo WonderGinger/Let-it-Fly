@@ -88,8 +88,8 @@
                   <td class="data" id="td6">$0</td>
                 </tr>
               </table>
-
               <div class="row">
+                <div class="progress"><div class="determinate" id="preload"></div></div>
                 <div class="col s12">
                   <button class="btn waves-effect waves-light yellow darken-2 disabled" type="submit" id="update">Update</button>
                 </div>
@@ -99,7 +99,7 @@
           </div>
         </div>
       </div>
-      <p id="ajax"></p>
+      <p id="ajax" style="word-wrap: break-word;"></p>
     </div>
   </div>
 </div>
