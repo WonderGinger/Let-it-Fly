@@ -147,6 +147,7 @@ function checkRequests(){
         console.log(output);
 
         // Sets "GO" button to SJSU for now
+        document.getElementById("go").classList.remove("disabled");
         document.getElementById("go").href = 
             "https://www.google.com/maps/dir/?api=1&destination=" + 37.3351874 + "," + -121.88107150000002;
     });

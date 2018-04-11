@@ -12,7 +12,7 @@
             <p id="waiting-message"></p>
         </div>
         <div class="row">
-            <a id="go" class="col s4 offset-s4 waves-effect blue lighten-1 waves-light btn-large">GO <i class="material-icons">navigation</i></a>    
+            <a href="#" id="go" class="col s4 offset-s4 waves-effect blue lighten-1 waves-light btn-large disabled">GO <i class="material-icons">navigation</i></a>    
         </div>
     </div>
 </div>
