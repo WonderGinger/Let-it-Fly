@@ -142,25 +142,29 @@ function checkRequests(){
     }, function(output){
         // Receives request in form of JSON
         // { "id", "id_rider", "id_driver", "airport", "time" }
-        console.log(output);
-
+        output = JSON.parse(output);
 
         // IF (VALID REQUEST)
+        if(output == null) return;
+        
         riderFound = true;
 
         // Clear interval checking for requests
         clearInterval(interval);
     
         // Stop progress bar and change message
-        document.getElementById("waiting-message").innerHTML = "Rider found!";
+        document.getElementById("waiting-message").innerHTML = 
+            "Rider found!</br>" + output.time/1000/60 + " minutes to " + output.airport;
         document.getElementById("preload").classList.remove("indeterminate");    
         document.getElementById("preload").classList.add("determinate");
     
         // Change button to GO
         document.getElementById("working-toggle").innerHTML = "GO <i class='material-icons'>navigation</i>"
-        document.getElementById("working-toggle").href =
-            "https://www.google.com/maps/dir/?api=1&destination=" + 37.3351874 + "," + -121.88107150000002;
         document.getElementById("working-toggle").classList.remove("red");
         document.getElementById("working-toggle").classList.add("blue");
+        // Change button to direct to official Google Maps navigation. Currently SJSU is hardcoded.
+        document.getElementById("working-toggle").href =
+            "https://www.google.com/maps/dir/?api=1&destination=" + 37.3351874 + "," + -121.88107150000002;
+
     });
 }
