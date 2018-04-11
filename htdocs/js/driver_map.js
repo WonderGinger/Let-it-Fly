@@ -8,10 +8,10 @@ var interval = null;
 document.getElementById("working-toggle").addEventListener("click", function(){
     let workingValue = 0;
     if(this.textContent == "CANCEL") {
-        endWorking(this);
+        cancel(this);
         workingValue = 0;
     } else {
-        startWorking(this);
+        start(this);
         workingValue = 1;
     }
     $.post("js/ajax/request.php", {
@@ -22,8 +22,8 @@ document.getElementById("working-toggle").addEventListener("click", function(){
     });
 });
 
-function startWorking(element){
-    // Change button to END
+function start(element){
+    // Change button to CANCEL
     if(element.classList.contains("green")) 
         element.classList.remove("green");
     if(!element.classList.contains("red"))
@@ -43,7 +43,7 @@ function startWorking(element){
     initMap();
 }
 
-function endWorking(element){
+function cancel(element){
     // TODO: Add error checks here to made sure it's allowed for the driver to stop working
 
     // Clear interval checking for requests
@@ -76,7 +76,7 @@ function initMap() {
     });
 }
 
-
+// A <p> element above the START/CANCEL button that has no innerHTML unless we add some here for debugging.
 var debug = document.getElementById("debug");
 function getLocation() {
     if (navigator.geolocation) {
@@ -90,7 +90,11 @@ function showPosition(position) {
     loc_lat = position.coords.latitude;
     loc_lng = position.coords.longitude;
     initialLocation = new google.maps.LatLng(loc_lat, loc_lng);
+
+    // Center map
     map.setCenter(initialLocation);
+
+    // Map marker
     initialMarker = new google.maps.Marker({
         position: initialLocation,
         map: map,
@@ -115,6 +119,7 @@ function showError(error) {
     }
 } 
 
+// Sends AJAX request to check the requests table for a rider who needs a driver.
 function checkRequests(){
     $.post("js/ajax/request.php", {
         selector: "check"
