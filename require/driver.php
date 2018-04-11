@@ -1,6 +1,6 @@
-
 <!-- One of the two ways of doing map display logic.-->
 <div class="container">
+    <p id="debug"></p>
     <div class="section teal-text lighten-1 center-align">
         <div class="row">
             <a id="working-toggle" class="col s12 waves-effect green lighten-1 waves-light btn-large progress">START</a>
@@ -13,7 +13,10 @@
         </div>
 
     </div>
+    
 </div>
+<div id="map"></div>
+
 
 
 <?php
