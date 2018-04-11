@@ -1,6 +1,7 @@
 var loc_lat = null;
 var loc_lng = null;
-
+var map = null;
+var initialMarker = null;
 var interval = null;
 
 // Start / Stop "working" 
@@ -65,7 +66,7 @@ function endWorking(element){
 function initMap() {
     getLocation();
     validateAddress(loc_lat, loc_lng);
-    var map = new google.maps.Map(document.getElementById("map"), {
+    map = new google.maps.Map(document.getElementById("map"), {
       center: { lat: 37.3351874, lng: -121.88107150000002 },
       clickableIcons: false,
       fullscreenControl: false,
@@ -88,8 +89,13 @@ function getLocation() {
 function showPosition(position) {
     loc_lat = position.coords.latitude;
     loc_lng = position.coords.longitude;
-    debug.innerHTML = "Latitude: " + position.coords.latitude +
-    "<br>Longitude: " + position.coords.longitude;
+    initialLocation = new google.maps.LatLng(loc_lat, loc_lng);
+    map.setCenter(initialLocation);
+    initialMarker = new google.maps.Marker({
+        position: initialLocation,
+        map: map,
+        title: 'Your location'
+    });
 }
 
 function showError(error) {
