@@ -68,26 +68,6 @@ function cancel(){
     clearInterval(interval);
 }
 
-function foundRider() {
-    riderFound = true;
-
-    // Clear interval checking for requests
-    clearInterval(interval);
-
-    // Stop progress bar and change message
-    document.getElementById("waiting-message").innerHTML = "Rider found!";
-    document.getElementById("preload").classList.remove("indeterminate");    
-    document.getElementById("preload").classList.add("determinate");
-
-    // Change button to GO
-    document.getElementById("working-toggle").innerHTML = "GO <i class='material-icons'>navigation</i>"
-    document.getElementById("working-toggle").href =
-        "https://www.google.com/maps/dir/?api=1&destination=" + 37.3351874 + "," + -121.88107150000002;
-    document.getElementById("working-toggle").classList.remove("red");
-    document.getElementById("working-toggle").classList.add("blue");
-
-}
-
 function initMap() {
     getLocation();
     validateAddress(loc_lat, loc_lng);
@@ -166,8 +146,21 @@ function checkRequests(){
 
 
         // IF (VALID REQUEST)
+        riderFound = true;
 
-        // Cancels search
-        foundRider();
+        // Clear interval checking for requests
+        clearInterval(interval);
+    
+        // Stop progress bar and change message
+        document.getElementById("waiting-message").innerHTML = "Rider found!";
+        document.getElementById("preload").classList.remove("indeterminate");    
+        document.getElementById("preload").classList.add("determinate");
+    
+        // Change button to GO
+        document.getElementById("working-toggle").innerHTML = "GO <i class='material-icons'>navigation</i>"
+        document.getElementById("working-toggle").href =
+            "https://www.google.com/maps/dir/?api=1&destination=" + 37.3351874 + "," + -121.88107150000002;
+        document.getElementById("working-toggle").classList.remove("red");
+        document.getElementById("working-toggle").classList.add("blue");
     });
 }
