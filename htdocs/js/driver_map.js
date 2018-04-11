@@ -3,15 +3,17 @@ var loc_lng = null;
 var map = null;
 var initialMarker = null;
 var interval = null;
+var riderFound = false;
 
 // Start / Stop "working" 
 document.getElementById("working-toggle").addEventListener("click", function(){
+    if(riderFound) return;
     let workingValue = 0;
     if(this.textContent == "CANCEL") {
-        cancel(this);
+        cancel();
         workingValue = 0;
     } else {
-        start(this);
+        start();
         workingValue = 1;
     }
     $.post("js/ajax/request.php", {
@@ -22,51 +24,67 @@ document.getElementById("working-toggle").addEventListener("click", function(){
     });
 });
 
-function start(element){
+function start(){
     // Change button to CANCEL
-    if(element.classList.contains("green")) 
-        element.classList.remove("green");
-    if(!element.classList.contains("red"))
-        element.classList.add("red");
-    element.textContent = "CANCEL";
+    if(document.getElementById("working-toggle").classList.contains("green")) 
+        document.getElementById("working-toggle").classList.remove("green");
+    if(!document.getElementById("working-toggle").classList.contains("red"))
+        document.getElementById("working-toggle").classList.add("red");
+    document.getElementById("working-toggle").textContent = "CANCEL";
 
     // Initialize the progress bar and status
     document.getElementById("preload").classList.remove("determinate");
     document.getElementById("preload").classList.add("indeterminate");
     document.getElementById("waiting-message").innerHTML = "Waiting for rider request";
     document.getElementById("progress").style.visibility = "visible";
-    
-    initMap();
 
+    initMap();
 
     // Check requests right away, and initialize a timer for checking.
     // Wait 2 seconds to check requests initially.
     setTimeout(checkRequests, 2000);
     interval = window.setInterval(checkRequests, 60000);
-
 }
 
-function cancel(element){
-    // TODO: Add error checks here to made sure it's allowed for the driver to stop working
-
-    // Clear interval checking for requests
-    clearInterval(interval);
-
-    // Not sure if this actually works or just appears to, but we basically erase the map when we cancel.
-    document.getElementById("map").innerHTML = "";    
-
+function cancel(){
+    // TODO: Add error checks here to made sure it's allowed for the driver to stop working 
+ 
     // Change button back to START
-    if(element.classList.contains("red"))         
-        element.classList.remove("red");
-    if(!element.classList.contains("green")) 
-        element.classList.add("green");
-    element.textContent = "START";
+    if(document.getElementById("working-toggle").classList.contains("red"))         
+        document.getElementById("working-toggle").classList.remove("red");
+    if(!document.getElementById("working-toggle").classList.contains("green")) 
+        document.getElementById("working-toggle").classList.add("green");
+    document.getElementById("working-toggle").textContent = "START";
 
     // Get rid of the progress bar if it isn't already taken care of.
     document.getElementById("preload").classList.remove("indeterminate");
     document.getElementById("preload").classList.add("determinate");
     document.getElementById("waiting-message").innerHTML = "";
     document.getElementById("progress").style.visibility = "hidden";
+    // Not sure if this actually works or just appears to, but we basically erase the map when we cancel.
+    document.getElementById("map").innerHTML = "";   
+
+    // Clear interval checking for requests
+    clearInterval(interval);
+}
+
+function foundRider() {
+    riderFound = true;
+
+    // Clear interval checking for requests
+    clearInterval(interval);
+
+    // Stop progress bar and change message
+    document.getElementById("waiting-message").innerHTML = "Rider found!";
+    document.getElementById("preload").classList.remove("indeterminate");    
+    document.getElementById("preload").classList.add("determinate");
+
+    // Change button to GO
+    document.getElementById("working-toggle").innerHTML = "GO <i class='material-icons'>navigation</i>"
+    document.getElementById("working-toggle").href =
+        "https://www.google.com/maps/dir/?api=1&destination=" + 37.3351874 + "," + -121.88107150000002;
+    document.getElementById("working-toggle").classList.remove("red");
+    document.getElementById("working-toggle").classList.add("blue");
 
 }
 
@@ -146,9 +164,10 @@ function checkRequests(){
         // { "id", "id_rider", "id_driver", "airport", "time" }
         console.log(output);
 
-        // Sets "GO" button to SJSU for now
-        document.getElementById("go").classList.remove("disabled");
-        document.getElementById("go").href = 
-            "https://www.google.com/maps/dir/?api=1&destination=" + 37.3351874 + "," + -121.88107150000002;
+
+        // IF (VALID REQUEST)
+
+        // Cancels search
+        foundRider();
     });
 }
