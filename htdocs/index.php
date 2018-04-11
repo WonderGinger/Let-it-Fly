@@ -52,8 +52,10 @@ if (!isset($_SESSION["logged_in"]) || !$_SESSION["logged_in"]) {
     <?php
     if ($_SESSION["user"] === "riders") {
       require_once "../require/rider.php";
+      $script = "js/map.js";
     } else {
       require_once "../require/driver.php";
+      $script = "js/driver_map.js";
     }
     mysqli_close($dbh);
     ?>
@@ -62,7 +64,6 @@ if (!isset($_SESSION["logged_in"]) || !$_SESSION["logged_in"]) {
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAHd7wEeRlgn08q5xC4mifzgVZcKSoplUM&libraries=places"></script>
     <script src="js/materialize.js"></script>
-    <script src="js/driver_map.js"></script>
-    <script src="js/map.js"></script>
+    <script src="<?php echo $script; ?>"></script>
   </body>
 </html>

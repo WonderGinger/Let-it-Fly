@@ -1,6 +1,4 @@
 
-<p id="ajax"></p>
-
 <!-- One of the two ways of doing map display logic.-->
 <!-- <div class="container">
     <div class="section teal-text lighten-3 center-align">
@@ -8,9 +6,11 @@
     </div>
 </div> -->
 
-<button class="btn waves-effect waves-light yellow darken-2" type="submit" id="update">Update</button>
+<button class="btn waves-effect waves-light yellow darken-2" type="submit" id="update">notclicked</button>
+
 
 <?php
+/*
 if (!$result = $dbh->query("SELECT * FROM drivers WHERE email='{$_SESSION['email']}' LIMIT 1")) echo $result;
 $result = $result->fetch_array(MYSQLI_ASSOC);
 $_SESSION["id"] = $result["id"];
@@ -23,5 +23,5 @@ MAP;
 // Toggle WORKING column in database:
 // if (!$result = $dbh->query("UPDATE drivers SET working=!working WHERE id='{$_SESSION['id']}'")) db_error();
 
-
+*/
 ?>
