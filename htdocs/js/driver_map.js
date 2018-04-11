@@ -1,6 +1,8 @@
 var loc_lat = null;
 var loc_lng = null;
 
+var interval = null;
+
 // Start / Stop "working" 
 document.getElementById("working-toggle").addEventListener("click", function(){
     let workingValue = 0;
@@ -32,13 +34,19 @@ function startWorking(element){
     document.getElementById("preload").classList.add("indeterminate");
     document.getElementById("waiting-message").innerHTML = "Waiting for rider request";
     document.getElementById("progress").style.visibility = "visible";
+    
+    // Check requests right away, and initialize a timer for checking.
+    checkRequests();
+    interval = window.setInterval(checkRequests, 60000);
 
     initMap();
-
 }
 
 function endWorking(element){
     // TODO: Add error checks here to made sure it's allowed for the driver to stop working
+
+    // Clear interval checking for requests
+    clearInterval(interval);
 
     // Change button back to START
     if(element.classList.contains("red"))         
@@ -51,9 +59,7 @@ function endWorking(element){
     document.getElementById("preload").classList.remove("indeterminate");
     document.getElementById("preload").classList.add("determinate");
     document.getElementById("waiting-message").innerHTML = "";
-    document.getElementById("progress").style.visibility = "hidden";    
-
-
+    document.getElementById("progress").style.visibility = "hidden";
 }
 
 function initMap() {
@@ -102,3 +108,11 @@ function showError(error) {
             break;
     }
 } 
+
+function checkRequests(){
+    $.post("js/ajax/request.php", {
+        selector: "check"
+    }, function(output){
+        console.log(output);
+    });
+}

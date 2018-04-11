@@ -12,7 +12,13 @@ if (isset($_POST["selector"])) {
   }
   if ($_POST["selector"] === "working" && isset($_SESSION["id"]) && isset($_POST["value"])) {
     if (!$result = $dbh->query("UPDATE drivers SET working={$_POST['value']} WHERE id='{$_SESSION['id']}'")) db_error();
-    echo $_POST["value"];
+    // echo $_POST["value"];
+  }
+  if ($_POST["selector"] === "check") {
+    // Find a request in the requests table that has id_driver matching the driver's ID.
+    if (!$result = $dbh->query("SELECT * FROM requests WHERE id_driver={$_SESSION['id']}")) db_error();
+    $result = $result->fetch_array(MYSQLI_ASSOC);
+    print_r($result);
   }
 }
 
