@@ -1,27 +1,46 @@
-
 function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
-    var R = 6371; // Radius of the earth in km
-    var dLat = deg2rad(lat2 - lat1); // deg2rad below
-    var dLon = deg2rad(lon2 - lon1);
-    var a =
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
-      Math.sin(dLon / 2) * Math.sin(dLon / 2);
-    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    var d = R * c; // Distance in km
-    return d;
+  var R = 6371; // Radius of the earth in km
+  var dLat = deg2rad(lat2 - lat1); // deg2rad below
+  var dLon = deg2rad(lon2 - lon1);
+  var a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  var d = R * c; // Distance in km
+  return d;
 }
 
 function deg2rad(deg) {
-    return deg * (Math.PI / 180)
+  return deg * (Math.PI / 180)
 }
 
 function km2mi(km) {
-    return km * 0.621371;
+  return km * 0.621371;
 }
 
+/**
+ * Get the best driver, returns the id
+ * @param drivers json list of available drivers from DB
+ */
+function getBestDrivers(drivers) {
+  return sortArrayByKey(drivers, "eta");
+}
 
-
+/**
+ * Helper function to sort an array by a key
+ *
+ * @param array of objects to sort
+ * @param key by which to sort items
+ * @returns {*} the sorted array
+ */
+function sortArrayByKey(array, key) {
+  return array.sort(function (a, b) {
+    let x = a[key];
+    let y = b[key];
+    return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+  });
+}
 
 
 /**
@@ -16050,4 +16069,4 @@ var santaCruzCounty = new google.maps.Polygon({
     new google.maps.LatLng(37.0428333, 122.31605),
     new google.maps.LatLng(37.0479139, 122.3220529)
   ]
-});;;
+});

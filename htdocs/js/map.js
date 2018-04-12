@@ -261,6 +261,8 @@ function verify() {
           document.getElementById("preload").classList.remove("indeterminate");
           document.getElementById("preload").classList.add("determinate");
 
+          console.log(getBestDrivers(drivers)); // drivers array is sorted
+
           // TODO(ken): remember you left off here
 
          }, drivers.length * 1000);
