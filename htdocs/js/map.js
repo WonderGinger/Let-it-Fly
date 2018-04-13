@@ -210,7 +210,7 @@ function verify() {
         selector: "drivers"
       }, function(output) {
         // List of working drivers with non-zero seats
-        var drivers = JSON.parse(output)
+        var drivers = JSON.parse(output);
         if (drivers.length > 0) {
           // TODO: do something with front end
         }
@@ -261,9 +261,17 @@ function verify() {
           document.getElementById("preload").classList.remove("indeterminate");
           document.getElementById("preload").classList.add("determinate");
 
-          console.log(getBestDrivers(drivers)); // drivers array is sorted
+          console.log(getBestDrivers(drivers)[0]);
 
-          // TODO(ken): remember you left off here
+          var guy = getBestDrivers(drivers)[0];
+          $.post("js/ajax/request.php", {
+            data: { guy },
+            selector: "submit"
+          }, function(output) {
+            console.log(output);
+
+            
+          });
 
          }, drivers.length * 1000);
       });
