@@ -52,6 +52,7 @@ if (!isset($_SESSION["logged_in"]) || !$_SESSION["logged_in"]) {
       <li><a class="teal-text text-lighten-1 waves-effect" href="about">User Manual</a></li>
       <li><a class="teal-text text-lighten-1 waves-effect" href="account">Account Settings</a></li>
     </ul>
+	
     <?php
     if ($_SESSION["user"] === "riders") {
       require_once "../require/rider.php";
@@ -62,6 +63,28 @@ if (!isset($_SESSION["logged_in"]) || !$_SESSION["logged_in"]) {
     }
     mysqli_close($dbh);
     ?>
+	
+	<!-- Display Polyline Map -->
+	<div id="map"></div>
+		<div class="container">
+			<div style="pointer-events: auto;">
+				<div class="input-field col s12">
+					<select id="sel">
+						<option value="SFO" selected>SFO</option>
+						<option value="SJC">SJC</option>
+						<option value="OAK">OAK</option>
+					</select>
+				</div>
+				<p id="info0"></p>
+				<p id="info1"></p>
+				<p id="info2"></p>
+				<p id="info3"></p>
+				<p id="info4"></p>
+				<p id="info99"></p>
+				<h5 id="info100"></p>
+			</div>
+		</div>						
+																
     <!-- Import JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-alpha.4/js/materialize.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
