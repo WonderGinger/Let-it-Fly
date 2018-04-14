@@ -310,7 +310,6 @@ function addTiming(arr, totalTime) {
   }
 }
 
-
 var loc_lat = null;
 var loc_lng = null;
 
@@ -330,8 +329,29 @@ var destinations = {
   }
 };
 
+var UPDATE_PERIOD = 1000;
+
+function coordinate(x, y) {
+  this.x = x;
+  this.y = y;
+}
+
+var polyline;
+var origin_lat;
+var origin_lng;
+
+var dest_lat;
+var dest_lng;
+var map;
+var marker;
+
+var our_route;
+var current_lat;
+var current_lng;
+var update_timeout = false;
+
 function initMap() {
-  var map = new google.maps.Map(document.getElementById("map"), {
+    map = new google.maps.Map(document.getElementById("map"), {
     center: { lat: 37.3351874, lng: -121.88107150000002 },
     clickableIcons: false,
     fullscreenControl: false,
@@ -341,7 +361,7 @@ function initMap() {
   });
 
   // Initialize autocomplete module
-  var marker = new google.maps.Marker({ map: map });
+  marker = new google.maps.Marker({ map: map });
   var input = document.getElementById("autocomplete-input");
   var autocomplete = new google.maps.places.Autocomplete(input);
   autocomplete.bindTo("bounds", map);
@@ -463,7 +483,356 @@ function initMap() {
     });
     marker.setVisible(true);
 
+	// Save origin lat and lng
+    origin_lat = place.geometry.location.lat();
+    origin_lng = place.geometry.location.lng();
+	
+	document.getElementById("info0").innerHTML = place.name;
+    document.getElementById("info1").innerHTML = "Origin lat: " + origin_lat + "; Origin long: " + origin_lng;
+    document.getElementById("info2").innerHTML = "Destination: " + document.getElementById("sel").value;
+
+    // Check if origin address is valid
+    if(!validateAddress(origin_lat, origin_lng, true)){
+      alert("The address must be in San Mateo County, Alameda County, or Santa Clara County.");
+      return;
+    }
+
+    if (document.getElementById("sel").value === "SFO") {
+      dest_lat = destinations.sfo.lat;
+      dest_lng = destinations.sfo.long;
+    }
+
+    if (document.getElementById("sel").value === "SJC") {
+      dest_lat = destinations.sjc.lat;
+      dest_lng = destinations.sjc.long;
+    }
+
+    if (document.getElementById("sel").value === "OAK") {
+      dest_lat = destinations.oak.lat;
+      dest_lng = destinations.oak.long;
+    }
+
+    var directionsService = new google.maps.DirectionsService();
+    var directionsDisplay = new google.maps.DirectionsRenderer({
+      map: map,
+      preserveViewport: true
+    });
+
+    directionsService.route({
+      origin: new google.maps.LatLng(origin_lat, origin_lng),
+      destination: new google.maps.LatLng(dest_lat, dest_lng),
+      travelMode: google.maps.TravelMode.DRIVING
+    }, function (response, status) {
+
+      if (status !== google.maps.DirectionsStatus.OK) {
+        window.alert('Directions request failed due to ' + status);
+      }
+
+      var route = response.routes[0];
+      our_route = route;
+      push_route(route);
+      update_bounds(route);
+      update_polyline(route);
+      check_other_user_routes(route);
+
+      clearTimeout(update_timeout);
+      update_timeout = setTimeout(function(){
+        update_route(route);        
+      }, UPDATE_PERIOD);
+    });
+	
     // UPDATE ROUTE
     update();
   });
+}
+
+function check_other_user_routes(route) {
+  fetch_routes(function(routes){
+    if(typeof routes.drivers !== 'undefined'){
+      for(var i=0; i < routes.drivers.length; ++i){
+        if(routes.drivers[i].email == session_data['email'])
+          continue;
+
+        var coords = draw_other_user_polyline(routes.drivers[i], map);
+        if(check1MileRadius(current_lat, current_lng, coords)){
+          alert('Found a route near you from user '+routes.drivers[i].email);
+        }
+      }
+    }
+
+    if(typeof routes.riders !== 'undefined'){
+      for(var i=0; i < routes.riders.length; ++i){
+        if(routes.riders[i].email == session_data['email'])
+          continue;
+
+        var coords = draw_other_user_polyline(routes.riders[i], map);
+        if(check1MileRadius(current_lat, current_lng, coords)) {
+          alert('Found a route near you from user '+routes.riders[i].email);
+        }
+      }
+    }
+  });
+}
+
+function push_route(route) {
+  var xhr = new XMLHttpRequest();
+  xhr.open("POST", 'push-route.php', true);
+  xhr.setRequestHeader('Content-Type', 'application/json');
+  xhr.send(JSON.stringify({
+    current_location: {lat: current_lat, lng: current_lng},
+    route: serializeDirectionsResult(route)
+  }));
+}
+
+function fetch_routes(callback) {
+  var xhr = new XMLHttpRequest();
+  // we defined the xhr
+
+  var routes = {};
+  xhr.onreadystatechange = function () {
+      if (this.readyState != 4) return;
+
+      if (this.status == 200) {
+          var data = JSON.parse(this.responseText);
+          console.log('Got data');
+
+          if(typeof data.drivers !== 'undefined'){
+            for(var i=0; i < data.drivers.length; ++i){
+              data.drivers[i].route = deserializeDirectionsResult(data.drivers[i].route);
+            }
+          }
+
+          if(typeof data.riders !== 'undefined'){
+            for(var i=0; i < data.riders.length; ++i){
+              data.riders[i].route = deserializeDirectionsResult(data.riders[i].route);
+            }
+          }
+          callback(data);
+      }
+  };
+
+  xhr.open('GET', 'get-routes.php', true);
+  xhr.send();
+}
+
+function update_bounds(route){
+  var bounds = new google.maps.LatLngBounds();
+
+  var legs = route.legs;
+  for (i = 0; i < legs.length; i++) {
+    var steps = legs[i].steps;
+    for (j = 0; j < steps.length; j++) {
+      var nextSegment = steps[j].path;
+      for (k = 0; k < nextSegment.length; k++) {
+        bounds.extend(nextSegment[k]);
+      }
+    }
+  }
+  map.fitBounds(bounds);
+}
+
+function update_route(route) {
+  var legs = route.legs;
+  if(!legs[0])
+    return;
+
+  var duration_total = 0;
+  var current_lat_lngs = false;
+  var steps = legs[0].steps;
+  for (var j =0; j < steps.length && duration_total < 60; j++) {
+      var speed = steps[j].distance.value/steps[j].duration.value;
+      var nextSegment = steps[j].path;
+      var k = 1;
+      for (; k < nextSegment.length && duration_total < 60; k++) {
+        var distance = getDistanceFromLatLonInKm(nextSegment[k-1].lat(), nextSegment[k-1].lng(), nextSegment[k].lat(), nextSegment[k].lng())*1000;
+        var duration = distance/speed;
+        current_lat_lngs = nextSegment[k];
+        duration_total += duration;
+      }
+      steps[j].path = steps[j].path.slice(k); 
+      
+      if(steps[j].path.length != 0){
+        break;
+      } else {
+        legs[0].steps = legs[0].steps.slice(1);
+        steps = legs[0].steps;
+        j--; 
+      }
+  }
+  route.legs[0].duration.value -= duration_total;
+  route.legs[0].duration.text = Math.round(route.legs[0].duration.value/60)+" min";
+
+  if(steps.length == 0) {
+    route.legs = route.legs.slice(1);
+  }
+
+  if(route.legs.length == 0) {
+    console.log('Reached destination');
+  }
+
+  if(current_lat_lngs) {
+    marker.setPosition(current_lat_lngs);
+    current_lat = current_lat_lngs.lat();
+    current_lng = current_lat_lngs.lng();
+  }
+
+  update_polyline(route);
+  push_route(route);
+  check_other_user_routes(route);
+  clearTimeout(update_timeout);
+  update_timeout = setTimeout(function(){
+    update_route(route);
+  }, UPDATE_PERIOD);
+}
+
+function update_polyline(route) {
+  if(route.legs[0]){
+    console.log("Travel time: " + route.legs[0].duration.text + " seconds");
+  }
+
+  // had polyline from before, remove it from map
+  if (polyline != null) {
+    polyline.setMap(null);
+  }
+
+  // directionsDisplay.setDirections(response);
+  polyline = new google.maps.Polyline({
+    path: [],
+    strokeColor: '#0000FF',
+    strokeWeight: 3
+  });
+
+  var coordinatesArr = [];
+  // append the origin to the beginning of array
+  coordinatesArr.push(new coordinate(origin_lat, origin_lng));
+
+  var legs = route.legs;
+  for (i = 0; i < legs.length; i++) {
+    var steps = legs[i].steps;
+    for (j = 0; j < steps.length; j++) {
+      var nextSegment = steps[j].path;
+      for (k = 0; k < nextSegment.length; k++) {
+        polyline.getPath().push(nextSegment[k]);
+        // document.getElementById("info99").innerHTML = nextSegment[k].lng();
+        coordinatesArr.push(new coordinate(nextSegment[k].lat(), nextSegment[k].lng()));
+      }
+    }
+  }
+
+  // append the dest to the end of array
+  coordinatesArr.push(new coordinate(dest_lat, dest_lng));
+
+  polyline.setMap(map);
+
+  if(route.legs[0]){
+    document.getElementById("info3").innerHTML = "Estimated historic time: " + route.legs[0].duration.text;
+    addTiming(coordinatesArr, route.legs[0].duration.value);
+  }
+
+  // parse the coordinatesArr every seconds (except for the origin and dest)
+  var parsedArr = [];
+  var n = 0;
+  parsedArr.push(coordinatesArr[0]);
+  for (var i = 1; i < coordinatesArr.length - 1; i++) {
+    if (coordinatesArr[i].time >= n) {
+      parsedArr.push(coordinatesArr[i]);
+      n += 60;
+    }
+  }
+  parsedArr.push(coordinatesArr[coordinatesArr.length - 1]);
+
+  var items = document.getElementById("info99");
+  items.innerHTML = "";
+  for (var i = 0; i < parsedArr.length; i++) {
+    var output = document.createElement("li");
+    output.innerHTML = "[Point " + i + "] lat: " + parsedArr[i].x + ", lng: " + parsedArr[i].y + ", time: " + parsedArr[i].time;
+    items.appendChild(output);
+  }
+}
+
+var polylines = {};
+function draw_other_user_polyline(route_data, map) {
+  var route = route_data['route'];
+  var email = route_data['email'];
+  // had polyline from before, remove it from map
+  if (email in polylines) {
+    polylines[email].setMap(null);
+  }
+
+  // directionsDisplay.setDirections(response);
+  polylines[email] = new google.maps.Polyline({
+    path: [],
+    strokeColor: '#FF00FF',
+    strokeWeight: 2
+  });
+
+  var coordinatesArr = [];
+  // append the origin to the beginning of array
+  coordinatesArr.push(new coordinate(origin_lat, origin_lng));
+
+  var legs = route.legs;
+  for (i = 0; i < legs.length; i++) {
+    var steps = legs[i].steps;
+    for (j = 0; j < steps.length; j++) {
+      var nextSegment = steps[j].path;
+      for (k = 0; k < nextSegment.length; k++) {
+        polylines[email].getPath().push(nextSegment[k]);
+        // document.getElementById("info99").innerHTML = nextSegment[k].lng();
+        coordinatesArr.push(new coordinate(nextSegment[k].lat(), nextSegment[k].lng()));
+      }
+    }
+  }
+
+  // append the dest to the end of array
+  coordinatesArr.push(new coordinate(dest_lat, dest_lng));
+
+  polylines[email].setMap(map);
+  return coordinatesArr;
+}
+
+function serializeDirectionsResult (route) {
+  var copyright = route.copyrights;
+  var startLat = route.legs[0].start_location.lat();
+  var startLng = route.legs[0].start_location.lng();
+  var endLat = route.legs[0].end_location.lat();
+  var endLng = route.legs[0].end_location.lng();
+  var steps = [];
+  for (var i = 0; i < route.legs[0].steps.length; i++){
+          var pathLatLngs = [];
+          for (var c = 0; c < route.legs[0].steps[i].path.length; c++){
+                  var lat = route.legs[0].steps[i].path[c].lat();
+                  var lng = route.legs[0].steps[i].path[c].lng();
+                  pathLatLngs.push( { "lat":lat , "lng":lng }  );
+          }
+          steps.push( pathLatLngs );
+  }
+  var serialSteps = JSON.stringify(steps);
+  //Return custom serialized directions result object.
+  return startLat + "`" + startLng + "`" + endLat + "`" + endLng + "`" + serialSteps;
+}
+
+//Takes serialized directionResult object string as input.
+//Returns directionResult object.
+function deserializeDirectionsResult (serializedResult) {
+  var serialArray = serializedResult.split("`");
+ 
+  var route = {};
+  route.legs = [];
+  route.legs[0] = {};
+  route.legs[0].start_location = new google.maps.LatLng(serialArray[0], serialArray[1]);
+  route.legs[0].end_location = new google.maps.LatLng(serialArray[2], serialArray[3]);
+  route.legs[0].steps = [];
+  var deserializedSteps = JSON.parse(serialArray[4]);
+  for (var i = 0; i < deserializedSteps.length; i++){
+          var dirStep = {};
+          dirStep.path = [];
+          for (var c = 0; c < deserializedSteps[i].length; c++){
+                  var lat = deserializedSteps[i][c].lat;
+                  var lng = deserializedSteps[i][c].lng;
+                  var theLatLng = new google.maps.LatLng(lat, lng);
+                  dirStep.path.push( theLatLng );
+          }
+          route.legs[0].steps.push( dirStep );
+  }
+  return route;
 }
