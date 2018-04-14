@@ -18,6 +18,9 @@ if (!isset($_SESSION["logged_in"]) || !$_SESSION["logged_in"]) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-alpha.4/css/materialize.min.css">
     <link rel="stylesheet" href="css/master.css">
     <link rel="stylesheet" href="css/index.css">
+	<script>
+      var session_data = <?= json_encode($_SESSION);?>;
+    </script>
   </head>
   <body class="grey lighten-3">
     <!-- Navigation bar -->
