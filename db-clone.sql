@@ -1,17 +1,17 @@
 -- phpMyAdmin SQL Dump
--- version 4.7.7
+-- version 4.7.9
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 13, 2018 at 04:01 AM
--- Server version: 10.1.30-MariaDB
--- PHP Version: 7.2.2
+-- Generation Time: Apr 17, 2018 at 08:28 AM
+-- Server version: 10.1.31-MariaDB
+-- PHP Version: 7.2.3
 
-SET FOREIGN_KEY_CHECKS=0;
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
 START TRANSACTION;
 SET time_zone = "+00:00";
+
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -28,126 +28,85 @@ SET time_zone = "+00:00";
 -- Table structure for table `drivers`
 --
 
-DROP TABLE IF EXISTS `drivers`;
 CREATE TABLE `drivers` (
   `id` int(11) NOT NULL,
   `email` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
-  `active` tinyint(1) NOT NULL DEFAULT '0',
   `seats` int(11) NOT NULL DEFAULT '0',
   `working` tinyint(1) NOT NULL DEFAULT '0',
-  `driving` tinyint(1) NOT NULL DEFAULT '0',
+  `locked` tinyint(1) NOT NULL DEFAULT '0',
   `lat` double NOT NULL,
-  `lng` double NOT NULL
+  `lng` double NOT NULL,
+  `parties` int(11) NOT NULL,
+  `des` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
---
--- Truncate table before insert `drivers`
---
-TRUNCATE TABLE `drivers`;
 --
 -- Dumping data for table `drivers`
 --
 
-INSERT INTO `drivers` (`id`, `email`, `password`, `active`, `seats`, `working`, `driving`, `lat`, `lng`) VALUES
-(1, 'driver1@domain.com', '$2y$10$TRDV4fuNbqMbeht2HM/IYOgJqggNEZvUWJLIo3aXQVJFP0.9l/k1y', 0, 1, 1, 0, 37.6213129, -122.3789554),
-(2, 'driver2@domain.com', '$2y$10$NpReHR4AJpyBXlGOhw/kVuD0OZEXDha6B49pnlcOiCzd163xEvLai', 0, 2, 1, 0, 37.7125689, -122.2197428),
-(3, 'driver3@domain.com', '$2y$10$Huvf2FRkYYj7I/VFbALNBu8HfPpJjp.VzBLnZUvtILilAePOh6EvG', 0, 3, 1, 0, 37.3639472, -121.92893750000002),
-(4, 'driver4@domain.com', '$2y$10$akm9HefojbgLNvoyzZGleuZCXWFzTdoXJqEhIaj/VCnDIUA4EHm0C', 0, 1, 1, 0, 37.6213129, -122.3789554),
-(5, 'driver5@domain.com', '$2y$10$oLKSOlpQ9NQyeBiwWpV50OIb6kgav3gv87CA/Nkk5WUbDgZg4KQK6', 0, 2, 1, 0, 37.7125689, -122.2197428),
-(6, 'driver6@domain.com', '$2y$10$bonsr6qF8/IRlHfO1ckvruSS4uDtLiuTsFP44SeFyloFNmdgthGIK', 0, 3, 1, 0, 37.3639472, -121.92893750000002),
-(7, 'driver7@domain.com', '$2y$10$wsz.CkUI4VNiYZJCwqtNDetk/AYzVoasgs3RivrJSvZQnVGNLSaLW', 0, 1, 1, 1, 37.6213129, -122.3789554),
-(8, 'driver8@domain.com', '$2y$10$M3AQymsppeIcJ0YCDHl6k.9i5/z48ECm7ASbA0W0aiJxSifOUasdy', 0, 2, 1, 1, 37.7125689, -122.2197428),
-(9, 'driver9@domain.com', '$2y$10$3RuD1p3byp9MpKfZO2AaMOeM9V7RtlP1I.VhhA6FXwTrh6sYlCJYW', 0, 3, 1, 1, 37.3639472, -121.92893750000002),
-(10, 'driver10@domain.com', '$2y$10$TRDV4fuNbqMbeht2HM/IYOgJqggNEZvUWJLIo3aXQVJFP0.9l/k1y', 0, 1, 1, 0, 37.6213129, -122.3789554),
-(11, 'driver11@domain.com', '$2y$10$NpReHR4AJpyBXlGOhw/kVuD0OZEXDha6B49pnlcOiCzd163xEvLai', 0, 2, 1, 0, 37.7125689, -122.2197428),
-(12, 'driver12@domain.com', '$2y$10$Huvf2FRkYYj7I/VFbALNBu8HfPpJjp.VzBLnZUvtILilAePOh6EvG', 0, 3, 1, 0, 37.3639472, -121.92893750000002),
-(13, 'driver13@domain.com', '$2y$10$akm9HefojbgLNvoyzZGleuZCXWFzTdoXJqEhIaj/VCnDIUA4EHm0C', 0, 1, 1, 0, 37.6213129, -122.3789554),
-(14, 'driver14@domain.com', '$2y$10$oLKSOlpQ9NQyeBiwWpV50OIb6kgav3gv87CA/Nkk5WUbDgZg4KQK6', 0, 2, 1, 0, 37.7125689, -122.2197428),
-(15, 'driver15@domain.com', '$2y$10$bonsr6qF8/IRlHfO1ckvruSS4uDtLiuTsFP44SeFyloFNmdgthGIK', 0, 3, 1, 0, 37.3639472, -121.92893750000002),
-(16, 'driver16@domain.com', '$2y$10$wsz.CkUI4VNiYZJCwqtNDetk/AYzVoasgs3RivrJSvZQnVGNLSaLW', 0, 1, 1, 1, 37.6213129, -122.3789554),
-(17, 'driver17@domain.com', '$2y$10$M3AQymsppeIcJ0YCDHl6k.9i5/z48ECm7ASbA0W0aiJxSifOUasdy', 0, 2, 1, 1, 37.7125689, -122.2197428),
-(18, 'driver18@domain.com', '$2y$10$3RuD1p3byp9MpKfZO2AaMOeM9V7RtlP1I.VhhA6FXwTrh6sYlCJYW', 0, 3, 1, 1, 37.3639472, -121.92893750000002);
--- --------------------------------------------------------
+INSERT INTO `drivers` (`id`, `email`, `password`, `seats`, `working`, `locked`, `lat`, `lng`, `parties`, `des`) VALUES
+(1, 'driver0@sfo.domain.com', '$2y$10$jWWicBx/XJOtbc8UCssgneDaMoWJG3pxBYjg7KJR7/wZnMgpUS9ma', 1, 1, 0, 37.6213129, -122.3789554, 0, 'OAK'),
+(2, 'driver1@sfo.domain.com', '$2y$10$rhl78bz2OK9jC95IXqnKPOvKyxkcz67KhgAQNVKILZS2I1WsKCpIu', 1, 1, 0, 37.6213129, -122.3789554, 0, 'OAK'),
+(3, 'driver2@sfo.domain.com', '$2y$10$Q424LRW3RSiLTF7emIub4etlMdA5d.IqfRDN/fYKB/rHkGNDLV4F2', 1, 1, 0, 37.6213129, -122.3789554, 0, 'OAK'),
+(4, 'driver3@sfo.domain.com', '$2y$10$D16WP1jhEBZIbm79BIvXJ.fRF3USrZfv5NkbYGkKn39p9DU7HqApm', 1, 1, 0, 37.6213129, -122.3789554, 0, 'OAK'),
+(5, 'driver4@sfo.domain.com', '$2y$10$g1fufbHOZlCov9g8Uo7sL.9s3JwKkgzaz1qzX7cmD.3YnMIQguJo.', 1, 1, 0, 37.6213129, -122.3789554, 0, 'OAK'),
+(6, 'driver5@sfo.domain.com', '$2y$10$xJYN68lbJykkOFFCSCVznOlFXALiZrCfD6qyKFbKgoD5tofRYebAq', 1, 1, 0, 37.6213129, -122.3789554, 0, 'OAK'),
+(7, 'driver6@sfo.domain.com', '$2y$10$Vm3Hjvl4ZF64WKvl.QoFg.qXeiz.21zp5bPMB90.aNeIAnooRUTEW', 1, 1, 0, 37.6213129, -122.3789554, 0, 'OAK'),
+(8, 'driver7@sfo.domain.com', '$2y$10$eqo5ADiTTuae3E/Q8N0DHOT4fP.GA65U9leGBoLONPb0hdK9iLOPi', 1, 1, 0, 37.6213129, -122.3789554, 0, 'OAK'),
+(9, 'driver8@sfo.domain.com', '$2y$10$YAs5nvMvDxjNQ6rit4mZ4eXYgk6yeFOL1yXFsGhSoLryvZwsVgI1.', 1, 1, 0, 37.6213129, -122.3789554, 0, 'OAK'),
+(10, 'driver9@sfo.domain.com', '$2y$10$e2w9McNKPqcBOri5VfIeLeEMuI1GPi0maFYwjWgXe7oBw0wbd6m2.', 1, 1, 0, 37.6213129, -122.3789554, 0, 'OAK'),
+(11, 'driver0@oak.domain.com', '$2y$10$60bq0VxPq6X1.E2nzn3vN.XmgrtoVdc5S6B1.1pHNZRHByxTnYMtW', 1, 1, 0, 37.7125689, -122.2197428, 0, 'OAK'),
+(12, 'driver1@oak.domain.com', '$2y$10$c8RRVVISueyW.Ws1bAkkiufe1gXZoIxd69iMtDXxW7ow9NfMccNo6', 1, 1, 0, 37.7125689, -122.2197428, 0, 'OAK'),
+(13, 'driver2@oak.domain.com', '$2y$10$cmj4Mk2qvmWwwZ.4VCXV7.IMzMfScOZBpnyFag4ckPlWW8wDX4tb2', 1, 1, 0, 37.7125689, -122.2197428, 0, 'OAK'),
+(14, 'driver3@oak.domain.com', '$2y$10$xEYWe.VDCK1Uvu/JiwR7g.pifvvprHCQmlsvkJVBDHhE7Lcp.FqVu', 1, 1, 0, 37.7125689, -122.2197428, 0, 'OAK'),
+(15, 'driver4@oak.domain.com', '$2y$10$JxiMrcNar.QPk4om3xD/QuPKa0F3V51.Cg/Vcwc6gRyr9EbFeb9ya', 1, 1, 0, 37.7125689, -122.2197428, 0, 'OAK'),
+(16, 'driver5@oak.domain.com', '$2y$10$DnLFnJhFH.L91Asm15gsTOgr/7tLuKr/mTme9.TUo1Rf4JpbaaHya', 1, 1, 0, 37.7125689, -122.2197428, 0, 'OAK'),
+(17, 'driver6@oak.domain.com', '$2y$10$doPZYtr7b.BXhWFX2TTxy.6nfYuf2pZkIE5jpsHikO4sX8atWuEIa', 1, 1, 0, 37.7125689, -122.2197428, 0, 'OAK'),
+(18, 'driver7@oak.domain.com', '$2y$10$siIwxWT3rt5T4/shKjCH0ehRWzPjEHMJWr9jmo2iNyN033nzFIuRa', 1, 1, 0, 37.7125689, -122.2197428, 0, 'OAK'),
+(19, 'driver8@oak.domain.com', '$2y$10$FERPojxh.vDVvlSlirhtM.uazdaqFXpUOibljwK9FueVHQAQMTD9S', 1, 1, 0, 37.7125689, -122.2197428, 0, 'OAK'),
+(20, 'driver9@oak.domain.com', '$2y$10$JJI5j86vejUTBDcAiY144O0eXOjjqyRvPlbyslKQnoUTz1BuDmQPa', 1, 1, 0, 37.7125689, -122.2197428, 0, 'OAK'),
+(21, 'driver0@sjc.domain.com', '$2y$10$3U9Q/U/G/yM/na0nN/WkseyX8TzdNrOc/9ipXRG8OPI86kxNntiK.', 1, 1, 0, 37.3639472, -121.92893750000002, 0, 'OAK'),
+(22, 'driver1@sjc.domain.com', '$2y$10$SHIJbbuRcH2gjFun/ALqwOi2xZqUvqfUOjyl8Sttn83ltrAqnLYUu', 1, 1, 0, 37.3639472, -121.92893750000002, 0, 'OAK'),
+(23, 'driver2@sjc.domain.com', '$2y$10$L3J5JW4K0yUlWl2H8PMzmOvlOENHij2YgSnlLwMcTMwSprMGrduWq', 1, 1, 0, 37.3639472, -121.92893750000002, 0, 'OAK'),
+(24, 'driver3@sjc.domain.com', '$2y$10$eJHvLQ5LzfGoOV2EUh0ituZxBNxN.KQOrkvxX0yLJe5p/DSQFUmke', 1, 1, 0, 37.3639472, -121.92893750000002, 0, NULL),
+(25, 'driver4@sjc.domain.com', '$2y$10$Am0klGgx59PZBkC3eDAWvunDq9sdP1nk3.LGqF7zcPVk/lDEAYg2i', 1, 1, 0, 37.3639472, -121.92893750000002, 0, NULL),
+(26, 'driver5@sjc.domain.com', '$2y$10$JyDBXD91JWfEqXlZGT0cKOjO2uvkDLMmjboGqICM40qfR/V1zBWFK', 1, 1, 0, 37.3639472, -121.92893750000002, 0, 'OAK'),
+(27, 'driver6@sjc.domain.com', '$2y$10$WmnvfaBDjOFW/hd69a3bb./SO2bikAtmvi1DXrs/DQv59jNeoFOcW', 1, 1, 0, 37.3639472, -121.92893750000002, 0, 'OAK'),
+(28, 'driver7@sjc.domain.com', '$2y$10$moprbkunIyOVBqjDntouLOWWitKn6YOoddtUJx174qS.7PLSmwTWm', 1, 1, 0, 37.3639472, -121.92893750000002, 0, 'OAK'),
+(29, 'driver8@sjc.domain.com', '$2y$10$zT.I/FLHnW8Hx1.5b1EoBO3vd.iVhAheRvaj3LSRedFXrwyhs3b5u', 1, 1, 0, 37.3639472, -121.92893750000002, 0, 'OAK'),
+(30, 'driver9@sjc.domain.com', '$2y$10$z4Znopk9S/U2beJohwIyruAPZ36NIz6Sy8a.xpffo2KtvNzoSETlS', 1, 1, 0, 37.3639472, -121.92893750000002, 0, 'OAK');
 
---
--- Table structure for table `driver_routes`
---
-DROP TABLE IF EXISTS `driver_routes`;
-CREATE TABLE `driver_routes` (
-  `driver` int(11) NOT NULL,
-  `route` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Truncate table before insert `driver_routes`
---
-TRUNCATE TABLE `driver_routes`;
 -- --------------------------------------------------------
 
 --
 -- Table structure for table `requests`
 --
-DROP TABLE IF EXISTS `requests`;
+
 CREATE TABLE `requests` (
   `id` int(11) NOT NULL,
   `id_rider` int(11) NOT NULL,
-  `id_driver` int(11) NOT NULL,
-  `airport` varchar(255) NOT NULL,
-  `time` double NOT NULL DEFAULT '0',
-  `eta` double NOT NULL DEFAULT '0'
+  `id_driver` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
---
--- Truncate table before insert `requests`
---
-TRUNCATE TABLE `requests`;
 -- --------------------------------------------------------
 
 --
 -- Table structure for table `riders`
 --
-DROP TABLE IF EXISTS `riders`;
+
 CREATE TABLE `riders` (
   `id` int(11) NOT NULL,
   `email` varchar(255) NOT NULL,
-  `password` varchar(255) NOT NULL,
-  `active` tinyint(1) NOT NULL DEFAULT '0',
-  `lat` double DEFAULT NULL,
-  `lng` double DEFAULT NULL
+  `password` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Truncate table before insert `riders`
---
-TRUNCATE TABLE `riders`;
---
 -- Dumping data for table `riders`
 --
-INSERT INTO `riders` (`id`, `email`, `password`, `active`, `lat`, `lng`) VALUES
-(1, 'ken@domain.com', '$2y$10$GBo5v48sqhnPts3aoGS4M.Ff0VRyYPdn1t6BxV3Mwz3Lmi/y22kHy', 0, 37.61614, -122.38412),
-(2, 'ken1@domain.com', '$2y$10$II/7ypuFD.gVNdtOTKNzs.07D3wRYPUgCwwAqDhUNKsKXbY5TqaDq', 0, 37.61614, -122.38412);
--- --------------------------------------------------------
 
---
--- Table structure for table `rider_routes`
---
-DROP TABLE IF EXISTS `rider_routes`;
-CREATE TABLE `rider_routes` (
-  `rider` int(11) NOT NULL,
-  `route` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Truncate table before insert `rider_routes`
---
-TRUNCATE TABLE `rider_routes`;
---
--- Dumping data for table `rider_routes`
---
-INSERT INTO `rider_routes` (`rider`, `route`) VALUES
-(1, '37.3457021`-121.94655649999999`37.6172739`-122.38422589999999`[[{"lat":37.61634,"lng":-122.38399000000001},{"lat":37.616440000000004,"lng":-122.38393},{"lat":37.61647,"lng":-122.38391000000001},{"lat":37.616490000000006,"lng":-122.38390000000001},{"lat":37.616510000000005,"lng":-122.38390000000001},{"lat":37.61654,"lng":-122.38389000000001},{"lat":37.616600000000005,"lng":-122.38389000000001},{"lat":37.616640000000004,"lng":-122.38391000000001},{"lat":37.616780000000006,"lng":-122.38397},{"lat":37.616870000000006,"lng":-122.38401},{"lat":37.61701,"lng":-122.38406},{"lat":37.61717,"lng":-122.38413000000001},{"lat":37.617180000000005,"lng":-122.38414000000002},{"lat":37.617270000000005,"lng":-122.38423000000002}]]'),
-(2, '37.3440832`-121.87393420000001`37.6172739`-122.38422589999999`[[{"lat":37.61634,"lng":-122.38399000000001},{"lat":37.616440000000004,"lng":-122.38393},{"lat":37.61647,"lng":-122.38391000000001},{"lat":37.616490000000006,"lng":-122.38390000000001},{"lat":37.616510000000005,"lng":-122.38390000000001},{"lat":37.61654,"lng":-122.38389000000001},{"lat":37.616600000000005,"lng":-122.38389000000001},{"lat":37.616640000000004,"lng":-122.38391000000001},{"lat":37.616780000000006,"lng":-122.38397},{"lat":37.616870000000006,"lng":-122.38401},{"lat":37.61701,"lng":-122.38406},{"lat":37.61717,"lng":-122.38413000000001},{"lat":37.617180000000005,"lng":-122.38414000000002},{"lat":37.617270000000005,"lng":-122.38423000000002}]]');
+INSERT INTO `riders` (`id`, `email`, `password`) VALUES
+(1, 'rider0@lif.domain.com', '$2y$10$.NoOQZfOOSPwYgyfykriWeY0jMS4pcaIcoleEwJdoyPwFrmX.UAkq');
 
 --
 -- Indexes for dumped tables
@@ -162,19 +121,12 @@ ALTER TABLE `drivers`
   ADD UNIQUE KEY `email` (`email`);
 
 --
--- Indexes for table `driver_routes`
---
-ALTER TABLE `driver_routes`
-  ADD PRIMARY KEY (`driver`);
-
---
 -- Indexes for table `requests`
 --
 ALTER TABLE `requests`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `id` (`id`),
-  ADD UNIQUE KEY `id_rider` (`id_rider`),
-  ADD UNIQUE KEY `id_driver` (`id_driver`);
+  ADD UNIQUE KEY `id_rider` (`id_rider`);
 
 --
 -- Indexes for table `riders`
@@ -185,12 +137,6 @@ ALTER TABLE `riders`
   ADD UNIQUE KEY `email` (`email`);
 
 --
--- Indexes for table `rider_routes`
---
-ALTER TABLE `rider_routes`
-  ADD PRIMARY KEY (`rider`);
-
---
 -- AUTO_INCREMENT for dumped tables
 --
 
@@ -198,17 +144,19 @@ ALTER TABLE `rider_routes`
 -- AUTO_INCREMENT for table `drivers`
 --
 ALTER TABLE `drivers`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+
 --
 -- AUTO_INCREMENT for table `requests`
 --
 ALTER TABLE `requests`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
 --
 -- AUTO_INCREMENT for table `riders`
 --
 ALTER TABLE `riders`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2; SET FOREIGN_KEY_CHECKS=1;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
