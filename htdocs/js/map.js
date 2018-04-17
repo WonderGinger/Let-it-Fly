@@ -207,11 +207,25 @@ function verify() {
     des_lat = airport_lat;
     des_lng = airport_lng;
     toAirport = true;
+    var airportfix = document.getElementById("airport-select").value;
   } else {
     ori_lat = airport_lat;
     ori_lng = airport_lng;
     des_lat = loc_lat;
     des_lng = loc_lng;
+
+    if (des_lat === destinations.sfo.lat && des_lng === destinations.sfo.long) {
+      toAirport = true;
+      var airportfix = "SFO";
+    }
+    if (des_lat === destinations.oak.lat && des_lng === destinations.oak.long) {
+      toAirport = true;
+      var airportfix = "OAK";
+    }
+    if (des_lat === destinations.sjc.lat && des_lng === destinations.sjc.long) {
+      toAirport = true;
+      var airportfix = "SJC";
+    }
   }
 
   var directionsService = new google.maps.DirectionsService();
@@ -326,7 +340,7 @@ function verify() {
       var betterDrivers = [];
       if (toAirport) {
         for (var i = 0; i < drivers.length; i++) {
-          if (document.getElementById("airport-select").value === drivers[i]["des"] || drivers[i]["des"] === null) {
+          if (airportfix === drivers[i]["des"] || drivers[i]["des"] === null) {
             betterDrivers.push(drivers[i]);
           }
         }
