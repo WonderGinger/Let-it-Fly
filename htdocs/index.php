@@ -18,9 +18,6 @@ if (!isset($_SESSION["logged_in"]) || !$_SESSION["logged_in"]) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-alpha.4/css/materialize.min.css">
     <link rel="stylesheet" href="css/master.css">
     <link rel="stylesheet" href="css/index.css">
-	<script>
-      var session_data = <?= json_encode($_SESSION);?>;
-    </script>
   </head>
   <body class="grey lighten-3">
     <!-- Navigation bar -->
@@ -52,45 +49,30 @@ if (!isset($_SESSION["logged_in"]) || !$_SESSION["logged_in"]) {
       <li><a class="teal-text text-lighten-1 waves-effect" href="about">User Manual</a></li>
       <li><a class="teal-text text-lighten-1 waves-effect" href="account">Account Settings</a></li>
     </ul>
-	
     <?php
     if ($_SESSION["user"] === "riders") {
-      require_once "../require/rider.php";
-      $script = "js/map.js";
+      if (!$result = $dbh->query("SELECT * FROM requests WHERE id_rider = {$_SESSION["id"]}")) db_error();
+      $result = $result->fetch_array(MYSQLI_ASSOC);
+
+      if ($result) {
+        require_once "../require/request.php";
+        $script = "js/request-map.js";
+      } else {
+        require_once "../require/rider.php";
+        $script = "js/map.js";
+      }
     } else {
       require_once "../require/driver.php";
-      $script = "js/driver_map.js";
+      $script = "js/driver-map.js";
     }
     mysqli_close($dbh);
     ?>
-	
-	<!-- Display Polyline Map -->
-	<div id="map"></div>
-		<div class="container">
-			<div style="pointer-events: auto;">
-				<div class="input-field col s12">
-					<select id="sel">
-						<option value="SFO" selected>SFO</option>
-						<option value="SJC">SJC</option>
-						<option value="OAK">OAK</option>
-					</select>
-				</div>
-				<p id="info0"></p>
-				<p id="info1"></p>
-				<p id="info2"></p>
-				<p id="info3"></p>
-				<p id="info4"></p>
-				<p id="info99"></p>
-				<h5 id="info100"></p>
-			</div>
-		</div>						
-																
     <!-- Import JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-alpha.4/js/materialize.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAHd7wEeRlgn08q5xC4mifzgVZcKSoplUM&libraries=places"></script>
     <script src="js/materialize.js"></script>
-    <script src="js/utility.js"></script>
+    <script src="js/library.js"></script>
     <script src="<?php echo $script; ?>"></script>
   </body>
 </html>

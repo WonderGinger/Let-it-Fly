@@ -1,13 +1,15 @@
 function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
-  var R = 6371; // Radius of the earth in km
-  var dLat = deg2rad(lat2 - lat1); // deg2rad below
+  // Radius of the Earth in km
+  var R = 6371;
+  var dLat = deg2rad(lat2 - lat1);
   var dLon = deg2rad(lon2 - lon1);
   var a =
     Math.sin(dLat / 2) * Math.sin(dLat / 2) +
     Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
     Math.sin(dLon / 2) * Math.sin(dLon / 2);
   var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  var d = R * c; // Distance in km
+  // Distance in kilometers
+  var d = R * c;
   return d;
 }
 
@@ -20,19 +22,53 @@ function km2mi(km) {
 }
 
 /**
- * Get the best driver, returns the id
- * @param drivers json list of available drivers from DB
+ * Add timing to route.
+ *
+ * @param arr of coordinates that determine a route
+ * @param totalTime time in seconds to cover the route
  */
-function getBestDrivers(drivers) {
-  return sortArrayByKey(drivers, "eta");
+function addTiming(arr, totalTime) {
+  let totalDistance = 0;
+
+  // sum up all the distances, this is different from just start -> finish distance
+  for (let i = 1; i < arr.length; i++) {
+    totalDistance += getDistanceFromLatLonInKm(arr[i - 1]["lat"], arr[i - 1]["lng"], arr[i]["lat"], arr[i]["lng"]);
+  }
+
+  // time to first is zero
+  arr[0]["eta"] = 0;
+  for (let i = 1; i < arr.length; i++) {
+    prev = arr[i - 1];
+    // time to i-th coordinate = time to (i-1)th coordinate + time to cover the distance b/t the two
+    arr[i]["eta"] = ((getDistanceFromLatLonInKm(prev["lat"], prev["lng"], arr[i]["lat"], arr[i]["lng"]) / totalDistance) * totalTime) + arr[i - 1]["eta"];
+  }
 }
 
 /**
- * Helper function to sort an array by a key
+ * Get the best driver.
  *
- * @param array of objects to sort
- * @param key by which to sort items
- * @returns {*} the sorted array
+ * @param drivers JSON list of available drivers from database
+ * @return id
+ */
+function getBestDrivers(drivers) {
+  var best = sortArrayByKey(drivers, "eta");
+  var sorted = [];
+
+  for (var i = 0; i < best.length; i++) {
+    if (best[i]["eta"] <= 1800) {
+      sorted.push(best[i]);
+    }
+  }
+
+  return sorted;
+}
+
+/**
+ * Helper function to sort an array by a key.
+ *
+ * @param array objects to sort
+ * @param key key by which to sort items
+ * @return the sorted array
  */
 function sortArrayByKey(array, key) {
   return array.sort(function (a, b) {
@@ -42,12 +78,13 @@ function sortArrayByKey(array, key) {
   });
 }
 
-
 /**
- * @param lat, the latitude of the address to be checked.
- * @param long, the longitude
- * @param debug, boolean used to print debugging information to the console.
- * @returns boolean of if the address passed is within the correct counties.
+ * Check if address is within operational bounds.
+ *
+ * @param lat the latitude of the address to be checked
+ * @param long the longitude
+ * @param debug boolean used to print debugging information to the console
+ * @return boolean of if the address passed is within the correct counties
  */
 function validateAddress(lat, long, debug = false) {
   address = new google.maps.LatLng(lat, long);
@@ -69,7 +106,6 @@ function validateAddress(lat, long, debug = false) {
   }
   return alameda || contraCosta || sanFrancisco || sanMateo || santaClara || santaCruz;
 }
-
 
 var alamedaCounty = new google.maps.Polygon({
   paths: [

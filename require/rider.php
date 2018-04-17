@@ -60,6 +60,10 @@
                   <col width="100%">
                 </colgroup>
                 <tr>
+                  <td class="grey-text">Passenger(s)</td>
+                  <td class="data" id="td3">1</td>
+                </tr>
+                <tr>
                   <td class="grey-text">Starting point</td>
                   <td class="data red-text" id="td1">Unspecified</td>
                 </tr>
@@ -72,6 +76,10 @@
                   <td class="data red-text" id="td7">Unknown</td>
                 </tr>
                 <tr>
+                  <td class="grey-text">Cost</td>
+                  <td class="data red-text" id="td6">Unknown</td>
+                </tr>
+                <tr>
                   <td class="grey-text">Duration</td>
                   <td class="data red-text" id="td4">Unknown</td>
                 </tr>
@@ -79,27 +87,21 @@
                   <td class="grey-text">Wait Time</td>
                   <td class="data red-text" id="td5">Unknown</td>
                 </tr>
-                <tr>
-                  <td class="grey-text">Passenger(s)</td>
-                  <td class="data" id="td3">1</td>
-                </tr>
-                <tr>
-                  <td class="grey-text">Cost</td>
-                  <td class="data" id="td6">$0</td>
-                </tr>
               </table>
               <div class="row">
-                <div class="progress"><div class="determinate" id="preload"></div></div>
-                <div class="col s12">
-                  <button class="btn waves-effect waves-light yellow darken-2 disabled" type="submit" id="update">Update</button>
+                <div class="col s12" id="update-wrap">
+                  <button class="btn waves-effect waves-light disabled" type="submit" id="update">Search for Drivers</button>
+                  <div class="progress hide" id="preload"><div class="indeterminate"></div></div>
+                  <p class="hide red-text" id="warning"></p>
                 </div>
-                <div class="col s12"><button class="btn waves-effect waves-light green disabled" type="submit" id="confirm">Confirm</button></div>
+                <div class="col s12 hide" id="submit-wrap">
+                  <button class="btn waves-effect waves-light" type="submit" id="submit">Submit Request</button>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-      <p id="ajax" style="word-wrap: break-word;"></p>
     </div>
   </div>
 </div>

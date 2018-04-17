@@ -39,12 +39,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $errors[0] = "Email has not been registered yet.";
         break;
       }
-    case $email:
-      // TODO: make this condition false after implementing PHPMailer
-      if ($result["active"]) {
-        $errors[0] = "Email has not been activated yet.";
-        break;
-      }
   }
 
   // Check password exceptions
@@ -67,8 +61,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     case $password:
       $_SESSION["logged_in"] = true;
       $_SESSION["user"] = $user;
-      $_SESSION["email"] = $email;
-	  $_SESSION["user_id"] = $result["id"];
+	    $_SESSION["id"] = $result["id"];
       break;
   }
 
@@ -156,10 +149,8 @@ mysqli_close($dbh);
                         <input type="password" name="password" id="password" placeholder="Enter your password" <?php echo $inputs[2]; ?> required>
                         <span class="helper-text red-text"><?php echo $errors[1]; ?></span>
                       </div>
-                      <!-- Footnote -->
-                      <div class="col s8"><p id="footnote"><a href="reset">Forgot password?</a></p></div>
                       <!-- Submission -->
-                      <div class="col s4 right-align"><button class="btn waves-effect waves-light" type="submit">Next</button></div>
+                      <div class="col s4 offset-s8 right-align"><button class="btn waves-effect waves-light" type="submit">Next</button></div>
                     </div>
                   </form>
                 </div>

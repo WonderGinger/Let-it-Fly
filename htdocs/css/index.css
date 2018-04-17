@@ -164,7 +164,12 @@ td {
 
 #update {
   width: 100%;
-  margin-bottom: 8px;
+  margin-bottom: 0;
+}
+
+#submit {
+  width: 100%;
+  margin-bottom: 0;
 }
 
 #confirm {
@@ -186,7 +191,12 @@ input[type=range].disabled::-ms-thumb {
 }
 
 .progress {
-  margin-bottom: 8px;
+  margin: 8px 0 0;
+}
+
+#warning {
+  margin-top: 8px;
+  word-wrap: break-word;
 }
 
 /* Responsive design */

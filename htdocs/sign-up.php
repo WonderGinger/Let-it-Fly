@@ -169,7 +169,7 @@ mysqli_close($dbh);
                         <span class="helper-text red-text"><?php echo $errors[2]; ?></span>
                       </div>
                       <!-- Footnote -->
-                      <div class="col s8"><p id="footnote">By proceeding, you agree to the <a href="terms">Terms of Service</a>.</p></div>
+                      <div class="col s8"><p id="footnote">By proceeding, you agree to the Terms of Service.</p></div>
                       <!-- Submission -->
                       <div class="col s4 right-align"><button class="btn waves-effect waves-light" type="submit">Next</button></div>
                     </div>
