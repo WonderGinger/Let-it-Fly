@@ -14,12 +14,3 @@
     </div>
 </div>
 <div id="map"></div>
-
-
-
-<?php
-// Add ID to session
-    if (!$result = $dbh->query("SELECT * FROM drivers WHERE email='{$_SESSION['email']}' LIMIT 1")) echo $result;
-    $result = $result->fetch_array(MYSQLI_ASSOC);
-    $_SESSION["id"] = $result["id"];
-?>
