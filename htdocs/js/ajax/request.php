@@ -52,11 +52,10 @@ if (isset($_POST["selector"])) {
   // Get driver location
   if ($_POST["selector"] === "getLocation" && isset($_SESSION["id"])) {
     $_SESSION["id"] = mysqli_true_escape_string($dbh, $_SESSION["id"]);
-    echo "CODE WORKS"; 
 
     if (!$result = $dbh->query("SELECT lat, lng FROM drivers WHERE id={$_SESSION['id']} LIMIT 1")) db_error();
     $result = $result->fetch_array(MYSQLI_ASSOC);     
-    // echo json_encode($result);
+    echo json_encode($result);
     
   }
 }

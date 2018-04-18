@@ -69,7 +69,7 @@ function cancel(){
 }
 
 function initMap() {
-    getLocation();
+    getLocation(); 
     map = new google.maps.Map(document.getElementById("map"), {
       center: { lat: 37.3351874, lng: -121.88107150000002 },
       clickableIcons: false,
@@ -80,42 +80,38 @@ function initMap() {
     });
 }
 
-// A <p> element above the START/CANCEL button that has no innerHTML unless we add some here for debugging.
+// Fetches location from DB and stores it in loc_lat and loc_lng
 function getLocation() {
     console.log("Getting location")
     $.post("js/ajax/request.php", {
         selector: "getLocation"
     }, function(output){
-        console.log("OUTPUT:")
-        console.log(output);
         if(output == "") return;
-        if(output == null) return;
+        if(output == "null") return;
         output = JSON.parse(output);
-        console.log(output);
-        // loc_lat = output.lat;
-        // loc_lng = output.lng;        
+        console.log(output)
+        loc_lat = output.lat;
+        loc_lng = output.lng;
+        showPosition();
     });
 }
 
-// function showPosition(position) {
-//     loc_lat = position.coords.latitude;
-//     loc_lng = position.coords.longitude;
+function showPosition(position) {
+    console.log(loc_lat + ", " + loc_lng);
+    initialLocation = new google.maps.LatLng(loc_lat, loc_lng);
 
-//     console.log(loc_lat + ", " + loc_lng);
-//     initialLocation = new google.maps.LatLng(loc_lat, loc_lng);
+    if(map == null) return;
+    // Center map    
+    map.setCenter(initialLocation);
 
-//     if(map == null) return;
-//     // Center map    
-//     map.setCenter(initialLocation);
-
-//     // Map marker
-//     initialMarker = new google.maps.Marker({
-//         position: initialLocation,
-//         map: map,
-//         title: loc_lat + ", " + loc_lng,
-//         animation: google.maps.Animation.DROP
-//     });
-// }
+    // Map marker
+    initialMarker = new google.maps.Marker({
+        position: initialLocation,
+        map: map,
+        title: loc_lat + ", " + loc_lng,
+        animation: google.maps.Animation.DROP
+    });
+}
 
 function showError(error) {
     switch(error.code) {
@@ -142,12 +138,12 @@ function checkRequests(){
     }, function(output){
         // Receives request in form of JSON
         // { "id", "id_rider", "id_driver", "airport", "time" }
-        console.log(output);
 
         // IF (VALID REQUEST)
         if(output == "") return;
-        if(output == null) return;
+        if(output === "null") return;
         
+        console.log("after check: " + output);
         output = JSON.parse(output);
         
         riderFound = true;
