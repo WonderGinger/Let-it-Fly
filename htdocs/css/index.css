@@ -90,10 +90,25 @@ input[type=text]:not(.browser-default) {
 }
 
 /* Request details */
+.row .col#details .card{
+  margin-bottom: 4px;
+}
+
 h6 {
   margin: 0 0 8px;
 }
 
+/* noUiSlider */
+#nus {
+  margin: 10px 0 24px 4px;
+  width: calc(100% - 5px);
+}
+
+:disabled {
+  pointer-events: none;
+}
+
+/* Left side: Ride details */
 .input-field.inline {
   margin: 0 0 16px 18px;
   width: calc(100% - 53px);
@@ -111,12 +126,8 @@ h6 {
   margin-bottom: 0;
 }
 
-.row .col#details .card{
-  margin-bottom: 4px;
-}
-
 .switch {
-  margin: 5px 0 36px;
+  margin: 0px 0 3px;
 }
 
 .switch label .lever {
@@ -128,7 +139,7 @@ h6 {
   background-color: #26a69a;
 }
 
-/* Request submission */
+/* Right side: Ride submission */
 .row .col#submission .card{
   margin: 4px 0 16px;
 }
@@ -158,6 +169,7 @@ td {
   text-overflow: ellipsis;
 }
 
+/* Submit button formatting */
 .col .row {
   margin: 0;
 }
@@ -167,29 +179,6 @@ td {
   margin-bottom: 0;
 }
 
-#submit {
-  width: 100%;
-  margin-bottom: 0;
-}
-
-#confirm {
-  width: 100%;
-}
-
-.switch input[type=checkbox][disabled]+.lever {
-  background-color: rgba(0,0,0,0.12) !important;
-}
-
-input[type=range].disabled::-webkit-slider-thumb {
-  background-color: #949494;
-}
-input[type=range].disabled::-moz-range-thumb {
-  background-color: #949494;
-}
-input[type=range].disabled::-ms-thumb {
-  background-color: #949494;
-}
-
 .progress {
   margin: 8px 0 0;
 }
@@ -197,6 +186,28 @@ input[type=range].disabled::-ms-thumb {
 #warning {
   margin-top: 8px;
   word-wrap: break-word;
+}
+
+#submit {
+  width: 100%;
+  margin-bottom: 0;
+}
+
+/* Update disable phase */
+.switch input[type=checkbox][disabled]+.lever {
+  background-color: rgba(0,0,0,0.12) !important;
+}
+
+.grayed.noUi-connect {
+  background: #949494;
+}
+
+.grayed.noUi-horizontal .noUi-handle,
+.grayed.noUi-vertical .noUi-handle {
+  background: #949494;
+}
+.grayed.noUi-target.noUi-horizontal .noUi-tooltip {
+  background-color: #949494;
 }
 
 /* Responsive design */

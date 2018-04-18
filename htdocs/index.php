@@ -16,6 +16,7 @@ if (!isset($_SESSION["logged_in"]) || !$_SESSION["logged_in"]) {
     <!-- Import stylesheets -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-alpha.4/css/materialize.min.css">
+    <link rel="stylesheet" href="css/nouislider.css">
     <link rel="stylesheet" href="css/master.css">
     <link rel="stylesheet" href="css/index.css">
   </head>
@@ -72,6 +73,7 @@ if (!isset($_SESSION["logged_in"]) || !$_SESSION["logged_in"]) {
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAHd7wEeRlgn08q5xC4mifzgVZcKSoplUM&libraries=places"></script>
     <script src="js/materialize.js"></script>
+    <script src="js/nouislider.min.js"></script>
     <script src="js/library.js"></script>
     <script src="<?php echo $script; ?>"></script>
   </body>

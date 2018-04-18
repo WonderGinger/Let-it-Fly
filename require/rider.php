@@ -27,6 +27,10 @@
         <div class="col s12 m6" id="details">
           <div class="card">
             <div class="card-content">
+              <div class="row">
+                <div class="col s6"><h6 class="teal-text lighten-1">Passenger(s)</h6></div>
+                <div class="col s6"><div id="nus"></div></div>
+              </div>
               <h6 class="teal-text lighten-1">Route</h6>
               <i class="material-icons red-text" id="indicator1">location_on</i>
               <div class="input-field inline">
@@ -44,8 +48,6 @@
               <div class="switch">
                 <label><input type="checkbox" id="switch" name="checkbox"><span class="lever"></span>Swap directions</label>
               </div>
-              <h6 class="teal-text lighten-1">Passenger Count</h6>
-              <p class="range-field"><input type="range" id="range" min="1" max="4" value="1"></p>
             </div>
           </div>
         </div>

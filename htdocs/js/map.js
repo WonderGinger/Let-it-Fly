@@ -1,3 +1,18 @@
+var slider = document.getElementById("nus");
+noUiSlider.create(slider, {
+  start: [ 1 ],
+  connect: true,
+  step: 1,
+  orientation: "horizontal",
+  range: {
+    "min": [ 1 ],
+    "max": [ 4 ]
+  },
+  format: wNumb({
+    decimals: 0
+  })
+});
+
 google.maps.event.addDomListener(window, "load", initMap);
 
 var map;
@@ -21,12 +36,12 @@ var destinations = {
 function initMap() {
   // Define map options
   map = new google.maps.Map(document.getElementById("map"), {
-    center: { lat: 37.62445, lng: -122.26612 },
+    center: { lat: 37.6452181, lng: -122.17673625 },
     clickableIcons: false,
     fullscreenControl: false,
     mapTypeControl: false,
     streetViewControl: false,
-    zoom: 10
+    zoom: 9
   });
 
   // Initialize autocomplete module
@@ -319,7 +334,7 @@ function verify() {
     // Check database for available drivers
     $.post("js/ajax/request.php", {
       data: { waypoints },
-      passengers: document.getElementById("range").value,
+      passengers: slider.noUiSlider.get(),
       selector: "drivers"
     }, function(output) {
       // List of working drivers with non-zero seats and less than 2 parties
@@ -329,7 +344,7 @@ function verify() {
       if (drivers.length === 0) {
         enableInterface();
         document.getElementById("warning").classList.remove("hide");
-        document.getElementById("warning").innerHTML = "No drivers are available with open seats; please try again later.";
+        document.getElementById("warning").innerHTML = "No drivers are available with open seats; please try again at a later time.";
         // Change calculating wait time back to Unknown
         document.getElementById("td5").innerHTML = "Unknown";
         return;
@@ -347,7 +362,7 @@ function verify() {
         if (betterDrivers.length === 0) {
           enableInterface();
           document.getElementById("warning").classList.remove("hide");
-          document.getElementById("warning").innerHTML = "No drivers with matching destination; please try again later.";
+          document.getElementById("warning").innerHTML = "No drivers are available with matching destination; please try again at a later time.";
           document.getElementById("td5").innerHTML = "Unknown";
           return;
         }
@@ -360,7 +375,7 @@ function verify() {
         if (betterDrivers.length === 0) {
           enableInterface();
           document.getElementById("warning").classList.remove("hide");
-          document.getElementById("warning").innerHTML = "No drivers are available for private travel; please try again later.";
+          document.getElementById("warning").innerHTML = "No drivers are available for private travel; please try again at a later time.";
           document.getElementById("td5").innerHTML = "Unknown";
           return;
         }
@@ -452,7 +467,7 @@ function verify() {
         // 30-minute wait time check
         if (bestDrivers.length === 0) {
           document.getElementById("warning").classList.remove("hide");
-          document.getElementById("warning").innerHTML = "No drivers are within a 30-minute distance; please try again later.";
+          document.getElementById("warning").innerHTML = "No drivers are available within a 30-minute distance; please try again at a later time.";
           document.getElementById("td5").innerHTML = "Greater than 30 mins";
           return;
         }
@@ -503,8 +518,8 @@ function disableInterface() {
   document.getElementById("update").classList.add("disabled");
   document.getElementById("update").innerHTML = "Loading...";
   // Passenger count
-  document.getElementById("range").disabled = true;
-  document.getElementById("range").classList.add("disabled");
+  slider.setAttribute("disabled", true);
+  document.getElementById("nus").classList.add("grayed");
   // Directions toggle
   document.getElementById("switch").disabled = true;
   // Airport selector
@@ -527,8 +542,8 @@ function enableInterface() {
   // Display original update button text
   document.getElementById("update").innerHTML = "Search for Drivers";
   // Passenger count
-  document.getElementById("range").disabled = false;
-  document.getElementById("range").classList.remove("disabled");
+  slider.removeAttribute("disabled");
+  document.getElementById("nus").classList.remove("grayed");
   // Directions toggle
   document.getElementById("switch").disabled = false;
   // Airport selector
@@ -611,8 +626,8 @@ document.getElementById("switch").addEventListener("click", function() {
 });
 
 // Range slider listener
-document.getElementById("range").addEventListener("change", function() {
-  document.getElementById("td3").innerHTML = document.getElementById("range").value;
+slider.noUiSlider.on("update", function() {
+  document.getElementById("td3").innerHTML = slider.noUiSlider.get();
 
   clearRideDetails();
   update();
