@@ -37,23 +37,27 @@ if (isset($_POST["selector"])) {
     if (!$result = $dbh->query("UPDATE drivers SET working={$_POST['value']} WHERE id='{$_SESSION['id']}'")) db_error();
     // echo $_POST["value"];
   }
+
   // Checks for incoming requests for drivers in the requests table, and updates driver location.
   if ($_POST["selector"] === "check" && isset($_SESSION["id"])) {
     // Sanitize input
-    $_POST['lat'] = mysqli_true_escape_string($dbh, $_POST['lat']);
-    $_POST['lng'] = mysqli_true_escape_string($dbh, $_POST['lng']);
     $_SESSION['id'] = mysqli_true_escape_string($dbh, $_SESSION['id']);
-
-    /* DELETE THIS
-    // Update driver location
-    if (!$result = $dbh->query(
-      "UPDATE drivers SET lat={$_POST['lat']}, lng={$_POST['lng']} WHERE id='{$_SESSION['id']}'")) db_error();
-    */
 
     // Find a request in the requests table that has id_driver matching the driver's ID.
     if (!$result = $dbh->query("SELECT * FROM requests WHERE id_driver={$_SESSION['id']} LIMIT 1")) db_error();
     $result = $result->fetch_array(MYSQLI_ASSOC);
     echo json_encode($result);
+  }
+
+  // Get driver location
+  if ($_POST["selector"] === "getLocation" && isset($_SESSION["id"])) {
+    $_SESSION["id"] = mysqli_true_escape_string($dbh, $_SESSION["id"]);
+    echo "CODE WORKS"; 
+
+    if (!$result = $dbh->query("SELECT lat, lng FROM drivers WHERE id={$_SESSION['id']} LIMIT 1")) db_error();
+    $result = $result->fetch_array(MYSQLI_ASSOC);     
+    // echo json_encode($result);
+    
   }
 }
 
