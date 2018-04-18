@@ -433,6 +433,7 @@ function verify() {
             var encodeString = google.maps.geometry.encoding.encodePath(polyline.getPath());
 
             callback(counter, result.routes[0].legs[0].duration.value, wpoints, encodeString);
+
           } else if (status === google.maps.DirectionsStatus.OVER_QUERY_LIMIT) {
             delay++;
             setTimeout(function () {

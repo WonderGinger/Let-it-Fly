@@ -64,6 +64,22 @@ function getBestDrivers(drivers) {
 }
 
 /**
+ * Check if a rider's coordinates are within 1 mile of a list of coordinates
+ *
+ * @param waypoints 
+ * @param riderCords
+ */
+function isInOneMileRadius(waypoints, riderLat, riderLng) {
+
+  for (let i = 0; i < waypoints.length; i++) {
+    if (getDistanceFromLatLonInKm(riderLat, riderLng, waypoints[i]["lat"], waypoints[i]["lng"]) < 1.61) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
  * Helper function to sort an array by a key.
  *
  * @param array objects to sort
