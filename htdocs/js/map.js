@@ -243,6 +243,17 @@ function verify() {
     }
   }
 
+  var onroad = false;
+  if (ori_lat === destinations.sfo.lat && ori_lng === destinations.sfo.long) {
+    console.log("Rider is starting at SFO.");
+  } else if (ori_lat === destinations.oak.lat && ori_lng === destinations.oak.long) {
+    console.log("Rider is starting at OAK.");
+  } else if (ori_lat === destinations.sjc.lat && ori_lng === destinations.sjc.long) {
+    console.log("Rider is starting at SJC.");
+  } else {
+    onroad = true;
+  }
+
   var directionsService = new google.maps.DirectionsService();
   directionsService.route({
     origin: new google.maps.LatLng(ori_lat, ori_lng),
@@ -350,23 +361,10 @@ function verify() {
         return;
       }
 
-      // Check if rider is going to airport, filter drivers by matching destination
-      // If rider is not going to airport, driver parties must be 0 and null des
       var betterDrivers = [];
-      if (toAirport) {
-        for (var i = 0; i < drivers.length; i++) {
-          if (airportfix === drivers[i]["des"] || drivers[i]["des"] === null) {
-            betterDrivers.push(drivers[i]);
-          }
-        }
-        if (betterDrivers.length === 0) {
-          enableInterface();
-          document.getElementById("warning").classList.remove("hide");
-          document.getElementById("warning").innerHTML = "No drivers are available with matching destination; please try again at a later time.";
-          document.getElementById("td5").innerHTML = "Unknown";
-          return;
-        }
-      } else {
+      var delayTimer = 0;
+      if (!onroad && toAirport) {
+        console.log("Airport to airport request.");
         for (var i = 0; i < drivers.length; i++) {
           if (drivers[i]["parties"] == 0 && drivers[i]["des"] === null) {
             betterDrivers.push(drivers[i]);
@@ -375,11 +373,103 @@ function verify() {
         if (betterDrivers.length === 0) {
           enableInterface();
           document.getElementById("warning").classList.remove("hide");
-          document.getElementById("warning").innerHTML = "No drivers are available for private travel; please try again at a later time.";
+          document.getElementById("warning").innerHTML = "There are no idle drivers; please try again at a later time.";
+          document.getElementById("td5").innerHTML = "Unknown";
+          return;
+        }
+      } else if (onroad && toAirport) {
+
+
+
+
+
+        console.log("Road to airport request.");
+        for (var i = 0; i < drivers.length; i++) {
+          if (drivers[i]["parties"] == 1 && drivers[i]["des"] === airportfix) {
+            delayTimer++;
+            $.post("js/ajax/request.php", {
+              driver: drivers[i],
+              selector: "omc"
+            }, function(output) {
+              var polyarr = JSON.parse(output);
+
+              for (var j = 0; j < polyarr.length; j++) {
+                if (isInOneMileRadius(polyarr[j], ori_lat, ori_lng)) {
+                  betterDrivers.push(drivers[29]);
+                  //console.log(drivers[30]);
+                  //console.log(JSON.stringify(drivers[i]));
+                  // console.log("hi" + i);
+                  break;
+                }
+              }
+            });
+          }
+          if (drivers[i]["parties"] == 0 && drivers[i]["des"] === null) {
+            betterDrivers.push(drivers[i]);
+          }
+        }
+
+        
+        
+        /*
+        if (betterDrivers.length === 0) {
+          enableInterface();
+          document.getElementById("warning").classList.remove("hide");
+          document.getElementById("warning").innerHTML = "There are no idle drivers or available drivers with matching destination; please try again at a later time.";
+          document.getElementById("td5").innerHTML = "Unknown";
+          return;
+        }
+        */
+      } else {
+        console.log("Airport to road request.");
+        for (var i = 0; i < drivers.length; i++) {
+          if (drivers[i]["parties"] == 0 && drivers[i]["des"] === null) {
+            betterDrivers.push(drivers[i]);
+          }
+        }
+        if (betterDrivers.length === 0) {
+          enableInterface();
+          document.getElementById("warning").classList.remove("hide");
+          document.getElementById("warning").innerHTML = "There are no available drivers for private travel; please try again at a later time.";
           document.getElementById("td5").innerHTML = "Unknown";
           return;
         }
       }
+
+
+
+
+
+      
+
+
+
+
+        // Time out so async calls catch up
+        setTimeout(function() {
+          console.log(JSON.stringify(betterDrivers));
+
+      if (true) {
+        enableInterface();
+        document.getElementById("warning").classList.remove("hide");
+        document.getElementById("warning").innerHTML = "End of file.";
+        document.getElementById("td5").innerHTML = "Unknown";
+        return;
+      }          
+          
+          
+        }, delayTimer * 1000);
+
+
+
+
+
+console.log(JSON.stringify(betterDrivers));
+return;
+
+
+
+
 
       // Iterate through each driver to find wait time
       for (var i = 0; i < betterDrivers.length; i++) {
@@ -409,7 +499,7 @@ function verify() {
             // Only path is really needed
             var polyline = new google.maps.Polyline({
               path: [],
-              strokeColor: '#4597ff',
+              strokeColor: '#ffad45',
               strokeWeight: 6
             });
 
@@ -468,7 +558,7 @@ function verify() {
         // 30-minute wait time check
         if (bestDrivers.length === 0) {
           document.getElementById("warning").classList.remove("hide");
-          document.getElementById("warning").innerHTML = "No drivers are available within a 30-minute distance; please try again at a later time.";
+          document.getElementById("warning").innerHTML = "There are no available drivers within a 30-minute distance; please try again at a later time.";
           document.getElementById("td5").innerHTML = "Greater than 30 mins";
           return;
         }
@@ -488,10 +578,47 @@ function verify() {
         // Use jQuery event handling or submit will trigger twice
         $("#submit").off("click");
         $("#submit").on("click", function() {
+
+/*
+          var coords1 = bestDrivers[0]["wpoints"];
+          var coords2 = waypoints;
+          console.log(coords1);
+          console.log(coords2);
+
+          $.post("js/ajax/request.php", {
+            data1: { coords1 },
+            data2: { coords2 },
+            data3: bestDrivers[0]["id"],
+            selector: "submit"
+          }, function(output) {
+            console.log(output);
+          });
+*/
+
+
+
+
+
+
+
+
+
+
           // TODO: MUST CROSS-CHECK VALUES IF DRIVER IS MOVING
-          console.log(JSON.stringify(bestDrivers[0]));
+          //console.log(JSON.stringify(bestDrivers[0]));
 
+          // console.log(bestDrivers[0]["polyline"]);
 
+/*
+          var driverToRider = new google.maps.Polyline({
+            path: google.maps.geometry.encoding.decodePath(bestDrivers[0]["polyline"]),
+            strokeColor: '#ffad45',
+            strokeWeight: 6
+          });
+
+          driverToRider.setMap(map);
+          polyline.setMap(map);
+*/
 
           //console.log(JSON.stringify(waypoints));
           /*
