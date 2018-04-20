@@ -20,7 +20,6 @@ if (isset($_POST["selector"])) {
   if ($_POST["selector"] === "omc" && isset($_POST["driver"])) {
     $id = $_POST["driver"]["id"];
 
-
     if (!$result = $dbh->query("SELECT id_driver, polyline_1, polyline_2 FROM requests WHERE id_driver={$id}")) db_error();
     $result = $result->fetch_array(MYSQLI_ASSOC);
 
@@ -28,22 +27,37 @@ if (isset($_POST["selector"])) {
       echo "empty";
     } else {
       $arr = [];
-      if ($result["polyline_1"] !== null) {
-        array_push($arr, json_decode($result["polyline_1"]));
-      }
+      array_push($arr, $_POST["iteration"]);
+      // Get the main route
       if ($result["polyline_2"] !== null) {
         array_push($arr, json_decode($result["polyline_2"]));
+        echo json_encode($arr);
+      } else { // if ($result["polyline_1"] !== null)
+        array_push($arr, json_decode($result["polyline_1"]));
+        echo json_encode($arr);
       }
-      echo json_encode($arr);
     }
   }
 
+  // ccheck
+  if ($_POST["selector"] === "ccheck") {
+    $coords1 = json_encode($_POST["data1"]["coords1"]);
+    $coords2 = json_encode($_POST["data2"]["coords2"]);
+    $id_driver = $_POST["data3"];
+    $id_rider = $_SESSION['id'];
 
+    $orig_parties = $_POST["orig"]["parties"];
+    $orig_des = $_POST["orig"]["des"];
 
+    if (!$result = $dbh->query("SELECT id, parties, des, lat, lng FROM drivers WHERE id = {$id_driver}")) db_error();
+    $result = $result->fetch_array(MYSQLI_ASSOC);
 
-
-
-
+    if ($result["parties"] === $orig_parties && $result["des"] === $orig_des) {
+      echo json_encode($result);
+    } else {
+      echo "diff";
+    }
+  }
 
 
 

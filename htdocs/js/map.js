@@ -378,29 +378,19 @@ function verify() {
           return;
         }
       } else if (onroad && toAirport) {
-
-
-
-
-
         console.log("Road to airport request.");
         for (var i = 0; i < drivers.length; i++) {
           if (drivers[i]["parties"] == 1 && drivers[i]["des"] === airportfix) {
             delayTimer++;
             $.post("js/ajax/request.php", {
+              iteration: i,
               driver: drivers[i],
               selector: "omc"
             }, function(output) {
               var polyarr = JSON.parse(output);
 
-              for (var j = 0; j < polyarr.length; j++) {
-                if (isInOneMileRadius(polyarr[j], ori_lat, ori_lng)) {
-                  betterDrivers.push(drivers[29]);
-                  //console.log(drivers[30]);
-                  //console.log(JSON.stringify(drivers[i]));
-                  // console.log("hi" + i);
-                  break;
-                }
+              if (isInOneMileRadius(polyarr[1], ori_lat, ori_lng)) {
+                betterDrivers.push(drivers[polyarr[0]]);
               }
             });
           }
@@ -408,18 +398,6 @@ function verify() {
             betterDrivers.push(drivers[i]);
           }
         }
-
-        
-        
-        /*
-        if (betterDrivers.length === 0) {
-          enableInterface();
-          document.getElementById("warning").classList.remove("hide");
-          document.getElementById("warning").innerHTML = "There are no idle drivers or available drivers with matching destination; please try again at a later time.";
-          document.getElementById("td5").innerHTML = "Unknown";
-          return;
-        }
-        */
       } else {
         console.log("Airport to road request.");
         for (var i = 0; i < drivers.length; i++) {
@@ -436,207 +414,215 @@ function verify() {
         }
       }
 
+      // Time out so async calls catch up
+      setTimeout(function() {
+        if (onroad && toAirport) {
+          if (betterDrivers.length === 0) {
+            enableInterface();
+            document.getElementById("warning").classList.remove("hide");
+            document.getElementById("warning").innerHTML = "There are no idle drivers or available drivers with matching destination; please try again at a later time.";
+            document.getElementById("td5").innerHTML = "Unknown";
+            return;
+          }
+        }
 
+        for (var i = 0; i < betterDrivers.length; i++) {
+          var src = new google.maps.LatLng(betterDrivers[i]["lat"], betterDrivers[i]["lng"]);
+          var des = new google.maps.LatLng(ori_lat, ori_lng);
+          var request = {
+            origin: src,
+            destination: des,
+            travelMode: google.maps.DirectionsTravelMode.DRIVING
+          };
 
+          getWaitTime(i, request, src, des, function(counter, result, result2, result3) {
+            // Iterate through each driver to find wait time
+            betterDrivers[counter]["eta"] = result;
+            betterDrivers[counter]["wpoints"] = result2;
+            betterDrivers[counter]["polyline"] = result3;
+            // Display async results one by one
+            // console.log(result);
+          });
+        }
 
+        // Delayed asynchronous function
+        var delay = 0;
+        function getWaitTime(counter, request, src, des, callback) {
+          var service = new google.maps.DirectionsService();
+          service.route(request, function(result, status) {
+            if (status === google.maps.DirectionsStatus.OK) {
+              // Only path is really needed
+              var polyline = new google.maps.Polyline({
+                path: [],
+                strokeColor: '#ffad45',
+                strokeWeight: 6
+              });
 
-      
+              // Load array of dpoints with lat, lng, and eta
+              var dpoints = [];
+              dpoints.push({ "lat": src.lat(), "lng": src.lng(), "eta": undefined });
+              polyline.getPath().push(new google.maps.LatLng(src.lat(), src.lng()));
+              var legs = result.routes[0].legs;
+              for (i = 0; i < legs.length; i++) {
+                var steps = legs[i].steps;
+                for (j = 0; j < steps.length; j++) {
+                  var nextSegment = steps[j].path;
+                  for (k = 0; k < nextSegment.length; k++) {
+                    polyline.getPath().push(nextSegment[k]);
+                    dpoints.push({ "lat": nextSegment[k].lat(), "lng": nextSegment[k].lng(), "eta": undefined });
+                  }
+                }
+              }
+              dpoints.push({ "lat": des.lat(), "lng": des.lng(), "eta": undefined });
+              polyline.getPath().push(new google.maps.LatLng(des.lat(), des.lng()));
+              addTiming(dpoints, result.routes[0].legs[0].duration.value);
 
+              // Only take the minute dpoints
+              var wpoints = [];
+              wpoints.push(dpoints[0]);
+              var n = 0;
+              for (var i = 1; i < dpoints.length - 1; i++) {
+                if (dpoints[i]["eta"] >= n) {
+                  wpoints.push(dpoints[i]);
+                  n += 60;
+                }
+              }
+              wpoints.push(dpoints[dpoints.length - 1]);
 
+              // Encode the polyline
+              var encodeString = google.maps.geometry.encoding.encodePath(polyline.getPath());
 
+              callback(counter, result.routes[0].legs[0].duration.value, wpoints, encodeString);
 
-        // Time out so async calls catch up
+            } else if (status === google.maps.DirectionsStatus.OVER_QUERY_LIMIT) {
+              delay++;
+              setTimeout(function () {
+                getWaitTime(counter, request, src, des, callback);
+              }, delay * 1000);
+            } else {
+              window.alert("Directions request failed: " + status);
+            }
+          });
+        }
+
+        // When all asynchronous functions finish, process data
         setTimeout(function() {
-          console.log(JSON.stringify(betterDrivers));
+          var bestDrivers = getBestDrivers(betterDrivers);
+          enableInterface();
 
-      if (true) {
-        enableInterface();
-        document.getElementById("warning").classList.remove("hide");
-        document.getElementById("warning").innerHTML = "End of file.";
-        document.getElementById("td5").innerHTML = "Unknown";
-        return;
-      }          
-          
-          
-        }, delayTimer * 1000);
+          // 30-minute wait time check
+          if (bestDrivers.length === 0) {
+            document.getElementById("warning").classList.remove("hide");
+            document.getElementById("warning").innerHTML = "There are no available drivers within a 30-minute distance; please try again at a later time.";
+            document.getElementById("td5").innerHTML = "Greater than 30 mins";
+            return;
+          }
 
+          // Update wait time
+          document.getElementById("td5").classList.remove("red-text");
+          document.getElementById("td5").classList.add("green-text");
+          document.getElementById("td5").innerHTML = Math.floor(bestDrivers[0]["eta"] / 60) + " mins";
 
+          // Show request button
+          document.getElementById("update-wrap").classList.add("hide");
+          document.getElementById("submit-wrap").classList.remove("hide");
 
+          // Debug alert
+          console.log("Driver ID " + bestDrivers[0]["id"] + " selected.");
 
-
-console.log(JSON.stringify(betterDrivers));
-return;
-
-
-
-
-
-      // Iterate through each driver to find wait time
-      for (var i = 0; i < betterDrivers.length; i++) {
-        var src = new google.maps.LatLng(betterDrivers[i]["lat"], betterDrivers[i]["lng"]);
-        var des = new google.maps.LatLng(ori_lat, ori_lng);
-        var request = {
-          origin: src,
-          destination: des,
-          travelMode: google.maps.DirectionsTravelMode.DRIVING
-        };
-
-        getWaitTime(i, request, src, des, function(counter, result, result2, result3) {
-          betterDrivers[counter]["eta"] = result;
-          betterDrivers[counter]["wpoints"] = result2;
-          betterDrivers[counter]["polyline"] = result3;
-          // Display async results one by one
-          // console.log(result);
-        });
-      }
-
-      // Delayed asynchronous function
-      var delay = 0;
-      function getWaitTime(counter, request, src, des, callback) {
-        var service = new google.maps.DirectionsService();
-        service.route(request, function(result, status) {
-          if (status === google.maps.DirectionsStatus.OK) {
-            // Only path is really needed
-            var polyline = new google.maps.Polyline({
-              path: [],
+          // Use jQuery event handling or submit will trigger twice
+          $("#submit").off("click");
+          $("#submit").on("click", function() {
+            // Module to test omc
+            var driverToRider = new google.maps.Polyline({
+              path: google.maps.geometry.encoding.decodePath(bestDrivers[0]["polyline"]),
               strokeColor: '#ffad45',
               strokeWeight: 6
             });
+            driverToRider.setMap(map);
+            polyline.setMap(map);
 
-            // Load array of dpoints with lat, lng, and eta
-            var dpoints = [];
-            dpoints.push({ "lat": src.lat(), "lng": src.lng(), "eta": undefined });
-            polyline.getPath().push(new google.maps.LatLng(src.lat(), src.lng()));
-            var legs = result.routes[0].legs;
-            for (i = 0; i < legs.length; i++) {
-              var steps = legs[i].steps;
-              for (j = 0; j < steps.length; j++) {
-                var nextSegment = steps[j].path;
-                for (k = 0; k < nextSegment.length; k++) {
-                  polyline.getPath().push(nextSegment[k]);
-                  dpoints.push({ "lat": nextSegment[k].lat(), "lng": nextSegment[k].lng(), "eta": undefined });
-                }
+
+
+
+            var coords1 = bestDrivers[0]["wpoints"];
+            var coords2 = waypoints;
+
+            $.post("js/ajax/request.php", {
+              data1: { coords1 },
+              data2: { coords2 },
+              data3: bestDrivers[0]["id"],
+              orig: bestDrivers[0],
+              selector: "ccheck"
+            }, function(output) {
+              if (output === "diff") {
+                clearRideDetails();
+                document.getElementById("warning").classList.remove("hide");
+                document.getElementById("warning").innerHTML = "Request is outdated; please try again.";
+              } else {
+                // output === same
+
+                console.log(JSON.parse(output));
+
+// TODO(ken): you left off here
+
+
+
               }
-            }
-            dpoints.push({ "lat": des.lat(), "lng": des.lng(), "eta": undefined });
-            polyline.getPath().push(new google.maps.LatLng(des.lat(), des.lng()));
-            addTiming(dpoints, result.routes[0].legs[0].duration.value);
+            });
 
-            // Only take the minute dpoints
-            var wpoints = [];
-            wpoints.push(dpoints[0]);
-            var n = 0;
-            for (var i = 1; i < dpoints.length - 1; i++) {
-              if (dpoints[i]["eta"] >= n) {
-                wpoints.push(dpoints[i]);
-                n += 60;
+
+
+            /*
+            var coords1 = bestDrivers[0]["wpoints"];
+            var coords2 = waypoints;
+            console.log(coords1);
+            console.log(coords2);
+
+            $.post("js/ajax/request.php", {
+              data1: { coords1 },
+              data2: { coords2 },
+              data3: bestDrivers[0]["id"],
+              selector: "submit"
+            }, function(output) {
+              console.log(output);
+            });
+            */
+
+
+
+
+
+
+
+
+
+
+            // TODO: MUST CROSS-CHECK VALUES IF DRIVER IS MOVING
+            //console.log(JSON.stringify(bestDrivers[0]));
+
+            // console.log(bestDrivers[0]["polyline"]);
+
+
+
+            //console.log(JSON.stringify(waypoints));
+            /*
+            $.post("js/ajax/request.php", {
+              data: { guy },
+              selector: "submit"
+            }, function(output) {
+              if (output === "db-error") {
+                // Some kind of database error occurred
+                location = "/db-error";
+              } else {
+                // Reload the page since request has been submitted
+                // location.reload();
               }
-            }
-            wpoints.push(dpoints[dpoints.length - 1]);
-
-            // Encode the polyline
-            var encodeString = google.maps.geometry.encoding.encodePath(polyline.getPath());
-
-            callback(counter, result.routes[0].legs[0].duration.value, wpoints, encodeString);
-
-          } else if (status === google.maps.DirectionsStatus.OVER_QUERY_LIMIT) {
-            delay++;
-            setTimeout(function () {
-              getWaitTime(counter, request, src, des, callback);
-            }, delay * 1000);
-          } else {
-            window.alert("Directions request failed: " + status);
-          }
-        });
-      }
-
-      // When all asynchronous functions finish, process data
-      setTimeout(function() {
-        enableInterface();
-        var bestDrivers = getBestDrivers(betterDrivers);
-
-        // 30-minute wait time check
-        if (bestDrivers.length === 0) {
-          document.getElementById("warning").classList.remove("hide");
-          document.getElementById("warning").innerHTML = "There are no available drivers within a 30-minute distance; please try again at a later time.";
-          document.getElementById("td5").innerHTML = "Greater than 30 mins";
-          return;
-        }
-
-        // Update wait time
-        document.getElementById("td5").classList.remove("red-text");
-        document.getElementById("td5").classList.add("green-text");
-        document.getElementById("td5").innerHTML = Math.floor(bestDrivers[0]["eta"] / 60) + " mins";
-
-        // Show request button
-        document.getElementById("update-wrap").classList.add("hide");
-        document.getElementById("submit-wrap").classList.remove("hide");
-
-        // Debug alert
-        console.log("Driver ID " + bestDrivers[0]["id"] + " selected.");
-
-        // Use jQuery event handling or submit will trigger twice
-        $("#submit").off("click");
-        $("#submit").on("click", function() {
-
-/*
-          var coords1 = bestDrivers[0]["wpoints"];
-          var coords2 = waypoints;
-          console.log(coords1);
-          console.log(coords2);
-
-          $.post("js/ajax/request.php", {
-            data1: { coords1 },
-            data2: { coords2 },
-            data3: bestDrivers[0]["id"],
-            selector: "submit"
-          }, function(output) {
-            console.log(output);
+            });
+            */
           });
-*/
-
-
-
-
-
-
-
-
-
-
-          // TODO: MUST CROSS-CHECK VALUES IF DRIVER IS MOVING
-          //console.log(JSON.stringify(bestDrivers[0]));
-
-          // console.log(bestDrivers[0]["polyline"]);
-
-/*
-          var driverToRider = new google.maps.Polyline({
-            path: google.maps.geometry.encoding.decodePath(bestDrivers[0]["polyline"]),
-            strokeColor: '#ffad45',
-            strokeWeight: 6
-          });
-
-          driverToRider.setMap(map);
-          polyline.setMap(map);
-*/
-
-          //console.log(JSON.stringify(waypoints));
-          /*
-          $.post("js/ajax/request.php", {
-            data: { guy },
-            selector: "submit"
-          }, function(output) {
-            if (output === "db-error") {
-              // Some kind of database error occurred
-              location = "/db-error";
-            } else {
-              // Reload the page since request has been submitted
-              // location.reload();
-            }
-          });
-          */
-        });
-       }, betterDrivers.length * 1000);
+        }, betterDrivers.length * 1000);
+      }, delayTimer * 1000);
     });
   });
 }
