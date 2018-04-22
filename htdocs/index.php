@@ -28,8 +28,8 @@ if (!isset($_SESSION["logged_in"]) || !$_SESSION["logged_in"]) {
           <a class="brand-logo" href="/"><i class="material-icons teal-text text-lighten-1">airport_shuttle</i></a>
           <a class="sidenav-trigger" data-target="slide-out" href=""><i class="material-icons teal-text text-lighten-1">menu</i></a>
           <ul class="right hide-on-med-and-down">
-            <li class="waves-effect"><a class="teal-text text-lighten-1" href="about">User Manual</a></li>
-            <li class="waves-effect"><a class="teal-text text-lighten-1" href="account">Account Settings</a></li>
+            <li class="waves-effect"><a class="teal-text text-lighten-1" href="about">Documentation</a></li>
+            <li class="waves-effect"><a class="teal-text text-lighten-1" href="account">Account</a></li>
             <li><a class="btn waves-effect waves-light" href="sign-out">Sign Out</a></li>
           </ul>
         </div>
@@ -47,8 +47,8 @@ if (!isset($_SESSION["logged_in"]) || !$_SESSION["logged_in"]) {
           </div>
         </div>
       </li>
-      <li><a class="teal-text text-lighten-1 waves-effect" href="about">User Manual</a></li>
-      <li><a class="teal-text text-lighten-1 waves-effect" href="account">Account Settings</a></li>
+      <li><a class="teal-text text-lighten-1 waves-effect" href="about">Documentation</a></li>
+      <li><a class="teal-text text-lighten-1 waves-effect" href="account">Account</a></li>
     </ul>
     <?php
     if ($_SESSION["user"] === "riders") {
