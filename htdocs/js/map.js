@@ -1,3 +1,9 @@
+// Handle browser back error
+window.addEventListener( "pageshow", function ( event ) {
+  var historyTraversal = event.persisted || (typeof window.performance != "undefined" && window.performance.navigation.type === 2);
+  if (historyTraversal) window.location.reload();
+});
+
 var slider = document.getElementById("nus");
 noUiSlider.create(slider, {
   start: [ 1 ],
@@ -348,6 +354,11 @@ function verify() {
       passengers: slider.noUiSlider.get(),
       selector: "drivers"
     }, function(output) {
+      if (output === "db-error") {
+        location = "/db-error";
+        return;
+      }
+
       // List of working drivers with non-zero seats and less than 2 parties
       var drivers = JSON.parse(output);
 
@@ -387,10 +398,20 @@ function verify() {
               driver: drivers[i],
               selector: "omc"
             }, function(output) {
-              var polyarr = JSON.parse(output);
+              if (output === "db-error") {
+                location = "/db-error";
+                return;
+              }
 
-              if (isInOneMileRadius(polyarr[1], ori_lat, ori_lng)) {
-                betterDrivers.push(drivers[polyarr[0]]);
+              if (output !== "empty") {
+                var polyarr = JSON.parse(output);
+
+                if (isInOneMileRadius(polyarr[1], ori_lat, ori_lng)) {
+                  betterDrivers.push(drivers[polyarr[0]]);
+                }
+              } else {
+                // Never reaches here
+                console.log("Driver does not have any requests.");
               }
             });
           }
@@ -420,7 +441,7 @@ function verify() {
           if (betterDrivers.length === 0) {
             enableInterface();
             document.getElementById("warning").classList.remove("hide");
-            document.getElementById("warning").innerHTML = "There are no idle drivers or available drivers with matching destination; please try again at a later time.";
+            document.getElementById("warning").innerHTML = "There are no idle drivers or available drivers in a one-mile route distance with matching destination; please try again at a later time.";
             document.getElementById("td5").innerHTML = "Unknown";
             return;
           }
@@ -533,18 +554,6 @@ function verify() {
           // Use jQuery event handling or submit will trigger twice
           $("#submit").off("click");
           $("#submit").on("click", function() {
-            // Module to test omc
-            var driverToRider = new google.maps.Polyline({
-              path: google.maps.geometry.encoding.decodePath(bestDrivers[0]["polyline"]),
-              strokeColor: '#ffad45',
-              strokeWeight: 6
-            });
-            driverToRider.setMap(map);
-            polyline.setMap(map);
-
-
-
-
             var coords1 = bestDrivers[0]["wpoints"];
             var coords2 = waypoints;
 
@@ -555,74 +564,47 @@ function verify() {
               orig: bestDrivers[0],
               selector: "ccheck"
             }, function(output) {
+              if (output === "db-error") {
+                location = "/db-error";
+                return;
+              }
+
               if (output === "diff") {
                 clearRideDetails();
                 document.getElementById("warning").classList.remove("hide");
-                document.getElementById("warning").innerHTML = "Request is outdated; please try again.";
+                document.getElementById("warning").innerHTML = "The ride details above are outdated since the driver under consideration has been requested by another rider or is no longer working; please try again.";
               } else {
-                // output === same
+                var driverAfterSubmit = JSON.parse(output);
 
-                console.log(JSON.parse(output));
+                var dblCheck = new google.maps.DirectionsService();
+                dblCheck.route({
+                  origin: new google.maps.LatLng(driverAfterSubmit["lat"], driverAfterSubmit["lng"]),
+                  destination: new google.maps.LatLng(ori_lat, ori_lng),
+                  travelMode: google.maps.TravelMode.DRIVING
+                }, function (response, status) {
+                  if (status !== google.maps.DirectionsStatus.OK) {
+                    window.alert("Directions request failed: " + status);
+                  } else {
+                    console.log("Previous request time: " + bestDrivers[0]["eta"]);
+                    console.log("New request time: " + response.routes[0].legs[0].duration.value);
 
-// TODO(ken): you left off here
+                    if (response.routes[0].legs[0].duration.value <= 1800) {
+                      // submit request
 
 
 
+                    } else {
+                      clearRideDetails();
+                      document.getElementById("warning").classList.remove("hide");
+                      document.getElementById("warning").innerHTML = "The wait time between you and the driver is now greater than 30 minutes; we recommend searching for drivers again.";
+                    }
+                  }
+                });
               }
             });
-
-
-
-            /*
-            var coords1 = bestDrivers[0]["wpoints"];
-            var coords2 = waypoints;
-            console.log(coords1);
-            console.log(coords2);
-
-            $.post("js/ajax/request.php", {
-              data1: { coords1 },
-              data2: { coords2 },
-              data3: bestDrivers[0]["id"],
-              selector: "submit"
-            }, function(output) {
-              console.log(output);
-            });
-            */
-
-
-
-
-
-
-
-
-
-
-            // TODO: MUST CROSS-CHECK VALUES IF DRIVER IS MOVING
-            //console.log(JSON.stringify(bestDrivers[0]));
-
-            // console.log(bestDrivers[0]["polyline"]);
-
-
-
-            //console.log(JSON.stringify(waypoints));
-            /*
-            $.post("js/ajax/request.php", {
-              data: { guy },
-              selector: "submit"
-            }, function(output) {
-              if (output === "db-error") {
-                // Some kind of database error occurred
-                location = "/db-error";
-              } else {
-                // Reload the page since request has been submitted
-                // location.reload();
-              }
-            });
-            */
           });
         }, betterDrivers.length * 1000);
-      }, delayTimer * 1000);
+      }, delayTimer * 100);
     });
   });
 }
@@ -654,6 +636,7 @@ function disableInterface() {
 
 function enableInterface() {
   // Display original update button text
+  document.getElementById("update").classList.remove("disabled");
   document.getElementById("update").innerHTML = "Search for Drivers";
   // Passenger count
   slider.removeAttribute("disabled");

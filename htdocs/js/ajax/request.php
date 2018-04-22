@@ -9,7 +9,10 @@ if (isset($_POST["selector"])) {
     $_POST["passengers"] = mysqli_true_escape_string($dbh, $_POST["passengers"]);
 
     $passengers = $_POST["passengers"];
-    if (!$result = $dbh->query("SELECT id, parties, des, lat, lng FROM drivers WHERE locked=0 AND working=1 AND seats>={$passengers} AND parties<2")) db_error();
+    if (!$result = $dbh->query("SELECT id, parties, des, lat, lng FROM drivers WHERE locked=0 AND working=1 AND seats>={$passengers} AND parties<2")) {
+      echo "db-error";
+      exit;
+    }
 
     $drivers = array();
     while($row = $result->fetch_assoc()) $drivers[] = $row;
@@ -20,7 +23,10 @@ if (isset($_POST["selector"])) {
   if ($_POST["selector"] === "omc" && isset($_POST["driver"])) {
     $id = $_POST["driver"]["id"];
 
-    if (!$result = $dbh->query("SELECT id_driver, polyline_1, polyline_2 FROM requests WHERE id_driver={$id}")) db_error();
+    if (!$result = $dbh->query("SELECT id_driver, polyline_1, polyline_2 FROM requests WHERE id_driver={$id}")) {
+      echo "db-error";
+      exit;
+    }
     $result = $result->fetch_array(MYSQLI_ASSOC);
 
     if (!$result) {
@@ -28,18 +34,12 @@ if (isset($_POST["selector"])) {
     } else {
       $arr = [];
       array_push($arr, $_POST["iteration"]);
-      // Get the main route
-      if ($result["polyline_2"] !== null) {
-        array_push($arr, json_decode($result["polyline_2"]));
-        echo json_encode($arr);
-      } else { // if ($result["polyline_1"] !== null)
-        array_push($arr, json_decode($result["polyline_1"]));
-        echo json_encode($arr);
-      }
+      array_push($arr, json_decode($result["polyline_1"]));
+      echo json_encode($arr);
     }
   }
 
-  // ccheck
+  // Cross check
   if ($_POST["selector"] === "ccheck") {
     $coords1 = json_encode($_POST["data1"]["coords1"]);
     $coords2 = json_encode($_POST["data2"]["coords2"]);
@@ -49,7 +49,10 @@ if (isset($_POST["selector"])) {
     $orig_parties = $_POST["orig"]["parties"];
     $orig_des = $_POST["orig"]["des"];
 
-    if (!$result = $dbh->query("SELECT id, parties, des, lat, lng FROM drivers WHERE id = {$id_driver}")) db_error();
+    if (!$result = $dbh->query("SELECT id, parties, des, lat, lng FROM drivers WHERE id = {$id_driver}")) {
+      echo "db-error";
+      exit;
+    }
     $result = $result->fetch_array(MYSQLI_ASSOC);
 
     if ($result["parties"] === $orig_parties && $result["des"] === $orig_des) {
