@@ -222,13 +222,14 @@ function verify() {
   var des_lat;
   var des_lng;
   var toAirport = false;
+  var airportfix = null;
   if (document.getElementById("indicator1").innerHTML === "location_on") {
     ori_lat = loc_lat;
     ori_lng = loc_lng;
     des_lat = airport_lat;
     des_lng = airport_lng;
     toAirport = true;
-    var airportfix = document.getElementById("airport-select").value;
+    airportfix = document.getElementById("airport-select").value;
   } else {
     ori_lat = airport_lat;
     ori_lng = airport_lng;
@@ -237,15 +238,15 @@ function verify() {
 
     if (des_lat === destinations.sfo.lat && des_lng === destinations.sfo.long) {
       toAirport = true;
-      var airportfix = "SFO";
+      airportfix = "SFO";
     }
     if (des_lat === destinations.oak.lat && des_lng === destinations.oak.long) {
       toAirport = true;
-      var airportfix = "OAK";
+      airportfix = "OAK";
     }
     if (des_lat === destinations.sjc.lat && des_lng === destinations.sjc.long) {
       toAirport = true;
-      var airportfix = "SJC";
+      airportfix = "SJC";
     }
   }
 
@@ -589,9 +590,31 @@ function verify() {
                     console.log("New request time: " + response.routes[0].legs[0].duration.value);
 
                     if (response.routes[0].legs[0].duration.value <= 1800) {
-                      // submit request
 
+                      if (!onroad && toAirport) {
+                        var identifier = "aa";
+                      } else if (onroad && toAirport) {
+                        var identifier = "ra";
+                      } else {
+                        var identifier = "ar";
+                      }
 
+                      $.post("js/ajax/request.php", {
+                        data1: bestDrivers[0],
+                        data2: coords1,
+                        data3: coords2,
+                        data4: slider.noUiSlider.get(),
+                        data5: airportfix,
+                        selector: "submit-" + identifier
+                      }, function(output) {
+                        if (output === "db-error") {
+                          location = "/db-error";
+                          return;
+                        }
+
+                        location = "/";
+                        return;
+                      });
 
                     } else {
                       clearRideDetails();

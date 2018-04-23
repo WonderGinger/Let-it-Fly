@@ -55,44 +55,63 @@ if (isset($_POST["selector"])) {
     }
     $result = $result->fetch_array(MYSQLI_ASSOC);
 
-    if ($result["parties"] === $orig_parties && $result["des"] === $orig_des) {
+    if ($result["parties"] === $orig_parties && ($result["des"] === $orig_des || $result["des"] === null)) {
       echo json_encode($result);
     } else {
       echo "diff";
     }
   }
 
+  // Submit request airport to airport or airport to road (private travel)
+  if (($_POST["selector"] === "submit-aa" || $_POST["selector"] === "submit-ar") && isset($_SESSION["id"])) {
+    $id_rider = $_SESSION["id"];
+    $id_driver = $_POST["data1"]["id"];
+    $coords1 = json_encode($_POST["data2"]);
+    $coords2 = json_encode($_POST["data3"]);
+    $people = $_POST["data4"];
+    $des = $_POST["data5"];
 
-
-
-
-
-
-  // Submit request
-  if ($_POST["selector"] === "submit" && isset($_SESSION["id"]) && isset($_POST["data1"]) && isset($_POST["data2"]) && isset($_POST["data3"])) {
-    // $id_driver = mysqli_true_escape_string($dbh, $_POST["data"]["guy"]["id"]);
-    //$wpoints = mysqli_true_escape_string($dbh, $_POST["data"]["guy"]);
-
-    //echo json_encode($_POST["data"]["guy"]);
-
-    $coords1 = json_encode($_POST["data1"]["coords1"]);
-    $coords2 = json_encode($_POST["data2"]["coords2"]);
-    $id_driver = $_POST["data3"];
-    $id_rider = $_SESSION['id'];
-
-
-    if (!$result = $dbh->query("INSERT INTO requests (id_rider, id_driver, polyline_1, polyline_2, eta_1, eta_2) VALUES ({$id_rider}, {$id_driver},'{$coords1}', '{$coords2}', 0, 0)")) {
-      echo mysqli_error($dbh);
+    if ($des == null) {
+      $des = "NULL";
     } else {
-      echo "db-success";
+      $des = "'" . $des . "'";
+    }
+
+    if (!$result1 = $dbh->query("INSERT INTO requests (id_rider, id_driver, seats, polyline_1) VALUES ({$id_rider}, {$id_driver}, {$people}, '{$coords2}')")) {
+      echo "db-error";
+      exit;
+    }
+
+    if (!$result2 = $dbh->query("UPDATE drivers SET seats = seats - {$people}, parties = parties + 1, des = {$des} WHERE id = {$id_driver}")) {
+      echo "db-error";
+      exit;
     }
   }
 
+  // Submit request road to airport
+  if ($_POST["selector"] === "submit-ra" && isset($_SESSION["id"])) {
+    $id_rider = $_SESSION["id"];
+    $id_driver = $_POST["data1"]["id"];
+    $coords1 = json_encode($_POST["data2"]);
+    $coords2 = json_encode($_POST["data3"]);
+    $people = $_POST["data4"];
+    $des = $_POST["data5"];
 
+    if (!$result1 = $dbh->query("INSERT INTO requests (id_rider, id_driver, seats, polyline_1, polyline_2, eta_2) VALUES ({$id_rider}, {$id_driver}, {$people} ,'{$coords1}', '{$coords2}', 0)")) {
+      echo "db-error";
+      exit;
+    }
 
+    if (!$result2 = $dbh->query("UPDATE requests SET polyline_1 = '{$coords1}', eta_1 = 0, polyline_2 = '{$coords2}', eta_2 = 0 WHERE id_driver = {$id_driver}")) {
+      echo "db-error";
+      exit;
+    }
 
-
-
+    if (!$result3 = $dbh->query("UPDATE drivers SET seats = seats - {$people}, locked = 1, parties = parties + 1, des = '{$des}' WHERE id = {$id_driver}")) {
+      echo "db-error";
+      exit;
+    }
+  }
 
 
 
