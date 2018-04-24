@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 23, 2018 at 04:58 AM
+-- Generation Time: Apr 24, 2018 at 06:01 AM
 -- Server version: 10.1.31-MariaDB
 -- PHP Version: 7.2.3
 
@@ -88,9 +88,9 @@ CREATE TABLE `requests` (
   `id_rider` int(11) NOT NULL,
   `id_driver` int(11) NOT NULL,
   `seats` int(11) NOT NULL,
-  `polyline_1` mediumtext NOT NULL,
+  `polyline_1` longtext NOT NULL,
   `eta_1` int(11) NOT NULL DEFAULT '0',
-  `polyline_2` mediumtext,
+  `polyline_2` longtext,
   `eta_2` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

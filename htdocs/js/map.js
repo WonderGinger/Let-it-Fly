@@ -588,13 +588,6 @@ function verify() {
                   } else {
                     console.log("Previous request time: " + bestDrivers[0]["eta"]);
                     console.log("New request time: " + response.routes[0].legs[0].duration.value);
-                    
-                    
-                    
-                    
-                    // HAVE TO REGENERATE WPOINTS
-                    
-                    
 
                     if (response.routes[0].legs[0].duration.value <= 1800) {
                       if (!onroad && toAirport) {
@@ -605,13 +598,30 @@ function verify() {
                         var identifier = "ar";
                       }
 
-                      
-                      console.log(coordinates);
-                      /*
+                      // Regenerate preroute for accuracy
+                      var preroute = [];
+                      preroute.push({ "lat": driverAfterSubmit["lat"], "lng": driverAfterSubmit["lng"], "eta": undefined });
+                      var legs = response.routes[0].legs;
+                      for (i = 0; i < legs.length; i++) {
+                        var steps = legs[i].steps;
+                        for (j = 0; j < steps.length; j++) {
+                          var nextSegment = steps[j].path;
+                          for (k = 0; k < nextSegment.length; k++) {
+                            preroute.push({ "lat": nextSegment[k].lat(), "lng": nextSegment[k].lng(), "eta": undefined });
+                          }
+                        }
+                      }
+                      preroute.push({ "lat": des.lat(), "lng": des.lng(), "eta": undefined });
+                      polyline.getPath().push(new google.maps.LatLng(des.lat(), des.lng()));
+                      addTiming(preroute, response.routes[0].legs[0].duration.value);
+
+                      var coords3 = preroute;
+                      var coords4 = coordinates;
+
                       $.post("js/ajax/request.php", {
                         data1: bestDrivers[0],
-                        data2: coords1,
-                        data3: coords2,
+                        data2: coords3,
+                        data3: coords4,
                         data4: slider.noUiSlider.get(),
                         data5: airportfix,
                         selector: "submit-" + identifier
@@ -624,7 +634,6 @@ function verify() {
                         location = "/";
                         return;
                       });
-                      */
                     } else {
                       clearRideDetails();
                       document.getElementById("warning").classList.remove("hide");
