@@ -51,10 +51,14 @@ function refreshMap(load) {
     }
 
     if (path_2 === null) {
-      createPolyline(path_1, request[0]["eta_1"] / 60, "blue", 1, load);
+      var main = createPolyline(path_1, request[0]["eta_1"] / 60, "blue", 1, load);
+
+      document.getElementById("td3").innerHTML = main + " mins";
     } else {
-      createPolyline(path_2, request[0]["eta_2"] / 60, "blue", 0, load);
-      createPolyline(path_1, request[0]["eta_1"] / 60, "orange", 1, load);
+      var main = createPolyline(path_2, request[0]["eta_2"] / 60, "blue", 0, load);
+      var prer = createPolyline(path_1, request[0]["eta_1"] / 60, "orange", 1, load);
+
+      document.getElementById("td3").innerHTML = main + prer + " mins";
     }
   });
 }
@@ -102,6 +106,9 @@ function createPolyline(path, position, color, main, load) {
           map: map
         });
       }
+      marker.addListener("click", function() {
+        document.getElementById("slider").click();
+      });
       markers.push(marker);
     }
   }
@@ -118,17 +125,14 @@ function createPolyline(path, position, color, main, load) {
     map.fitBounds(bounds);
     map.setCenter(bounds.getCenter());
   }
+
+  return (((waypoints.length * 60 - 60) - (position * 60)) / 60);
 }
 
-function demo(mode) {
-  if (mode === 1) {
-    demoMode = mode;
-    demoMap();
-    return "Fast forward activated";
-  } else {
-    location = "/";
-    return;
-  }
+function demo() {
+  demoMode = 1;
+  demoMap();
+  return "Speedometer: 4,000 mph";
 }
 
 function demoMap() {
@@ -141,12 +145,12 @@ function demoMap() {
       return;
     }
 
-    // Load data
     var request = JSON.parse(output);
     var path_1 = JSON.parse(request[0]["polyline_1"]);
     var path_2 = request[0]["polyline_2"] !== null ? JSON.parse(request[0]["polyline_2"]) : null;
+    var dblTrack = true;
+    if (path_2 === null) dblTrack = false;
 
-    // Shrink
     var waypoints_1 = [];
     waypoints_1.push(path_1[0]);
     var n = 0;
@@ -158,7 +162,7 @@ function demoMap() {
     }
     waypoints_1.push(path_1[path_1.length - 1]);
 
-    if (path_2 !== null) {
+    if (dblTrack) {
       var waypoints_2 = [];
       waypoints_2.push(path_2[0]);
       var n = 0;
@@ -171,43 +175,61 @@ function demoMap() {
       waypoints_2.push(path_2[path_2.length - 1]);
     }
 
-    var add = request[0]["eta_1"] - 60;
+
+    var counter = 0;
     var refreshId = setInterval(function() {
 
-      // Reset previous polylines
-      for (var i = 0; i < polylines.length; i++) {
-        polylines[i].setMap(null);
-      }
+      if (dblTrack) {
+        if (path_2 !== null) {
+          if ((request[0]["eta_1"] / 60) + counter > waypoints_1.length - 1) {
+            path_1 = path_2;
+            path_2 = null;
+            counter = 0;
+            return;
+          }
 
-      // Reset previous markers
-      for (var i = 0; i < markers.length; i++) {
-        markers[i].setMap(null);
-      }
+          reset();
 
-      bounds = new google.maps.LatLngBounds();
+          var main = createPolyline(path_2, 0, "blue", 0, 0);
+          var prer = createPolyline(path_1, (request[0]["eta_1"] / 60) + counter, "orange", 1, 1);
+          document.getElementById("td3").innerHTML = main + prer + " mins";
+        } else {
+          if (counter >= waypoints_2.length - 1) {
+            clearInterval(refreshId);
+          }
 
-      add += 60;
+          reset();
 
-      if (path_2 !== null) {
-        if (add >= waypoints_1.length * 60) {
-          path_1 = path_2;
-          path_2 = null;
-          add = 0;
-          waypoints_1 = waypoints_2;
+          var main = createPolyline(path_1, counter, "blue", 1, 1);
+          document.getElementById("td3").innerHTML = main + " mins";
         }
       } else {
-        if (add >= waypoints_1.length * 60) {
+        if ((request[0]["eta_1"] / 60) + counter >= waypoints_1.length - 1) {
           clearInterval(refreshId);
-          return;
         }
+
+        reset();
+
+        var main = createPolyline(path_1, (request[0]["eta_1"] / 60) + counter, "blue", 1, 1);
+        document.getElementById("td3").innerHTML = main + " mins";
       }
 
-      if (path_2 === null) {
-        createPolyline(path_1, (request[0]["eta_1"] + add) / 60, "blue", 1, 1);
-      } else {
-        createPolyline(path_2, (request[0]["eta_2"] + add) / 60, "blue", 0, 0);
-        createPolyline(path_1, (request[0]["eta_1"] + add) / 60, "orange", 1, 1);
-      }
+      counter++;
     }, 500);
   });
+}
+
+function reset() {
+  // Reset previous polylines
+  for (var i = 0; i < polylines.length; i++) {
+    polylines[i].setMap(null);
+  }
+
+  // Reset previous markers
+  for (var i = 0; i < markers.length; i++) {
+    markers[i].setMap(null);
+  }
+
+  // Reset bounds
+  bounds = new google.maps.LatLngBounds();
 }

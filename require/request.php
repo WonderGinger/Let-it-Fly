@@ -11,7 +11,7 @@
     <div class="container">
       <div class="row" style="margin-bottom: 16px;">
         <!-- Request Submission -->
-        <div class="col s12 m6 offset-m3">
+        <div class="col s12 m8 offset-m2">
           <div class="card">
             <div class="card-content">
               <table>
@@ -20,24 +20,24 @@
                   <col width="100%">
                 </colgroup>
                 <tr>
-                  <td class="grey-text">ETA</td>
-                  <td class="data green-text" id="td4">-</td>
-                </tr>
-                <tr>
                   <td class="grey-text">Driver</td>
                   <td class="data green-text" id="td1">-</td>
                 </tr>
                 <tr>
-                  <td class="grey-text">Paid Passenger(s)</td>
+                  <td class="grey-text">Destination</td>
                   <td class="data green-text" id="td2">-</td>
                 </tr>
                 <tr>
-                  <td class="grey-text">Destination</td>
+                  <td class="grey-text">ETA</td>
                   <td class="data green-text" id="td3">-</td>
                 </tr>
                 <tr>
+                  <td class="grey-text">Paid Passenger(s)</td>
+                  <td class="data green-text" id="td4">-</td>
+                </tr>
+                <tr>
                   <td class="grey-text">Cost</td>
-                  <td class="data green-text" id="td6">-</td>
+                  <td class="data green-text" id="td5">-</td>
                 </tr>
               </table>
             </div>
