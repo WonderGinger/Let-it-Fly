@@ -645,7 +645,7 @@ function verify() {
             });
           });
         }, betterDrivers.length * 1000);
-      }, delayTimer * 100);
+      }, delayTimer * 1000);
     });
   });
 }
