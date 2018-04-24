@@ -113,6 +113,44 @@ if (isset($_POST["selector"])) {
     }
   }
 
+  // RIDER FUNCTIONS
+  if ($_POST["selector"] === "refresh" && isset($_SESSION["id"])) {
+
+    $id_rider = $_SESSION["id"];
+    if (!$result1 = $dbh->query("SELECT * FROM requests WHERE id_rider = {$id_rider}")) {
+      echo "db-error";
+      exit;
+    }
+    $result1 = $result1->fetch_array(MYSQLI_ASSOC);
+
+    $id_driver = $result1["id_driver"];
+    if (!$result2 = $dbh->query("SELECT id, seats, locked, lat, lng, parties, des FROM drivers WHERE id = {$id_driver}")) {
+      echo "db-error";
+      exit;
+    }
+    $result2 = $result2->fetch_array(MYSQLI_ASSOC);
+
+    $details = [];
+    array_push($details, $result1);
+    array_push($details, $result2);
+    echo json_encode($details);
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

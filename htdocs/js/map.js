@@ -588,9 +588,15 @@ function verify() {
                   } else {
                     console.log("Previous request time: " + bestDrivers[0]["eta"]);
                     console.log("New request time: " + response.routes[0].legs[0].duration.value);
+                    
+                    
+                    
+                    
+                    // HAVE TO REGENERATE WPOINTS
+                    
+                    
 
                     if (response.routes[0].legs[0].duration.value <= 1800) {
-
                       if (!onroad && toAirport) {
                         var identifier = "aa";
                       } else if (onroad && toAirport) {
@@ -599,6 +605,9 @@ function verify() {
                         var identifier = "ar";
                       }
 
+                      
+                      console.log(coordinates);
+                      /*
                       $.post("js/ajax/request.php", {
                         data1: bestDrivers[0],
                         data2: coords1,
@@ -615,7 +624,7 @@ function verify() {
                         location = "/";
                         return;
                       });
-
+                      */
                     } else {
                       clearRideDetails();
                       document.getElementById("warning").classList.remove("hide");
