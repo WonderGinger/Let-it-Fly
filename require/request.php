@@ -24,10 +24,6 @@
                   <td class="data green-text" id="td1">-</td>
                 </tr>
                 <tr>
-                  <td class="grey-text">Destination</td>
-                  <td class="data green-text" id="td2">-</td>
-                </tr>
-                <tr>
                   <td class="grey-text">ETA</td>
                   <td class="data green-text" id="td3">-</td>
                 </tr>

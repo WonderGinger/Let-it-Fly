@@ -40,6 +40,14 @@ function refreshMap(load) {
     var path_1 = JSON.parse(request[0]["polyline_1"]);
     var path_2 = request[0]["polyline_2"] !== null ? JSON.parse(request[0]["polyline_2"]) : null;
 
+    if (load === 1) {
+      console.log(request);
+      document.getElementById("td1").innerHTML = request[1]["email"];
+      document.getElementById("td4").innerHTML = request[0]["seats"];
+    }
+
+    document.getElementById("td5").innerHTML = "$" + "0";
+
     // Reset previous polylines
     for (var i = 0; i < polylines.length; i++) {
       polylines[i].setMap(null);

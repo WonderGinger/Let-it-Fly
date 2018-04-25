@@ -624,6 +624,7 @@ function verify() {
                         data3: coords4,
                         data4: slider.noUiSlider.get(),
                         data5: airportfix,
+                        data6: travelCost,
                         selector: "submit-" + identifier
                       }, function(output) {
                         if (output === "db-error") {
@@ -634,6 +635,7 @@ function verify() {
                         location = "/";
                         return;
                       });
+
                     } else {
                       clearRideDetails();
                       document.getElementById("warning").classList.remove("hide");

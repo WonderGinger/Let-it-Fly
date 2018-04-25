@@ -70,6 +70,7 @@ if (isset($_POST["selector"])) {
     $coords2 = json_encode($_POST["data3"]);
     $people = $_POST["data4"];
     $des = $_POST["data5"];
+    $cost = $_POST["data6"];
 
     if ($des == null) {
       $des = "NULL";
@@ -77,7 +78,7 @@ if (isset($_POST["selector"])) {
       $des = "'" . $des . "'";
     }
 
-    if (!$result1 = $dbh->query("INSERT INTO requests (id_rider, id_driver, seats, polyline_1) VALUES ({$id_rider}, {$id_driver}, {$people}, '{$coords2}')")) {
+    if (!$result1 = $dbh->query("INSERT INTO requests (id_rider, id_driver, seats, polyline_1, cost) VALUES ({$id_rider}, {$id_driver}, {$people}, '{$coords2}', {$cost})")) {
       echo "db-error";
       exit;
     }
@@ -96,8 +97,9 @@ if (isset($_POST["selector"])) {
     $coords2 = json_encode($_POST["data3"]);
     $people = $_POST["data4"];
     $des = $_POST["data5"];
+    $cost = $_POST["data6"];
 
-    if (!$result1 = $dbh->query("INSERT INTO requests (id_rider, id_driver, seats, polyline_1, polyline_2, eta_2) VALUES ({$id_rider}, {$id_driver}, {$people} ,'{$coords1}', '{$coords2}', 0)")) {
+    if (!$result1 = $dbh->query("INSERT INTO requests (id_rider, id_driver, seats, polyline_1, polyline_2, eta_2, cost) VALUES ({$id_rider}, {$id_driver}, {$people} ,'{$coords1}', '{$coords2}', 0, {$cost})")) {
       echo "db-error";
       exit;
     }
@@ -124,7 +126,7 @@ if (isset($_POST["selector"])) {
     $result1 = $result1->fetch_array(MYSQLI_ASSOC);
 
     $id_driver = $result1["id_driver"];
-    if (!$result2 = $dbh->query("SELECT id, seats, locked, lat, lng, parties, des FROM drivers WHERE id = {$id_driver}")) {
+    if (!$result2 = $dbh->query("SELECT id, email, seats, locked, lat, lng, parties, des FROM drivers WHERE id = {$id_driver}")) {
       echo "db-error";
       exit;
     }
