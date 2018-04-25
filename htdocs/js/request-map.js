@@ -44,9 +44,8 @@ function refreshMap(load) {
       console.log(request);
       document.getElementById("td1").innerHTML = request[1]["email"];
       document.getElementById("td4").innerHTML = request[0]["seats"];
+      document.getElementById("td5").innerHTML = "$" + request[0]["cost"];
     }
-
-    document.getElementById("td5").innerHTML = "$" + "0";
 
     // Reset previous polylines
     for (var i = 0; i < polylines.length; i++) {
