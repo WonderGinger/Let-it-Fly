@@ -51,7 +51,7 @@ function checkWorking() {
     window.setInterval(function() {
       if (working === 1) addPassenger(0);
       drawMarker();
-    }, 10000);
+    }, 60000);
   });
 }
 

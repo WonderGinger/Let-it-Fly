@@ -28,7 +28,7 @@ function initMap() {
     if (demoMode === 0) {
       refreshMap(0);
     }
-  }, 10000);
+  }, 60000);
 }
 
 function refreshMap(load) {
