@@ -12,114 +12,84 @@
       <div class="row">
         <!-- Request Submission -->
         <div class="col s12 m8 offset-m2">
-          <!-- Toggles -->
-          <div class="card gutter">
+
+          <!-- Begin working mode -->
+          <div class="card gutter hide" id="begin-working">
             <div class="card-content">
-              <a class="btn waves-effect waves-light" style="width: 100%;">Begin Working</a>
+              <a class="btn waves-effect waves-light" id="begin-working-button" style="width: 100%;">Begin Working</a>
+
+              <!-- Message -->
               <p>You must begin working to receive requests.</p>
+            </div>
+          </div>
+
+          <!-- Stop working mode -->
+          <div class="card gutter hide" id="stop-working">
+            <div class="card-content">
+              <a class="btn orange lighten-2 waves-effect waves-light" id="stop-working-button"  style="width: 100%;">Stop Working</a>
+
+              <!-- Searching bar -->
               <div class="progress hide" id="searching">
                 <div class="indeterminate"></div>
               </div>
+
+              <!-- Capacity bar -->
               <div class="progress hide" id="capacity">
-                <div class="determinate" style="width: 50%"></div>
+                <div class="determinate" id="capacity-bar" style="width: 0%"></div>
+              </div>
+
+              <!-- Message -->
+              <p id="request-warning"></p>
+            </div>
+          </div>
+
+          <!-- Hidden passenger details -->
+          <div id="request-pane">
+            <div class="card gutter hide" id="1">
+              <div class="card-content">
+                <table>
+                  <colgroup>
+                    <col width="0%">
+                    <col width="100%">
+                  </colgroup>
+                  <tr>
+                    <td class="grey-text">Rider</td>
+                    <td class="data green-text" id="1-td1">-</td>
+                  </tr>
+                  <tr>
+                    <td class="grey-text">Passenger(s)</td>
+                    <td class="data green-text" id="1-td2">-</td>
+                  </tr>
+                  <tr>
+                    <td class="grey-text">Payment</td>
+                    <td class="data green-text" id="1-td3">-</td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+            <div class="card gutter hide" id="2">
+              <div class="card-content">
+                <table>
+                  <colgroup>
+                    <col width="0%">
+                    <col width="100%">
+                  </colgroup>
+                  <tr>
+                    <td class="grey-text">Rider</td>
+                    <td class="data green-text" id="2-td1">-</td>
+                  </tr>
+                  <tr>
+                    <td class="grey-text">Passenger(s)</td>
+                    <td class="data green-text" id="2-td2">-</td>
+                  </tr>
+                  <tr>
+                    <td class="grey-text">Payment</td>
+                    <td class="data green-text" id="2-td3">-</td>
+                  </tr>
+                </table>
               </div>
             </div>
           </div>
-
-          
-          
-          
-
-          <div class="card gutter hide">
-            <div class="card-content">
-              <table>
-                <colgroup>
-                  <col width="0%">
-                  <col width="100%">
-                </colgroup>
-                <tr>
-                  <td class="grey-text">Driver</td>
-                  <td class="data green-text" id="td1">-</td>
-                </tr>
-                <tr>
-                  <td class="grey-text">ETA</td>
-                  <td class="data green-text" id="td3">-</td>
-                </tr>
-                <tr>
-                  <td class="grey-text">Paid Passenger(s)</td>
-                  <td class="data green-text" id="td4">-</td>
-                </tr>
-                <tr>
-                  <td class="grey-text">Cost</td>
-                  <td class="data green-text" id="td5">-</td>
-                </tr>
-              </table>
-            </div>
-          </div>
-
-
-<!--
-
-          <div class="card gutter hide">
-            <div class="card-content">
-              <table>
-                <colgroup>
-                  <col width="0%">
-                  <col width="100%">
-                </colgroup>
-                <tr>
-                  <td class="grey-text">Driver</td>
-                  <td class="data green-text" id="td1">-</td>
-                </tr>
-                <tr>
-                  <td class="grey-text">ETA</td>
-                  <td class="data green-text" id="td3">-</td>
-                </tr>
-                <tr>
-                  <td class="grey-text">Paid Passenger(s)</td>
-                  <td class="data green-text" id="td4">-</td>
-                </tr>
-                <tr>
-                  <td class="grey-text">Cost</td>
-                  <td class="data green-text" id="td5">-</td>
-                </tr>
-              </table>
-            </div>
-          </div>
-
-          
-          
-          
-          
-          
-          
-          
-          
-          
-          
--->
-
-<!-- One of the two ways of doing map display logic
-<div class="container">
-    <p id="debug"></p>
-    <div class="section teal-text lighten-1 center-align">
-        <div class="row">
-            <a id="working-toggle" class="col s12 waves-effect green lighten-1 waves-light btn-large">START</a>
-        </div>
-        <div class="row">
-            <div class="progress" id="progress" style="visibility: hidden"><div class="determinate" id="preload"></div></div>  
-        </div>
-        <div class="row">
-            <p id="waiting-message"></p>
-        </div>
-    </div>
-</div>
-<div id="map"></div>
-.-->
-
-
-
-
         </div>
       </div>
     </div>

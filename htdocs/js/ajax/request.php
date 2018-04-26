@@ -55,6 +55,18 @@ if (isset($_POST["selector"])) {
     }
     $result = $result->fetch_array(MYSQLI_ASSOC);
 
+    // Cross check working state before others
+    if (!$result2 = $dbh->query("SELECT working FROM drivers WHERE id = {$id_driver}")) {
+      echo "db-error";
+      exit;
+    }
+    $result2 = $result2->fetch_array(MYSQLI_ASSOC);
+
+    if ($result2["working"] == 0) {
+      echo "diff";
+      exit;
+    }
+
     if ($result["parties"] === $orig_parties && ($result["des"] === $orig_des || $result["des"] === null)) {
       echo json_encode($result);
     } else {
@@ -71,6 +83,7 @@ if (isset($_POST["selector"])) {
     $people = $_POST["data4"];
     $des = $_POST["data5"];
     $cost = $_POST["data6"];
+    $rider_email = $_SESSION["email"];
 
     if ($des == null) {
       $des = "NULL";
@@ -78,7 +91,7 @@ if (isset($_POST["selector"])) {
       $des = "'" . $des . "'";
     }
 
-    if (!$result1 = $dbh->query("INSERT INTO requests (id_rider, id_driver, seats, polyline_1, cost) VALUES ({$id_rider}, {$id_driver}, {$people}, '{$coords2}', {$cost})")) {
+    if (!$result1 = $dbh->query("INSERT INTO requests (id_rider, rider_email, id_driver, seats, polyline_1, cost, des) VALUES ({$id_rider}, '{$rider_email}', {$id_driver}, {$people}, '{$coords2}', {$cost}, {$des})")) {
       echo "db-error";
       exit;
     }
@@ -98,8 +111,9 @@ if (isset($_POST["selector"])) {
     $people = $_POST["data4"];
     $des = $_POST["data5"];
     $cost = $_POST["data6"];
+    $rider_email = $_SESSION["email"];
 
-    if (!$result1 = $dbh->query("INSERT INTO requests (id_rider, id_driver, seats, polyline_1, polyline_2, eta_2, cost) VALUES ({$id_rider}, {$id_driver}, {$people} ,'{$coords1}', '{$coords2}', 0, {$cost})")) {
+    if (!$result1 = $dbh->query("INSERT INTO requests (id_rider, rider_email, id_driver, seats, polyline_1, polyline_2, eta_2, cost, des) VALUES ({$id_rider}, '{$rider_email}', {$id_driver}, {$people} ,'{$coords1}', '{$coords2}', 0, {$cost}, '{$des}')")) {
       echo "db-error";
       exit;
     }
@@ -125,6 +139,11 @@ if (isset($_POST["selector"])) {
     }
     $result1 = $result1->fetch_array(MYSQLI_ASSOC);
 
+    if (!$result1) {
+      echo "empty";
+      exit;
+    }
+
     $id_driver = $result1["id_driver"];
     if (!$result2 = $dbh->query("SELECT id, email, seats, locked, lat, lng, parties, des FROM drivers WHERE id = {$id_driver}")) {
       echo "db-error";
@@ -135,59 +154,98 @@ if (isset($_POST["selector"])) {
     $details = [];
     array_push($details, $result1);
     array_push($details, $result2);
+
+
+    if (!$result3 = $dbh->query("SELECT * FROM requests WHERE id_driver = {$id_driver}")) {
+      echo "db-error";
+      exit;
+    }
+    $reqs = [];
+    while($row = $result3->fetch_assoc()) $reqs[] = $row;
+    
+    array_push($details, $reqs);
+
     echo json_encode($details);
   }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  // Toggles the "working" boolean in the drivers table.
-  if ($_POST["selector"] === "working" && isset($_SESSION["id"]) && isset($_POST["value"])) {
+  // Get working state
+  if ($_POST["selector"] === "working" && isset($_SESSION["id"])) {
     // Sanitize inputs
-    $_POST['value'] = mysqli_true_escape_string($dbh, $_POST['value']);
-    $_SESSION['id'] = mysqli_true_escape_string($dbh, $_SESSION['id']);
+    $id_driver = mysqli_true_escape_string($dbh, $_SESSION['id']);
 
-    if (!$result = $dbh->query("UPDATE drivers SET working={$_POST['value']} WHERE id='{$_SESSION['id']}'")) db_error();
-    // echo $_POST["value"];
+    if (!$result = $dbh->query("SELECT working FROM drivers WHERE id = {$id_driver}")) {
+      echo "db-error";
+      exit;
+    }
+    $result = $result->fetch_array(MYSQLI_ASSOC);
+
+    echo json_encode($result);
   }
 
-  // Checks for incoming requests for drivers in the requests table, and updates driver location.
-  if ($_POST["selector"] === "check" && isset($_SESSION["id"])) {
-    // Sanitize input
-    $_SESSION['id'] = mysqli_true_escape_string($dbh, $_SESSION['id']);
+  // Set working state to 1
+  if ($_POST["selector"] === "begin-working" && isset($_SESSION["id"])) {
+    // Sanitize inputs
+    $id_driver = mysqli_true_escape_string($dbh, $_SESSION['id']);
 
-    // Find a request in the requests table that has id_driver matching the driver's ID.
-    if (!$result = $dbh->query("SELECT * FROM requests WHERE id_driver={$_SESSION['id']} LIMIT 1")) db_error();
-    $result = $result->fetch_array(MYSQLI_ASSOC);
-    echo json_encode($result);
+    if (!$result = $dbh->query("UPDATE drivers SET working = 1 WHERE id = {$id_driver}")) {
+      echo "db-error";
+      exit;
+    }
+  }
+
+  // Set working state to 0
+  if ($_POST["selector"] === "stop-working" && isset($_SESSION["id"])) {
+    // Sanitize inputs
+    $id_driver = mysqli_true_escape_string($dbh, $_SESSION['id']);
+
+    if (!$result = $dbh->query("SELECT * FROM requests WHERE id_driver = {$id_driver}")) {
+      echo "db-error";
+      exit;
+    }
+
+    $pass = [];
+    while($row = $result->fetch_assoc()) $pass[] = $row;
+
+    if (count($pass) == 0) {
+      if (!$result = $dbh->query("UPDATE drivers SET working = 0 WHERE id = {$id_driver}")) {
+        echo "db-error";
+        exit;
+      }
+      echo "1";
+      exit;
+    } else {
+      echo "0";
+      exit;
+    }
+  }
+
+  // Get request list
+  if ($_POST["selector"] === "get-passengers" && isset($_SESSION["id"])) {
+    // Sanitize inputs
+    $id_driver = mysqli_true_escape_string($dbh, $_SESSION['id']);
+
+    if (!$result = $dbh->query("SELECT * FROM requests WHERE id_driver = {$id_driver}")) {
+      echo "db-error";
+      exit;
+    }
+
+    $pass = [];
+    while($row = $result->fetch_assoc()) $pass[] = $row;
+    echo json_encode($pass);
   }
 
   // Get driver location
-  if ($_POST["selector"] === "getLocation" && isset($_SESSION["id"])) {
+  if ($_POST["selector"] === "get-location" && isset($_SESSION["id"])) {
     $_SESSION["id"] = mysqli_true_escape_string($dbh, $_SESSION["id"]);
 
-    if (!$result = $dbh->query("SELECT lat, lng FROM drivers WHERE id={$_SESSION['id']} LIMIT 1")) db_error();
+    if (!$result = $dbh->query("SELECT lat, lng FROM drivers WHERE id={$_SESSION['id']} LIMIT 1")) {
+      echo "db-error";
+      exit;
+    }
     $result = $result->fetch_array(MYSQLI_ASSOC);
     echo json_encode($result);
-
   }
+
 }
 
 mysqli_close($dbh);

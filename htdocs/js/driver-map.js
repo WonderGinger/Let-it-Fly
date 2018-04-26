@@ -1,4 +1,15 @@
+// Handle browser back error
+window.addEventListener( "pageshow", function ( event ) {
+  var historyTraversal = event.persisted || (typeof window.performance != "undefined" && window.performance.navigation.type === 2);
+  if (historyTraversal) window.location.reload();
+});
+
 var map;
+var working = 0;
+
+var polylines = [];
+var markers = [];
+var bounds = new google.maps.LatLngBounds();
 
 google.maps.event.addDomListener(window, "load", initMap);
 
@@ -11,178 +22,247 @@ function initMap() {
     streetViewControl: false,
     zoom: 9
   });
+
+  checkWorking();
 }
 
-/*
+function checkWorking() {
+  $.post("js/ajax/request.php", {
+    selector: "working"
+  }, function(output) {
+    // Database error
+    if (output === "db-error") {
+      location = "/db-error";
+      return;
+    }
 
-var loc_lat = null;
-var loc_lng = null;
-var map;
-var initialMarker = null;
-var interval = null;
-var riderFound = false;
+    var output = JSON.parse(output);
 
-$(document).ready(function(){
-    initMap();
-    // Start / Stop "working" 
-    document.getElementById("working-toggle").addEventListener("click", function(){
-        if(riderFound) return;
-        let workingValue = 0;
-        if(this.textContent == "CANCEL") {
-            cancel();
-            workingValue = 0;
-        } else {
-            start();
-            workingValue = 1;
-        }
-        $.post("js/ajax/request.php", {
-            selector: "working",
-            value: workingValue
-        }, function(output){
-            // console.log(output);
-        });
+    if (output["working"] == 1) {
+      working = 1;
+    } else {
+      document.getElementById("begin-working").classList.remove("hide");
+      working = 0;
+    }
+
+    // Initial load of page
+    if (working === 1) addPassenger(1);
+    drawMarker();
+    window.setInterval(function() {
+      if (working === 1) addPassenger(0);
+      drawMarker();
+    }, 10000);
+  });
+}
+
+function addPassenger(load) {
+  $.post("js/ajax/request.php", {
+    selector: "get-passengers"
+  }, function(output) {
+    // Database error
+    if (output === "db-error") {
+      location = "/db-error";
+      return;
+    }
+
+    var requests = JSON.parse(output);
+
+    document.getElementById("1").classList.add("hide");
+    document.getElementById("2").classList.add("hide");
+
+    for (var i = 0; i < requests.length; i++) {
+      document.getElementById(i + 1).classList.remove("hide");
+
+      document.getElementById(i + 1 + "-td1").innerHTML = requests[i]["rider_email"];
+      document.getElementById(i + 1 + "-td2").innerHTML = requests[i]["seats"];
+
+      if (requests.length > 1) {
+        document.getElementById(i + 1 + "-td3").innerHTML = "$" + (requests[i]["cost"] - 5).toFixed(2);
+      } else {
+        document.getElementById(i + 1 + "-td3").innerHTML = "$" + (requests[i]["cost"]);
+      }
+    }
+
+    if (requests.length === 0) {
+      document.getElementById("request-warning").innerHTML = "Searching for requests...";
+      document.getElementById("searching").classList.remove("hide");
+      document.getElementById("capacity").classList.add("hide");
+
+      //stop-working-button
+      document.getElementById("stop-working-button").classList.remove("disabled");
+      document.getElementById("stop-working-button").innerHTML = "Stop Working";
+
+      document.getElementById("stop-working").classList.remove("hide");
+    } else {
+      if (requests[0]["des"] == null) {
+        document.getElementById("request-warning").innerHTML = "(" + requests.length + "/1)";
+        document.getElementById("capacity-bar").style.width = "100%";
+      } else {
+        document.getElementById("request-warning").innerHTML = "(" + requests.length + "/2)";
+        document.getElementById("capacity-bar").style.width = 50 * requests.length + "%";
+      }
+
+      document.getElementById("searching").classList.add("hide");
+      document.getElementById("capacity").classList.remove("hide");
+
+      //stop-working-button
+      document.getElementById("stop-working-button").classList.add("disabled");
+      document.getElementById("stop-working-button").innerHTML = "Currently Working";
+
+      document.getElementById("stop-working").classList.remove("hide");
+
+      // Draw polylines
+      var path_1 = JSON.parse(requests[0]["polyline_1"]);
+      var path_2 = requests[0]["polyline_2"] !== null ? JSON.parse(requests[0]["polyline_2"]) : null;
+
+      // Reset previous polylines
+      for (var i = 0; i < polylines.length; i++) {
+        polylines[i].setMap(null);
+      }
+
+      if (path_2 === null) {
+        var main = createPolyline(path_1, requests[0]["eta_1"] / 60, "blue", 1, load);
+      } else {
+        var main = createPolyline(path_2, requests[0]["eta_2"] / 60, "blue", 0, load);
+        var prer = createPolyline(path_1, requests[0]["eta_1"] / 60, "orange", 1, load);
+      }
+    }
+  });
+}
+
+function createPolyline(path, position, color, main, load) {
+  // Shrink
+  var waypoints = [];
+  waypoints.push(path[0]);
+  var n = 0;
+  for (var i = 1; i < path.length - 1; i++) {
+    if (path[i]["eta"] >= n) {
+      waypoints.push(path[i]);
+      n += 60;
+    }
+  }
+  waypoints.push(path[path.length - 1]);
+
+  var mainRoutePoint = 0;
+  for (var i = 0; i < path.length; i++) {
+    if (main === 1 && waypoints[position]["lat"] === path[i]["lat"] && waypoints[position]["lng"] === path[i]["lng"] && waypoints[position]["eta"] === path[i]["eta"]) {
+      mainRoutePoint = i;
+    }
+  }
+
+  // Reconstruct polyline
+  var polylinePath = [];
+
+  for (var i = mainRoutePoint; i < path.length; i++) {
+    var coord = new google.maps.LatLng(path[i]["lat"], path[i]["lng"]);
+    polylinePath.push(coord);
+    if (load === 1) {
+      bounds.extend(coord);
+    }
+  }
+
+  var polyline = new google.maps.Polyline({
+    path: polylinePath,
+    strokeColor: (color === "blue") ? "#4597ff" : "#fb8c00",
+    strokeWeight: 6
+  });
+  polylines.push(polyline);
+  polyline.setMap(map);
+
+  if (load === 1) {
+    map.fitBounds(bounds);
+    map.setCenter(bounds.getCenter());
+  }
+
+  return (((waypoints.length * 60 - 60) - (position * 60)) / 60);
+}
+
+function drawMarker() {
+  $.post("js/ajax/request.php", {
+    selector: "get-location"
+  }, function(output) {
+    // Database error
+    if (output === "db-error") {
+      location = "/db-error";
+      return;
+    }
+
+    // Reset previous markers
+    for (var i = 0; i < markers.length; i++) {
+      markers[i].setMap(null);
+    }
+
+    var output = JSON.parse(output);
+    var coord = new google.maps.LatLng(output["lat"], output["lng"]);
+
+    map.panTo(coord);
+
+    var marker = new google.maps.Marker({
+      position: coord,
+      map: map,
+      animation: google.maps.Animation.DROP
     });
+
+    marker.addListener("click", function() {
+      document.getElementById("slider").click();
+    });
+    markers.push(marker);
+  });
+}
+
+document.getElementById("begin-working-button").addEventListener("click", function() {
+  $.post("js/ajax/request.php", {
+    selector: "begin-working"
+  }, function(output) {
+    // Database error
+    if (output === "db-error") {
+      location = "/db-error";
+      return;
+    }
+
+    document.getElementById("begin-working").classList.add("hide");
+    document.getElementById("stop-working").classList.remove("hide");
+    working = 1;
+
+    // Hide requests
+    document.getElementById("1").classList.add("hide");
+    document.getElementById("2").classList.add("hide");
+    document.getElementById("searching").classList.remove("hide");
+    document.getElementById("capacity").classList.add("hide");
+    document.getElementById("request-warning").innerHTML = "Searching for requests...";
+  });
 });
 
-
-function start(){
-    // Change button to CANCEL
-    if(document.getElementById("working-toggle").classList.contains("green")) 
-        document.getElementById("working-toggle").classList.remove("green");
-    if(!document.getElementById("working-toggle").classList.contains("red"))
-        document.getElementById("working-toggle").classList.add("red");
-    document.getElementById("working-toggle").textContent = "CANCEL";
-
-    // Initialize the progress bar and status
-    document.getElementById("preload").classList.remove("determinate");
-    document.getElementById("preload").classList.add("indeterminate");
-    document.getElementById("waiting-message").innerHTML = "Waiting for rider request";
-    document.getElementById("progress").style.visibility = "visible";
-
-    // Check requests right away, and initialize a timer for checking.
-    // Wait 2 seconds to check requests initially.
-    setTimeout(checkRequests, 2000);
-    interval = window.setInterval(checkRequests, 60000);
-}
-
-function cancel(){
-    // TODO: Add error checks here to made sure it's allowed for the driver to stop working 
- 
-    // Change button back to START
-    if(document.getElementById("working-toggle").classList.contains("red"))         
-        document.getElementById("working-toggle").classList.remove("red");
-    if(!document.getElementById("working-toggle").classList.contains("green")) 
-        document.getElementById("working-toggle").classList.add("green");
-    document.getElementById("working-toggle").textContent = "START";
-
-    // Get rid of the progress bar if it isn't already taken care of.
-    document.getElementById("preload").classList.remove("indeterminate");
-    document.getElementById("preload").classList.add("determinate");
-    document.getElementById("waiting-message").innerHTML = "";
-    document.getElementById("progress").style.visibility = "hidden";
-
-    // Clear interval checking for requests
-    clearInterval(interval);
-}
-
-function initMap() {
-    getLocation(); 
-    map = new google.maps.Map(document.getElementById("map"), {
-      center: { lat: 37.3351874, lng: -121.88107150000002 },
-      clickableIcons: false,
-      fullscreenControl: false,
-      mapTypeControl: false,
-      streetViewControl: false,
-      zoom: 15
-    });
-}
-
-// Fetches location from DB and stores it in loc_lat and loc_lng
-function getLocation() {
-    console.log("Getting location")
-    $.post("js/ajax/request.php", {
-        selector: "getLocation"
-    }, function(output){
-        if(output == "") return;
-        if(output == "null") return;
-        output = JSON.parse(output);
-        console.log(output)
-        loc_lat = output.lat;
-        loc_lng = output.lng;
-        showPosition();
-    });
-}
-
-function showPosition(position) {
-    console.log(loc_lat + ", " + loc_lng);
-    initialLocation = new google.maps.LatLng(loc_lat, loc_lng);
-
-    if(map == null) return;
-    // Center map    
-    map.setCenter(initialLocation);
-
-    // Map marker
-    initialMarker = new google.maps.Marker({
-        position: initialLocation,
-        map: map,
-        title: loc_lat + ", " + loc_lng,
-        animation: google.maps.Animation.DROP
-    });
-}
-
-function showError(error) {
-    switch(error.code) {
-        case error.PERMISSION_DENIED:
-            debug.innerHTML = "User denied the request for Geolocation."
-            break;
-        case error.POSITION_UNAVAILABLE:
-            debug.innerHTML = "Location information is unavailable."
-            break;
-        case error.TIMEOUT:
-            debug.innerHTML = "The request to get user location timed out."
-            break;
-        case error.UNKNOWN_ERROR:
-            debug.innerHTML = "An unknown error occurred."
-            break;
+document.getElementById("stop-working-button").addEventListener("click", function() {
+  $.post("js/ajax/request.php", {
+    selector: "stop-working"
+  }, function(output) {
+    // Database error
+    if (output === "db-error") {
+      location = "/db-error";
+      return;
     }
-} 
 
-// Sends AJAX request to check the requests table for a rider who needs a driver.
-function checkRequests(){
-    console.log("Checking requests");
-    $.post("js/ajax/request.php", {
-        selector: "check"
-    }, function(output){
-        // Receives request in form of JSON
-        // { "id", "id_rider", "id_driver", "airport", "time" }
+    if (output == 1) {
+      document.getElementById("stop-working").classList.add("hide");
+      document.getElementById("begin-working").classList.remove("hide");
+      working = 0;
 
-        // IF (VALID REQUEST)
-        if(output == "") return;
-        if(output === "null") return;
-        
-        console.log("after check: " + output);
-        output = JSON.parse(output);
-        
-        riderFound = true;
+      // Hide requests
+      document.getElementById("1").classList.add("hide");
+      document.getElementById("2").classList.add("hide");
+      document.getElementById("searching").classList.remove("hide");
+      document.getElementById("capacity").classList.add("hide");
+      document.getElementById("request-warning").innerHTML = "Searching for requests...";
 
-        // Clear interval checking for requests
-        clearInterval(interval);
-    
-        // Stop progress bar and change message
-        document.getElementById("waiting-message").innerHTML = 
-            "Rider found!</br>" + output.time/1000/60 + " minutes to " + output.airport;
-        document.getElementById("preload").classList.remove("indeterminate");    
-        document.getElementById("preload").classList.add("determinate");
-    
-        // Change button to GO
-        document.getElementById("working-toggle").innerHTML = "GO <i class='material-icons'>navigation</i>"
-        document.getElementById("working-toggle").classList.remove("red");
-        document.getElementById("working-toggle").classList.add("blue");
-        // Change button to direct to official Google Maps navigation. Currently SJSU is hardcoded.
-        document.getElementById("working-toggle").href =
-            "https://www.google.com/maps/dir/?api=1&destination=" + 37.3351874 + "," + -121.88107150000002;
-
-    });
-}
-
-*/
+      //stop-working-button
+      document.getElementById("stop-working-button").classList.remove("disabled");
+      document.getElementById("stop-working-button").innerHTML = "Stop Working";
+    } else {
+      //stop-working-button
+      document.getElementById("stop-working-button").classList.add("disabled");
+      document.getElementById("stop-working-button").innerHTML = "Currently Working";
+      addPassenger();
+    }
+  });
+});

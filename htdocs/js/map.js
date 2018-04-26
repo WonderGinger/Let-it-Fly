@@ -376,16 +376,31 @@ function verify() {
       var betterDrivers = [];
       var delayTimer = 0;
       if (!onroad && toAirport) {
-        console.log("Airport to airport request.");
+        console.log("Airport to airport request."); // disable
         for (var i = 0; i < drivers.length; i++) {
           if (drivers[i]["parties"] == 0 && drivers[i]["des"] === null) {
-            betterDrivers.push(drivers[i]);
+
+            // Check if driver is at airport
+            if (drivers[i]["lat"] == destinations.sfo.lat && drivers[i]["lng"] == destinations.sfo.long) {
+              console.log("Driver is starting at SFO.");
+              betterDrivers.push(drivers[i]);
+            } else if (drivers[i]["lat"] == destinations.oak.lat && drivers[i]["lng"] == destinations.oak.long) {
+              console.log("Driver is starting at OAK.");
+              betterDrivers.push(drivers[i]);
+            } else if (drivers[i]["lat"] == destinations.sjc.lat && drivers[i]["lng"] == destinations.sjc.long) {
+              console.log("Driver is starting at SJC.");
+              betterDrivers.push(drivers[i]);
+            } else {
+              // Nothing
+              console.log("Driver is not at an airport.")
+            }
+
           }
         }
         if (betterDrivers.length === 0) {
           enableInterface();
           document.getElementById("warning").classList.remove("hide");
-          document.getElementById("warning").innerHTML = "There are no idle drivers; please try again at a later time.";
+          document.getElementById("warning").innerHTML = "There are no idle drivers at the airport; please try again at a later time.";
           document.getElementById("td5").innerHTML = "Unknown";
           return;
         }
@@ -424,13 +439,28 @@ function verify() {
         console.log("Airport to road request.");
         for (var i = 0; i < drivers.length; i++) {
           if (drivers[i]["parties"] == 0 && drivers[i]["des"] === null) {
-            betterDrivers.push(drivers[i]);
+
+            // Check if driver is at airport
+            if (drivers[i]["lat"] == destinations.sfo.lat && drivers[i]["lng"] == destinations.sfo.long) {
+              console.log("Driver is starting at SFO.");
+              betterDrivers.push(drivers[i]);
+            } else if (drivers[i]["lat"] == destinations.oak.lat && drivers[i]["lng"] == destinations.oak.long) {
+              console.log("Driver is starting at OAK.");
+              betterDrivers.push(drivers[i]);
+            } else if (drivers[i]["lat"] == destinations.sjc.lat && drivers[i]["lng"] == destinations.sjc.long) {
+              console.log("Driver is starting at SJC.");
+              betterDrivers.push(drivers[i]);
+            } else {
+              // Nothing
+              console.log("Driver is not at an airport.")
+            }
+
           }
         }
         if (betterDrivers.length === 0) {
           enableInterface();
           document.getElementById("warning").classList.remove("hide");
-          document.getElementById("warning").innerHTML = "There are no available drivers for private travel; please try again at a later time.";
+          document.getElementById("warning").innerHTML = "There are no available drivers for private travel at the airport; please try again at a later time.";
           document.getElementById("td5").innerHTML = "Unknown";
           return;
         }
@@ -635,7 +665,6 @@ function verify() {
                         location = "/";
                         return;
                       });
-
                     } else {
                       clearRideDetails();
                       document.getElementById("warning").classList.remove("hide");

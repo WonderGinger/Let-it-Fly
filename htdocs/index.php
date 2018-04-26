@@ -6,6 +6,9 @@ if (!isset($_SESSION["logged_in"]) || !$_SESSION["logged_in"]) {
   header("location: sign-in");
   exit();
 }
+
+$account_name = explode("@", $_SESSION["email"], 2);
+$account_name = strlen($account_name[0]) > 21 ? substr($account_name[0], 0, 21) . "..." : $account_name[0];
 ?>
 <!doctype html>
 <html lang="en">
@@ -29,7 +32,7 @@ if (!isset($_SESSION["logged_in"]) || !$_SESSION["logged_in"]) {
           <a class="sidenav-trigger" data-target="slide-out" href=""><i class="material-icons teal-text text-lighten-1">menu</i></a>
           <ul class="right hide-on-med-and-down">
             <li class="waves-effect"><a class="teal-text text-lighten-1" href="about">Documentation</a></li>
-            <li class="waves-effect"><a class="teal-text text-lighten-1" href="account">Account</a></li>
+            <li class="waves-effect"><a class="teal-text text-lighten-1" href="account"><?php echo $account_name; ?></a></li>
             <li><a class="btn waves-effect waves-light" href="sign-out">Sign Out</a></li>
           </ul>
         </div>
@@ -48,7 +51,7 @@ if (!isset($_SESSION["logged_in"]) || !$_SESSION["logged_in"]) {
         </div>
       </li>
       <li><a class="teal-text text-lighten-1 waves-effect" href="about">Documentation</a></li>
-      <li><a class="teal-text text-lighten-1 waves-effect" href="account">Account</a></li>
+      <li><a class="teal-text text-lighten-1 waves-effect" href="account"><?php echo $account_name; ?></a></li>
     </ul>
     <?php
     if ($_SESSION["user"] === "riders") {

@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.7.7
+-- version 4.7.9
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 25, 2018 at 02:44 AM
--- Server version: 10.1.30-MariaDB
--- PHP Version: 7.2.2
+-- Generation Time: Apr 26, 2018 at 02:04 AM
+-- Server version: 10.1.31-MariaDB
+-- PHP Version: 7.2.3
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
@@ -75,7 +75,7 @@ INSERT INTO `drivers` (`id`, `email`, `password`, `seats`, `working`, `locked`, 
 (27, 'driver6@sjc.domain.com', '$2y$10$WmnvfaBDjOFW/hd69a3bb./SO2bikAtmvi1DXrs/DQv59jNeoFOcW', 2, 0, 0, 37.3639472, -121.92893750000002, 0, NULL),
 (28, 'driver7@sjc.domain.com', '$2y$10$moprbkunIyOVBqjDntouLOWWitKn6YOoddtUJx174qS.7PLSmwTWm', 2, 0, 0, 37.3639472, -121.92893750000002, 0, NULL),
 (29, 'driver8@sjc.domain.com', '$2y$10$zT.I/FLHnW8Hx1.5b1EoBO3vd.iVhAheRvaj3LSRedFXrwyhs3b5u', 2, 0, 0, 37.3639472, -121.92893750000002, 0, NULL),
-(30, 'driver9@sjc.domain.com', '$2y$10$z4Znopk9S/U2beJohwIyruAPZ36NIz6Sy8a.xpffo2KtvNzoSETlS', 2, 1, 0, 37.3639472, -121.92893750000002, 0, NULL);
+(30, 'driver9@sjc.domain.com', '$2y$10$z4Znopk9S/U2beJohwIyruAPZ36NIz6Sy8a.xpffo2KtvNzoSETlS', 2, 0, 0, 37.3639472, -121.92893750000002, 0, NULL);
 
 -- --------------------------------------------------------
 
@@ -86,13 +86,15 @@ INSERT INTO `drivers` (`id`, `email`, `password`, `seats`, `working`, `locked`, 
 CREATE TABLE `requests` (
   `id` int(11) NOT NULL,
   `id_rider` int(11) NOT NULL,
+  `rider_email` varchar(255) NOT NULL,
   `id_driver` int(11) NOT NULL,
   `seats` int(11) NOT NULL,
   `polyline_1` longtext NOT NULL,
   `eta_1` int(11) NOT NULL DEFAULT '0',
   `polyline_2` longtext,
   `eta_2` int(11) DEFAULT NULL,
-  `cost` double NOT NULL
+  `cost` double NOT NULL,
+  `des` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------

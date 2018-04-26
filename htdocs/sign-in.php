@@ -62,6 +62,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
       $_SESSION["logged_in"] = true;
       $_SESSION["user"] = $user;
 	    $_SESSION["id"] = $result["id"];
+      $_SESSION["email"] = $result["email"];
       break;
   }
 
