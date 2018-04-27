@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 27, 2018 at 02:08 AM
+-- Generation Time: Apr 27, 2018 at 08:13 AM
 -- Server version: 10.1.30-MariaDB
 -- PHP Version: 7.2.2
 
@@ -35,9 +35,9 @@ CREATE TABLE `drivers` (
   `seats` int(11) NOT NULL DEFAULT '0',
   `working` tinyint(1) NOT NULL DEFAULT '0',
   `locked` tinyint(1) NOT NULL DEFAULT '0',
-  `lat` double NOT NULL,
-  `lng` double NOT NULL,
-  `parties` int(11) NOT NULL,
+  `lat` double NOT NULL DEFAULT '0',
+  `lng` double NOT NULL DEFAULT '0',
+  `parties` int(11) NOT NULL DEFAULT '0',
   `des` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
