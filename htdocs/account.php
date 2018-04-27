@@ -23,6 +23,7 @@ $account_name = strlen($account_name[0]) > 21 ? substr($account_name[0], 0, 21) 
     <!-- Import stylesheets -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-alpha.4/css/materialize.min.css">
+    <link rel="stylesheet" href="css/nouislider.css">
     <link rel="stylesheet" href="css/master.css">
     <link rel="stylesheet" href="css/sign-in.css">
   </head>
@@ -74,7 +75,11 @@ if ($_SESSION["user"] == "drivers") {
                   <span class="card-title teal-text text-lighten-1">Account Settings</span>
                   <p>You must set your number of available passenger seats and location before starting.</p>
                   <div class="row">
-                    <div class="input-field col s12">
+                    <div class="col s6"><h6 class="teal-text lighten-1">Seats</h6></div>
+                    <div class="col s6"><div id="nus"></div></div>
+                  </div>
+                  <div class="row">
+                    <div class="input-field col s12" style="margin-top: 0;">
                       <select id="airport-select">
                         <option value="" disabled selected>Select an airport</option>
                         <option value="SFO">San Francisco (SFO)</option>
@@ -86,7 +91,7 @@ if ($_SESSION["user"] == "drivers") {
                   <div class="row">
                     <!-- Footnote -->
                     <div class="col s8"><p class="red-text" id="footnote"></p></div>
-                    <div class="col s4 right-align"><button class="btn waves-effect waves-light" type="submit">Next</button></div>
+                    <div class="col s4 right-align"><button class="btn waves-effect waves-light" id="submit" type="submit">Next</button></div>
                   <div>
                 </div>
               </div>
@@ -96,17 +101,14 @@ if ($_SESSION["user"] == "drivers") {
       </div>
     </div>
 EOT;
-
-
-
+  } else {
+    header('Location: /');
+    exit;
   }
-
-
-
-
-
 } else {
   // work on billing
+  header('Location: /');
+  exit;
 }
 ?>
 
@@ -130,6 +132,12 @@ EOT;
     #footnote {
       font-size: 12px;
     }
+
+    /* noUiSlider */
+#nus {
+  margin: 21px 0 24px 4px;
+  width: calc(100% - 5px);
+}
     </style>
 
 
@@ -138,9 +146,101 @@ EOT;
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAHd7wEeRlgn08q5xC4mifzgVZcKSoplUM&libraries=places"></script>
     <script src="js/materialize.js"></script>
+    <script src="js/nouislider.min.js"></script>
     <script>
+      var slider = document.getElementById("nus");
+      noUiSlider.create(slider, {
+        start: [ 1 ],
+        connect: true,
+        step: 1,
+        orientation: "horizontal",
+        range: {
+          "min": [ 1 ],
+          "max": [ 4 ]
+        },
+        format: wNumb({
+          decimals: 0
+        })
+      });
 
 
+      // If update button is enabled, call directions service
+      document.getElementById("submit").addEventListener("click", function() {
+        console.log();
+        if (document.getElementById("airport-select").value === "SFO") {
+
+          submit("sfo", slider.noUiSlider.get());
+
+
+          document.getElementById("footnote").innerHTML = "";
+        } else if (document.getElementById("airport-select").value === "OAK") {
+
+          submit("oak", slider.noUiSlider.get());
+
+          document.getElementById("footnote").innerHTML = "";
+        } else if (document.getElementById("airport-select").value === "SJC") {
+
+          submit("sjc", slider.noUiSlider.get());
+
+          document.getElementById("footnote").innerHTML = "";
+        } else {
+          document.getElementById("footnote").innerHTML = "You must specify a location.";
+        }
+      });
+
+      document.getElementById("airport-select").addEventListener("change", function() {
+        document.getElementById("footnote").innerHTML = "";
+      });
+
+      var destinations = {
+        "sfo": {
+          "lat": 37.6213129,
+          "long": -122.3789554
+        },
+        "oak": {
+          "lat": 37.7125689,
+          "long": -122.2197428
+        },
+        "sjc": {
+          "lat": 37.3639472,
+          "long": -121.92893750000002
+        }
+      };
+
+      function submit(air, pass) {
+        console.log(air + " " + pass);
+
+        var lat = 0;
+        var lng = 0;
+
+        if (air === "sfo") {
+          lat = destinations.sfo.lat;
+          lng = destinations.sfo.long;
+        } else if (air === "oak") {
+          lat = destinations.oak.lat;
+          lng = destinations.oak.long;
+        } else {
+          lat = destinations.sjc.lat;
+          lng = destinations.sjc.long;
+        }
+
+        $.post("js/ajax/request.php", {
+          lat: lat,
+          lng: lng,
+          pass: pass,
+          selector: "initialization"
+        }, function(output) {
+          if (output === "db-error") {
+            location = "/db-error";
+            return;
+          }
+
+          if (output === "success") {
+            location = "/";
+            return;
+          }
+        });
+      }
     </script>
   </body>
 </html>

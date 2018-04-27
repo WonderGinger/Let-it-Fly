@@ -162,7 +162,7 @@ if (isset($_POST["selector"])) {
     }
     $reqs = [];
     while($row = $result3->fetch_assoc()) $reqs[] = $row;
-    
+
     array_push($details, $reqs);
 
     echo json_encode($details);
@@ -245,6 +245,21 @@ if (isset($_POST["selector"])) {
     $result = $result->fetch_array(MYSQLI_ASSOC);
     echo json_encode($result);
   }
+
+  // Get driver location
+  if ($_POST["selector"] === "initialization" && isset($_SESSION["id"])) {
+    $lat = $_POST["lat"];
+    $lng = $_POST["lng"];
+    $pass = $_POST["pass"];
+
+    if (!$result = $dbh->query("UPDATE drivers SET lat = {$lat}, lng = {$lng}, seats = {$pass} WHERE id={$_SESSION['id']}")) {
+      echo "db-error";
+      exit;
+    } 
+    echo "success";
+  }
+
+
 
 }
 
