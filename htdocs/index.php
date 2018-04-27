@@ -7,6 +7,23 @@ if (!isset($_SESSION["logged_in"]) || !$_SESSION["logged_in"]) {
   exit();
 }
 
+if (!$result = $dbh->query("SELECT lat, lng, seats FROM drivers WHERE id = {$_SESSION['id']};")) db_error();
+$result = $result->fetch_array(MYSQLI_ASSOC);
+
+
+
+if ($_SESSION["user"] == "drivers") {
+  // Initialize driver in account settings
+  if ($result["lat"] == 0 && $result["lng"] == 0 && $result["seats"] == 0) {
+    header("location: account");
+    exit();
+  }
+} else {
+  // work on billing
+}
+
+
+
 $account_name = explode("@", $_SESSION["email"], 2);
 $account_name = strlen($account_name[0]) > 21 ? substr($account_name[0], 0, 21) . "..." : $account_name[0];
 ?>
