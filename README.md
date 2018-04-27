@@ -8,5 +8,5 @@ Also, make a database `let_it_fly` using `mysql` and copy the contents of `db_cl
 $ mysql let_it_fly < db_clone.sql
 ``` 
 
-## 
+## Usage
 Watch [this video](https://www.youtube.com/watch?v=fbPEMZo5ip4) to see the Let it Fly project uses cases. 
