@@ -4,7 +4,13 @@ session_start();
 
 if (isset($_POST["selector"])) {
   // Check database for available drivers
-  if ($_POST["selector"] === "drivers" && isset($_POST["passengers"])) {
+  if ($_POST["selector"] === "drivers" && isset($_POST["passengers"]) && isset($_SESSION["user"])) {
+
+    if ($_SESSION["user"] !== "riders") {
+      echo "db-error";
+      exit;
+    }
+
     // Sanitize input
     $_POST["passengers"] = mysqli_true_escape_string($dbh, $_POST["passengers"]);
 
@@ -20,7 +26,15 @@ if (isset($_POST["selector"])) {
   }
 
   // One-mile checking
-  if ($_POST["selector"] === "omc" && isset($_POST["driver"])) {
+  if ($_POST["selector"] === "omc" && isset($_POST["driver"]) && isset($_SESSION["user"])) {
+
+    if ($_SESSION["user"] !== "riders") {
+      echo "db-error";
+      exit;
+    }
+
+
+
     $id = $_POST["driver"]["id"];
 
     if (!$result = $dbh->query("SELECT id_driver, polyline_1, polyline_2 FROM requests WHERE id_driver={$id}")) {
@@ -40,7 +54,12 @@ if (isset($_POST["selector"])) {
   }
 
   // Cross check
-  if ($_POST["selector"] === "ccheck") {
+  if ($_POST["selector"] === "ccheck"  && isset($_SESSION["user"])) {
+    if ($_SESSION["user"] !== "riders") {
+      echo "db-error";
+      exit;
+    }
+
     $coords1 = json_encode($_POST["data1"]["coords1"]);
     $coords2 = json_encode($_POST["data2"]["coords2"]);
     $id_driver = $_POST["data3"];
@@ -75,7 +94,12 @@ if (isset($_POST["selector"])) {
   }
 
   // Submit request airport to airport or airport to road (private travel)
-  if (($_POST["selector"] === "submit-aa" || $_POST["selector"] === "submit-ar") && isset($_SESSION["id"])) {
+  if (($_POST["selector"] === "submit-aa" || $_POST["selector"] === "submit-ar") && isset($_SESSION["id"]) && isset($_SESSION["user"])) {
+    if ($_SESSION["user"] !== "riders") {
+      echo "db-error";
+      exit;
+    }
+
     $id_rider = $_SESSION["id"];
     $id_driver = $_POST["data1"]["id"];
     $coords1 = json_encode($_POST["data2"]);
@@ -100,10 +124,17 @@ if (isset($_POST["selector"])) {
       echo "db-error";
       exit;
     }
+
+    echo "success";
   }
 
   // Submit request road to airport
-  if ($_POST["selector"] === "submit-ra" && isset($_SESSION["id"])) {
+  if ($_POST["selector"] === "submit-ra" && isset($_SESSION["id"]) && isset($_SESSION["user"])) {
+    if ($_SESSION["user"] !== "riders") {
+      echo "db-error";
+      exit;
+    }
+
     $id_rider = $_SESSION["id"];
     $id_driver = $_POST["data1"]["id"];
     $coords1 = json_encode($_POST["data2"]);
@@ -127,10 +158,18 @@ if (isset($_POST["selector"])) {
       echo "db-error";
       exit;
     }
+
+    echo "success";
   }
 
   // RIDER FUNCTIONS
-  if ($_POST["selector"] === "refresh" && isset($_SESSION["id"])) {
+  if ($_POST["selector"] === "refresh" && isset($_SESSION["id"]) && isset($_SESSION["user"])) {
+    if ($_SESSION["user"] !== "riders") {
+      echo "db-error";
+      exit;
+    }
+
+
 
     $id_rider = $_SESSION["id"];
     if (!$result1 = $dbh->query("SELECT * FROM requests WHERE id_rider = {$id_rider}")) {

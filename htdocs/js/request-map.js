@@ -41,6 +41,11 @@ function refreshMap(load) {
       return;
     }
 
+    if (output === "") {
+      location = "/db-error";
+      return;
+    }
+
     // Request done
     if (output === "empty") {
       location = "/";
@@ -164,6 +169,11 @@ function demoMap() {
   }, function(output) {
     // Database error
     if (output === "db-error") {
+      location = "/db-error";
+      return;
+    }
+
+    if (output === "") {
       location = "/db-error";
       return;
     }

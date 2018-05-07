@@ -360,6 +360,11 @@ function verify() {
         return;
       }
 
+      if (output === "") {
+        location = "/db-error";
+        return;
+      }
+
       // List of working drivers with non-zero seats and less than 2 parties
       var drivers = JSON.parse(output);
 
@@ -415,6 +420,11 @@ function verify() {
               selector: "omc"
             }, function(output) {
               if (output === "db-error") {
+                location = "/db-error";
+                return;
+              }
+
+              if (output === "") {
                 location = "/db-error";
                 return;
               }
@@ -600,6 +610,11 @@ function verify() {
                 return;
               }
 
+              if (output === "") {
+                location = "/db-error";
+                return;
+              }
+
               if (output === "diff") {
                 clearRideDetails();
                 document.getElementById("warning").classList.remove("hide");
@@ -658,6 +673,11 @@ function verify() {
                         selector: "submit-" + identifier
                       }, function(output) {
                         if (output === "db-error") {
+                          location = "/db-error";
+                          return;
+                        }
+                        
+                        if (output !== "success") {
                           location = "/db-error";
                           return;
                         }
