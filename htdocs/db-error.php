@@ -22,7 +22,7 @@ session_start();
           <a class="brand-logo" href="/"><i class="material-icons teal-text text-lighten-1">airport_shuttle</i></a>
           <a class="sidenav-trigger" data-target="slide-out" href=""><i class="material-icons teal-text text-lighten-1">menu</i></a>
           <ul class="right hide-on-med-and-down">
-            <li class="waves-effect"><a class="teal-text text-lighten-1" href="about">Documentation</a></li>
+            <li class="waves-effect"><a class="teal-text text-lighten-1" href="about">About</a></li>
 
             <?php
             if (!isset($_SESSION["logged_in"]) || !$_SESSION["logged_in"]) {
@@ -58,7 +58,7 @@ session_start();
           </div>
         </div>
       </li>
-      <li><a class="teal-text text-lighten-1 waves-effect" href="about">Documentation</a></li>
+      <li><a class="teal-text text-lighten-1 waves-effect" href="about">About</a></li>
 
       <?php
       if (!isset($_SESSION["logged_in"]) || !$_SESSION["logged_in"]) {
