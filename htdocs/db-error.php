@@ -30,7 +30,7 @@ session_start();
               echo '<li><a class="btn waves-effect waves-light" href="sign-in">Sign In</a></li>';
             } else {
               $account_name = explode("@", $_SESSION["email"], 2);
-              $account_name = strlen($account_name[0]) > 21 ? substr($account_name[0], 0, 21) . "..." : $account_name[0];
+              $account_name = strlen($account_name[0]) > 12 ? substr($account_name[0], 0, 12) . "..." : $account_name[0];
               echo '<li class="waves-effect"><a class="teal-text text-lighten-1" href="account">' . $account_name . '</a></li>';
               echo '<li><a class="btn waves-effect waves-light" href="sign-out">Sign Out</a></li>';
             }

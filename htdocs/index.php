@@ -25,7 +25,7 @@ if ($_SESSION["user"] == "drivers") {
 
 
 $account_name = explode("@", $_SESSION["email"], 2);
-$account_name = strlen($account_name[0]) > 21 ? substr($account_name[0], 0, 21) . "..." : $account_name[0];
+$account_name = strlen($account_name[0]) > 12 ? substr($account_name[0], 0, 12) . "..." : $account_name[0];
 ?>
 <!doctype html>
 <html lang="en">
