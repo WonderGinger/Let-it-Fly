@@ -49,9 +49,32 @@ function checkWorking() {
     if (working === 1) addPassenger(1);
     drawMarker();
     window.setInterval(function() {
+      console.log("reload");
+      reload();
       if (working === 1) addPassenger(0);
       drawMarker();
-    }, 60000);
+    }, 10000);
+  });
+}
+
+function reload() {
+  $.post("js/ajax/request.php", {
+    selector: "working"
+  }, function(output) {
+    // Database error
+    if (output === "db-error") {
+      location = "/db-error";
+      return;
+    }
+
+    var output = JSON.parse(output);
+
+    if (output["working"] == working) {
+      console.log("normal behavior");
+    } else {
+      location = "/";
+      return;
+    }
   });
 }
 
@@ -262,7 +285,7 @@ document.getElementById("stop-working-button").addEventListener("click", functio
       //stop-working-button
       document.getElementById("stop-working-button").classList.add("disabled");
       document.getElementById("stop-working-button").innerHTML = "Currently Working";
-      addPassenger();
+      addPassenger(0);
     }
   });
 });
