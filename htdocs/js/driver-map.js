@@ -36,6 +36,11 @@ function checkWorking() {
       return;
     }
 
+    if (output === "") {
+      location = "/db-error";
+      return;
+    }
+
     var output = JSON.parse(output);
 
     if (output["working"] == 1) {
@@ -67,6 +72,11 @@ function reload() {
       return;
     }
 
+    if (output === "") {
+      location = "/db-error";
+      return;
+    }
+
     var output = JSON.parse(output);
 
     if (output["working"] == working) {
@@ -84,6 +94,11 @@ function addPassenger(load) {
   }, function(output) {
     // Database error
     if (output === "db-error") {
+      location = "/db-error";
+      return;
+    }
+
+    if (output === "") {
       location = "/db-error";
       return;
     }
@@ -210,6 +225,11 @@ function drawMarker() {
       return;
     }
 
+    if (output === "") {
+      location = "/db-error";
+      return;
+    }
+
     // Reset previous markers
     for (var i = 0; i < markers.length; i++) {
       markers[i].setMap(null);
@@ -243,6 +263,11 @@ document.getElementById("begin-working-button").addEventListener("click", functi
       return;
     }
 
+    if (output !== "success") {
+      location = "/db-error";
+      return;
+    }
+
     document.getElementById("begin-working").classList.add("hide");
     document.getElementById("stop-working").classList.remove("hide");
     working = 1;
@@ -262,6 +287,11 @@ document.getElementById("stop-working-button").addEventListener("click", functio
   }, function(output) {
     // Database error
     if (output === "db-error") {
+      location = "/db-error";
+      return;
+    }
+
+    if (output === "") {
       location = "/db-error";
       return;
     }

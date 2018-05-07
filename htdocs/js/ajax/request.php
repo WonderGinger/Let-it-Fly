@@ -168,8 +168,23 @@ if (isset($_POST["selector"])) {
     echo json_encode($details);
   }
 
+
+
+
+
+
+
+
+
+
+
   // Get working state
-  if ($_POST["selector"] === "working" && isset($_SESSION["id"])) {
+  if ($_POST["selector"] === "working" && isset($_SESSION["id"]) && isset($_SESSION["user"])) {
+    if ($_SESSION["user"] !== "drivers") {
+      echo "db-error";
+      exit;
+    }
+
     // Sanitize inputs
     $id_driver = mysqli_true_escape_string($dbh, $_SESSION['id']);
 
@@ -183,7 +198,12 @@ if (isset($_POST["selector"])) {
   }
 
   // Set working state to 1
-  if ($_POST["selector"] === "begin-working" && isset($_SESSION["id"])) {
+  if ($_POST["selector"] === "begin-working" && isset($_SESSION["id"]) && isset($_SESSION["user"])) {
+    if ($_SESSION["user"] !== "drivers") {
+      echo "db-error";
+      exit;
+    }
+
     // Sanitize inputs
     $id_driver = mysqli_true_escape_string($dbh, $_SESSION['id']);
 
@@ -191,10 +211,17 @@ if (isset($_POST["selector"])) {
       echo "db-error";
       exit;
     }
+
+    echo "success";
   }
 
   // Set working state to 0
-  if ($_POST["selector"] === "stop-working" && isset($_SESSION["id"])) {
+  if ($_POST["selector"] === "stop-working" && isset($_SESSION["id"]) && isset($_SESSION["user"])) {
+    if ($_SESSION["user"] !== "drivers") {
+      echo "db-error";
+      exit;
+    }
+
     // Sanitize inputs
     $id_driver = mysqli_true_escape_string($dbh, $_SESSION['id']);
 
@@ -220,7 +247,12 @@ if (isset($_POST["selector"])) {
   }
 
   // Get request list
-  if ($_POST["selector"] === "get-passengers" && isset($_SESSION["id"])) {
+  if ($_POST["selector"] === "get-passengers" && isset($_SESSION["id"]) && isset($_SESSION["user"])) {
+    if ($_SESSION["user"] !== "drivers") {
+      echo "db-error";
+      exit;
+    }
+
     // Sanitize inputs
     $id_driver = mysqli_true_escape_string($dbh, $_SESSION['id']);
 
@@ -235,7 +267,12 @@ if (isset($_POST["selector"])) {
   }
 
   // Get driver location
-  if ($_POST["selector"] === "get-location" && isset($_SESSION["id"])) {
+  if ($_POST["selector"] === "get-location" && isset($_SESSION["id"]) && isset($_SESSION["user"])) {
+    if ($_SESSION["user"] !== "drivers") {
+      echo "db-error";
+      exit;
+    }
+
     $_SESSION["id"] = mysqli_true_escape_string($dbh, $_SESSION["id"]);
 
     if (!$result = $dbh->query("SELECT lat, lng FROM drivers WHERE id={$_SESSION['id']} LIMIT 1")) {
@@ -247,7 +284,12 @@ if (isset($_POST["selector"])) {
   }
 
   // Get driver location
-  if ($_POST["selector"] === "initialization" && isset($_SESSION["id"])) {
+  if ($_POST["selector"] === "initialization" && isset($_SESSION["id"]) && isset($_SESSION["user"])) {
+    if ($_SESSION["user"] !== "drivers") {
+      echo "db-error";
+      exit;
+    }
+
     $lat = $_POST["lat"];
     $lng = $_POST["lng"];
     $pass = $_POST["pass"];
@@ -255,7 +297,7 @@ if (isset($_POST["selector"])) {
     if (!$result = $dbh->query("UPDATE drivers SET lat = {$lat}, lng = {$lng}, seats = {$pass} WHERE id={$_SESSION['id']}")) {
       echo "db-error";
       exit;
-    } 
+    }
     echo "success";
   }
 
