@@ -329,19 +329,27 @@ if (isset($_POST["selector"])) {
       exit;
     }
 
-    $lat = $_POST["lat"];
-    $lng = $_POST["lng"];
-    $pass = $_POST["pass"];
-
-    if (!$result = $dbh->query("UPDATE drivers SET lat = {$lat}, lng = {$lng}, seats = {$pass} WHERE id={$_SESSION['id']}")) {
+    if (!$result1 = $dbh->query("SELECT lat, lng, seats FROM drivers WHERE id = {$_SESSION['id']}")) {
       echo "db-error";
       exit;
     }
-    echo "success";
+    $result1 = $result1->fetch_array(MYSQLI_ASSOC);
+
+    if ($result1["lat"] == 0 && $result1["lng"] == 0 && $result1["seats"] == 0) {
+      $lat = $_POST["lat"];
+      $lng = $_POST["lng"];
+      $pass = $_POST["pass"];
+
+      if (!$result = $dbh->query("UPDATE drivers SET lat = {$lat}, lng = {$lng}, seats = {$pass} WHERE id={$_SESSION['id']}")) {
+        echo "db-error";
+        exit;
+      }
+      echo "success";
+    } else {
+      echo "db-error";
+      exit;
+    }
   }
-
-
-
 }
 
 mysqli_close($dbh);
