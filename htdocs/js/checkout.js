@@ -108,11 +108,17 @@ function luhnCheck(val) {
     return (sum % 10) == 0;
 }
 
+var todaysDate = new Date();
+var inputDate = new Date();
 function validateMonth(number) {
-    return (number - 0) == number && number <=12 && number > 0 && number.length > 1;
+    inputDate.setMonth(number);
+    var monthValidated = inputDate.getFullYear() > todaysDate.getFullYear() || inputDate.getMonth() > todaysDate.getMonth() + 1;
+    return (number - 0) == number && number <=12 && number > 0 && number.length > 1 && monthValidated;
 }
 function validateYear(number) {
-    return (number - 0) == number && number >= 18 && number.length > 1;
+    inputDate.setFullYear(20+number);
+    var monthValidated = (inputDate.getMonth() < todaysDate.getMonth() + 1) || (inputDate.getFullYear() > todaysDate.getFullYear());
+    return (number - 0) == number && number >= 18 && number.length > 1 && monthValidated;
 }
 function validateCVC(number) {
     return (number - 0) == number && number.length > 2;
